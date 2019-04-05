@@ -1,0 +1,16 @@
+sudo: true
+
+os:
+  - linux
+
+language: java
+jdk:
+  - oraclejdk11
+
+before_install:
+  - chmod +x mvnw
+
+script: mvn clean verify -DfailIfNoTests=true
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)

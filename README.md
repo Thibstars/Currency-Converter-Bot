@@ -1,0 +1,2 @@
+# Currency Converter Bot [![Build Status](https://travis-ci.org/Thibstars/Currency-Converter-Bot.svg?branch=master)](https://travis-ci.org/Thibstars/Currency-Converter-Bot) [![codecov](https://codecov.io/gh/Thibstars/Currency-Converter-Bot/branch/master/graph/badge.svg)](https://codecov.io/gh/Thibstars/Currency-Converter-Bot) # 
+Discord bot allowing currency conversions.

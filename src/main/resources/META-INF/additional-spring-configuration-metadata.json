@@ -1,0 +1,34 @@
+{
+  "properties": [
+    {
+      "name": "bot.author",
+      "type": "java.lang.String",
+      "description": "Discord bot author."
+    },
+    {
+      "name": "bot.name",
+      "type": "java.lang.String",
+      "description": "Discord bot name."
+    },
+    {
+      "name": "bot.description",
+      "type": "java.lang.String",
+      "description": "Discord bot description."
+    },
+    {
+      "name": "bot.version",
+      "type": "java.lang.String",
+      "description": "Current bot version."
+    },
+    {
+      "name": "bot.commandPrefix",
+      "type": "java.lang.String",
+      "description": "Discord bot command prefix."
+    },
+    {
+      "name": "bot.processBotMessages",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "Defines whether or not to process messages from other bots.."
+    }
+  ] }
