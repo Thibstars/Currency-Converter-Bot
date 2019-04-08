@@ -46,7 +46,6 @@ class HelpCommandTest extends CommandBaseTest {
     void shouldSendHelpMessage() {
         botCommands = new ArrayList<>();
         botCommands.add(new InviteCommand());
-        botCommands.add(new GoodBotCommand());
         botCommands.add(mock(HelpCommand.class));
 
         DiscordBotEnvironment environment = mock(DiscordBotEnvironment.class);
