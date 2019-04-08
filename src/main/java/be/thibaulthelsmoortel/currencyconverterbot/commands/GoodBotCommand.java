@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Random;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
 
@@ -38,6 +40,8 @@ import picocli.CommandLine.Command;
 @Command(name = "good bot", description = "Allows you to thank the bot for being helpful.")
 @Component
 public class GoodBotCommand extends BotCommand {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GoodBotCommand.class);
 
     private static final String THUMBS_UP_EMOJI = "\uD83D\uDC4D";
     private static final String VICTORY_HAND_EMOJI = "\u270C";
@@ -55,6 +59,7 @@ public class GoodBotCommand extends BotCommand {
         try {
             this.random = SecureRandom.getInstanceStrong();
         } catch (NoSuchAlgorithmException e) {
+            LOGGER.warn("Using fallback random generator.");
             this.random = new Random();
         }
     }
