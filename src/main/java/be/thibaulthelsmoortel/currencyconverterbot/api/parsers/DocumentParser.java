@@ -33,6 +33,8 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 /**
+ * Provides means for parsing a currency rates document from ECB.
+ *
  * @author Thibault Helsmoortel
  */
 @Component

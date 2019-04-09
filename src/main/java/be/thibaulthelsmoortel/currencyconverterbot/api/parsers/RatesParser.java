@@ -34,6 +34,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
+ * Provides means for parsing currency rates.
+ *
  * @author Thibault Helsmoortel
  */
 @Component
