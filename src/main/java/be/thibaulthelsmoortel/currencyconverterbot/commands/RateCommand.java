@@ -71,4 +71,9 @@ public class RateCommand extends BotCommand {
 
         return message;
     }
+
+    // Visible for testing
+    void setIsoCode(String isoCode) {
+        this.isoCode = isoCode;
+    }
 }
