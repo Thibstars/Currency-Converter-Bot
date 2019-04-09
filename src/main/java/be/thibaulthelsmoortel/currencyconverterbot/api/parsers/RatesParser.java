@@ -57,16 +57,22 @@ public class RatesParser {
     public List<Rate> parse() {
         Document document = documentParser.parse();
 
-        NodeList nodeList = document.getElementsByTagName(CUBE);
+        LOGGER.debug("Attempting to parse currency rates.");
+
+        NodeList nodeList = null;
+        if (document != null) {
+            nodeList = document.getElementsByTagName(CUBE);
+        }
 
         List<Rate> rates = new ArrayList<>();
 
-        if (nodeList.getLength() > 0) {
+        if (nodeList != null && nodeList.getLength() > 0) {
+            LOGGER.debug("Parsing currency rates.");
             IntStream.range(0, nodeList.getLength()).mapToObj(nodeList::item).filter(Node::hasAttributes).map(Node::getAttributes)
                 .forEach(attributes -> {
                     Node time = attributes.getNamedItem(TIME);
                     if (time != null) {
-                        LOGGER.debug("Search performed on: {}.", String.format(TIME_FORMAT, time.getNodeValue()));
+                        LOGGER.debug("Detected time value: {}.", String.format(TIME_FORMAT, time.getNodeValue()));
                     } else {
                         String currencyString = attributes.getNamedItem(CURRENCY).getNodeValue();
                         String rateString = attributes.getNamedItem(RATE).getNodeValue();

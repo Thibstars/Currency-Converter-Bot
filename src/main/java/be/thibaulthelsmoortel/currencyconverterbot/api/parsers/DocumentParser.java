@@ -43,6 +43,7 @@ public class DocumentParser {
     private static final String ECB_XML_URL = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml";
 
     Document parse() {
+        LOGGER.debug("Attempting to parse currency document.");
         URL xmlURL;
         try {
             xmlURL = new URL(ECB_XML_URL);
@@ -53,8 +54,11 @@ public class DocumentParser {
         }
 
         try (InputStream xml = xmlURL.openStream()) {
+            LOGGER.debug("Preparing document parsing.");
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+
+            LOGGER.debug("Parsing document.");
             return documentBuilder.parse(xml);
         } catch (IOException | ParserConfigurationException | SAXException e) {
             LOGGER.error(e.getMessage(), e);
