@@ -36,9 +36,8 @@ import picocli.CommandLine.Command;
 @Component
 public class RatesCommand extends BotCommand {
 
-    private static final String CURRENCY_PRINT = "Currency";
-    private static final String RATE_PRINT = "Rate";
-    private static final String SEPARATOR = ":";
+    private static final String HEADER = "Currency: rate";
+    private static final String HEADER_SEPARATOR = "-";
 
     private final RatesParser ratesParser;
 
@@ -53,8 +52,14 @@ public class RatesCommand extends BotCommand {
 
         if (getEvent() instanceof MessageReceivedEvent) {
             List<Rate> rates = ratesParser.parse();
-            if (rates != null &&!rates.isEmpty()) {
-                message.set(CURRENCY_PRINT + SEPARATOR + RATE_PRINT + System.lineSeparator());
+            if (rates != null && !rates.isEmpty()) {
+                message.set(HEADER + System.lineSeparator());
+                for (int i = 0; i <= HEADER.length(); i++) {
+                    message.set(message.get() + HEADER_SEPARATOR);
+                    if (i == HEADER.length()) {
+                        message.set(message.get() + System.lineSeparator());
+                    }
+                }
                 rates.forEach(rate -> message.set(message.get() + rate.toString() + System.lineSeparator()));
             }
 
