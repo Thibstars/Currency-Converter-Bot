@@ -19,7 +19,9 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
@@ -27,7 +29,11 @@ import be.thibaulthelsmoortel.currencyconverterbot.config.DiscordBotEnvironment;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.core.requests.Request;
+import net.dv8tion.jda.core.requests.Requester;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -52,6 +58,14 @@ class HelpCommandTest extends CommandBaseTest {
         when(environment.getCommandPrefix()).thenReturn("/");
         HelpCommand command = new HelpCommand(environment, botCommands);
         command.setEvent(messageReceivedEvent);
+
+        when(messageChannel.getType()).thenReturn(ChannelType.UNKNOWN);
+        when(messageChannel.getId()).thenReturn("id");
+        JDAImpl jda = mock(JDAImpl.class);
+        Requester requester = mock(Requester.class);
+        when(jda.getRequester()).thenReturn(requester);
+        when(messageChannel.getJDA()).thenReturn(jda);
+
         String message = (String) command.call();
 
         Assertions.assertTrue(StringUtils.isNotBlank(message), "Message should not be empty.");
@@ -63,7 +77,11 @@ class HelpCommandTest extends CommandBaseTest {
             }
         });
 
-        verifyOneMessageSent(message);
+        verifyOneMessageSent(requester);
+    }
+
+    void verifyOneMessageSent(Requester requester) {
+        verify(requester).request(any(Request.class));
     }
 
     private String parseDescription(Command annotation) {
