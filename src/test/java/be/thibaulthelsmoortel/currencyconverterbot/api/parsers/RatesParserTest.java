@@ -97,4 +97,23 @@ class RatesParserTest {
             Assertions.assertNotNull(rate.getValue(), "Rate must not be null.");
         });
     }
+
+    @DisplayName("Should parse rate.")
+    @Test
+    void shouldParseRate() {
+        Rate rate = ratesParser.parse("USD");
+
+        Assertions.assertNotNull(rate, "Rate must not be null.");
+        Assertions.assertNotNull(rate.getCurrency(), "Currency must not be null.");
+        Assertions.assertNotNull(rate.getValue(), "Rate must not be null.");
+        Assertions.assertEquals("USD", rate.getCurrency().getIsoCode(), "ISO codes must match.");
+    }
+
+    @DisplayName("Should not parse blank ISO code.")
+    @Test
+    void shouldNotParseBlankIsoCode() {
+        Rate rate = ratesParser.parse(" ");
+
+        Assertions.assertNull(rate, "Rate must be null.");
+    }
 }
