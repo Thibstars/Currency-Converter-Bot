@@ -23,8 +23,9 @@ import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
 import be.thibaulthelsmoortel.currencyconverterbot.config.DiscordBotEnvironment;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
+import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
@@ -35,8 +36,6 @@ import picocli.CommandLine.Command;
 @Command(name = "help", description = "Provides command usage help.")
 @Component
 public class HelpCommand extends BotCommand {
-
-    private static final String NEWLINE = System.lineSeparator();
 
     private final DiscordBotEnvironment discordBotEnvironment;
     private final List<BotCommand> botCommands;
@@ -50,33 +49,29 @@ public class HelpCommand extends BotCommand {
 
     @Override
     public Object call() {
-        String message = null;
-
+        MessageBuilder messageBuilder = new MessageBuilder();
         if (getEvent() instanceof MessageReceivedEvent) {
-            message = "Usage: " + discordBotEnvironment.getCommandPrefix() + "COMMAND [OPTIONS]" + NEWLINE + NEWLINE;
-
-            message += discordBotEnvironment.getDescription() + NEWLINE + NEWLINE;
-
-            message += createCommandOverview();
-
-            message += NEWLINE + "Run '" + discordBotEnvironment.getCommandPrefix() + "COMMAND --help' for more information on a command.";
-
-            ((MessageReceivedEvent) getEvent()).getChannel().sendMessage(message).queue();
+            messageBuilder.setContent("Usage: " + discordBotEnvironment.getCommandPrefix() + "COMMAND [OPTIONS]")
+                .appendFormat("%n%n%s%n%n", discordBotEnvironment.getDescription());
+            createCommandOverview(messageBuilder);
+            messageBuilder.appendFormat("%n%s '%s", "Run", discordBotEnvironment.getCommandPrefix())
+                .append("COMMAND --help' for more information on a command.")
+                .sendTo(((MessageReceivedEvent) getEvent()).getChannel())
+                .queue();
         }
 
-        return message;
+        String message = messageBuilder.getStringBuilder().toString();
+        return StringUtils.isNotBlank(message) ? message : null;
     }
 
-    private String createCommandOverview() {
-        AtomicReference<String> overview = new AtomicReference<>("Commands:" + NEWLINE);
+    private void createCommandOverview(MessageBuilder messageBuilder) {
+        messageBuilder.appendFormat("%s %n", "Commands:");
         botCommands.forEach(botCommand -> {
             if (!(botCommand instanceof HelpCommand)) {
                 Command annotation = botCommand.getClass().getAnnotation(Command.class);
-                overview.set(overview.get() + String.format("%-15s %s", annotation.name(), parseDescription(annotation)) + NEWLINE);
+                messageBuilder.appendFormat("%-15s %s %n", annotation.name(), parseDescription(annotation));
             }
         });
-
-        return overview.get();
     }
 
     private String parseDescription(Command annotation) {
