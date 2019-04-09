@@ -19,20 +19,14 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
+import be.thibaulthelsmoortel.currencyconverterbot.api.model.Rate;
+import be.thibaulthelsmoortel.currencyconverterbot.api.parsers.RatesParser;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
-import java.io.InputStream;
-import java.net.URL;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.IntStream;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import picocli.CommandLine.Command;
 
 /**
@@ -42,52 +36,29 @@ import picocli.CommandLine.Command;
 @Component
 public class RatesCommand extends BotCommand {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RatesCommand.class);
-
-    private static final String ECB_XML_URL = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml";
-
-    private static final String CUBE = "Cube";
-    private static final String TIME = "time";
-    private static final String CURRENCY = "currency";
-    private static final String RATE = "rate";
     private static final String CURRENCY_PRINT = "Currency";
     private static final String RATE_PRINT = "Rate";
-    private static final String TIME_FORMAT = "Time: %s";
-    private static final String SEPARATOR = "|";
-    private static final String FORMAT = "%-8s %-1s %-4s %n";
+    private static final String SEPARATOR = ":";
+
+    private final RatesParser ratesParser;
+
+    @Autowired
+    public RatesCommand(RatesParser ratesParser) {
+        this.ratesParser = ratesParser;
+    }
 
     @Override
-    public Object call() throws Exception {
+    public Object call() {
         AtomicReference<String> message = new AtomicReference<>();
 
         if (getEvent() instanceof MessageReceivedEvent) {
-            URL xmlURL = new URL(ECB_XML_URL);
-            try (InputStream xml = xmlURL.openStream()) {
-                DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-                DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-                Document document = documentBuilder.parse(xml);
-
-                NodeList nodeList = document.getElementsByTagName(CUBE);
-
-                if (nodeList.getLength() > 0) {
-                    message.set(String.format(FORMAT, CURRENCY_PRINT, SEPARATOR, RATE_PRINT));
-                }
-
-                IntStream.range(0, nodeList.getLength()).mapToObj(nodeList::item).filter(Node::hasAttributes).map(Node::getAttributes)
-                    .forEach(attributes -> {
-                        Node time = attributes.getNamedItem(TIME);
-                        if (time != null) {
-                            LOGGER.debug("Search performed on: {}.", String.format(TIME_FORMAT, time.getNodeValue()));
-                        } else {
-                            String currency = attributes.getNamedItem(CURRENCY).getNodeValue();
-                            String rate = attributes.getNamedItem(RATE).getNodeValue();
-
-                            message.set(message.get() + String.format(FORMAT, currency, SEPARATOR, rate));
-                        }
-                    });
-
-                ((MessageReceivedEvent) getEvent()).getChannel().sendMessage(message.get()).queue();
+            List<Rate> rates = ratesParser.parse();
+            if (rates != null &&!rates.isEmpty()) {
+                message.set(CURRENCY_PRINT + SEPARATOR + RATE_PRINT + System.lineSeparator());
+                rates.forEach(rate -> message.set(message.get() + rate.toString() + System.lineSeparator()));
             }
+
+            ((MessageReceivedEvent) getEvent()).getChannel().sendMessage(message.get()).queue();
         }
 
         return message.get();
