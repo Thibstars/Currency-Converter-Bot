@@ -103,7 +103,7 @@ public class RatesParser {
         }
 
         return parse().stream()
-            .filter(rate -> isoCode.equals(rate.getCurrency().getIsoCode()))
+            .filter(rate -> isoCode.equalsIgnoreCase(rate.getCurrency().getIsoCode()))
             .findFirst()
             .orElseThrow();
     }
