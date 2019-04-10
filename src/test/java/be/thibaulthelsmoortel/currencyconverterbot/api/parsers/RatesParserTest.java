@@ -90,6 +90,7 @@ class RatesParserTest {
         Assertions.assertNotNull(rates, "Rates must not be null.");
         Assertions.assertFalse(rates.isEmpty(), "Rates must not be empty.");
 
+        Assertions.assertTrue(rates.stream().map(Rate::getCurrency).map(Currency::getIsoCode).anyMatch("EUR"::equals), "Rates must contain EUR.");
         Assertions.assertTrue(rates.stream().map(Rate::getCurrency).map(Currency::getIsoCode).anyMatch("USD"::equals), "Rates must contain USD.");
         Assertions.assertTrue(rates.stream().map(Rate::getCurrency).map(Currency::getIsoCode).anyMatch("JPY"::equals), "Rates must contain JPY.");
 
