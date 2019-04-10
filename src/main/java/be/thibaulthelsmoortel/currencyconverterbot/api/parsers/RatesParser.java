@@ -49,6 +49,7 @@ public class RatesParser {
     private static final String TIME_FORMAT = "Time: %s";
     private static final String CURRENCY = "currency";
     private static final String RATE = "rate";
+    private static final String BASE_ISO_CODE = "EUR";
 
     private final DocumentParser documentParser;
 
@@ -90,6 +91,15 @@ public class RatesParser {
                         rates.add(rate);
                     }
                 });
+        }
+
+        if (rates.stream().map(Rate::getCurrency).map(Currency::getIsoCode).noneMatch(BASE_ISO_CODE::equals)) {
+            Rate baseRate = new Rate();
+            Currency baseCurrency = new Currency();
+            baseCurrency.setIsoCode(BASE_ISO_CODE);
+            baseRate.setCurrency(baseCurrency);
+            baseRate.setValue(BigDecimal.ONE);
+            rates.add(0, baseRate);
         }
 
         return rates;

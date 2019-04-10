@@ -90,6 +90,7 @@ class RatesParserTest {
         Assertions.assertNotNull(rates, "Rates must not be null.");
         Assertions.assertFalse(rates.isEmpty(), "Rates must not be empty.");
 
+        Assertions.assertTrue(rates.stream().map(Rate::getCurrency).map(Currency::getIsoCode).anyMatch("EUR"::equals), "Rates must contain EUR.");
         Assertions.assertTrue(rates.stream().map(Rate::getCurrency).map(Currency::getIsoCode).anyMatch("USD"::equals), "Rates must contain USD.");
         Assertions.assertTrue(rates.stream().map(Rate::getCurrency).map(Currency::getIsoCode).anyMatch("JPY"::equals), "Rates must contain JPY.");
 
@@ -121,7 +122,6 @@ class RatesParserTest {
     @DisplayName("Should not parse ISO code that isn't present.")
     @Test
     void shouldNotParseUnavailableIsoCode() {
-        // EUR is the base currency and is not available in the list
-        Assertions.assertThrows(NoSuchElementException.class, () -> ratesParser.parse("EUR"));
+        Assertions.assertThrows(NoSuchElementException.class, () -> ratesParser.parse("KFC"));
     }
 }
