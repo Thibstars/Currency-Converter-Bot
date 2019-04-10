@@ -25,6 +25,7 @@ import static org.mockito.Mockito.when;
 import be.thibaulthelsmoortel.currencyconverterbot.api.model.Currency;
 import be.thibaulthelsmoortel.currencyconverterbot.api.model.Rate;
 import java.util.List;
+import java.util.NoSuchElementException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -96,5 +97,31 @@ class RatesParserTest {
             Assertions.assertNotNull(rate.getCurrency(), "Currency must not be null.");
             Assertions.assertNotNull(rate.getValue(), "Rate must not be null.");
         });
+    }
+
+    @DisplayName("Should parse rate.")
+    @Test
+    void shouldParseRate() {
+        Rate rate = ratesParser.parse("USD");
+
+        Assertions.assertNotNull(rate, "Rate must not be null.");
+        Assertions.assertNotNull(rate.getCurrency(), "Currency must not be null.");
+        Assertions.assertNotNull(rate.getValue(), "Rate must not be null.");
+        Assertions.assertEquals("USD", rate.getCurrency().getIsoCode(), "ISO codes must match.");
+    }
+
+    @DisplayName("Should not parse blank ISO code.")
+    @Test
+    void shouldNotParseBlankIsoCode() {
+        Rate rate = ratesParser.parse(" ");
+
+        Assertions.assertNull(rate, "Rate must be null.");
+    }
+
+    @DisplayName("Should not parse ISO code that isn't present.")
+    @Test
+    void shouldNotParseUnavailableIsoCode() {
+        // EUR is the base currency and is not available in the list
+        Assertions.assertThrows(NoSuchElementException.class, () -> ratesParser.parse("EUR"));
     }
 }

@@ -25,6 +25,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,6 +93,19 @@ public class RatesParser {
         }
 
         return rates;
+    }
+
+    public Rate parse(String isoCode) {
+        if (StringUtils.isBlank(isoCode)) {
+            LOGGER.warn("Attempting to parse rate for blank currency iso code.");
+
+            return null;
+        }
+
+        return parse().stream()
+            .filter(rate -> isoCode.equalsIgnoreCase(rate.getCurrency().getIsoCode()))
+            .findFirst()
+            .orElseThrow();
     }
 
 }
