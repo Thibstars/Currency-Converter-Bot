@@ -30,6 +30,7 @@ import be.thibaulthelsmoortel.currencyconverterbot.BaseTest;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.AboutCommand;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.MessageAction;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,6 +64,7 @@ class CommandExecutorTest extends BaseTest {
     @BeforeEach
     void setUp() {
         when(messageReceivedEvent.getChannel()).thenReturn(messageChannel);
+        when(messageChannel.sendTyping()).thenReturn(mock(RestAction.class));
         when(messageChannel.sendMessage(anyString())).thenReturn(mock(MessageAction.class));
     }
 
@@ -75,9 +77,9 @@ class CommandExecutorTest extends BaseTest {
         boolean executed = commandExecutor.tryExecute(messageReceivedEvent, commandName);
 
         // Assuming the command sends a message back:
-        verify(messageReceivedEvent, times(2)).getChannel(); // Once for sending the message, once to pass to the output stream
+        // Once for sending the message, once to pass to the output stream, once for send typing
+        verify(messageReceivedEvent, times(3)).getChannel();
         verify(messageChannel).sendMessage(anyString());
-        verifyNoMoreInteractions(messageChannel);
         verifyNoMoreInteractions(messageReceivedEvent);
 
         Assertions.assertTrue(executed, "Command should be executed.");
@@ -92,9 +94,8 @@ class CommandExecutorTest extends BaseTest {
         boolean executed = commandExecutor.tryExecute(messageReceivedEvent, commandName);
 
         // Assuming the command sends a message back:
-        verify(messageReceivedEvent).getChannel(); // Once for sending the message, once to pass to the output stream
+        verify(messageReceivedEvent, times(2)).getChannel(); // Once for sending the message, once for send typing
         verify(messageChannel).sendMessage(anyString());
-        verifyNoMoreInteractions(messageChannel);
         verifyNoMoreInteractions(messageReceivedEvent);
 
         Assertions.assertTrue(executed, "Command should be executed.");
@@ -107,9 +108,6 @@ class CommandExecutorTest extends BaseTest {
 
         boolean executed = commandExecutor.tryExecute(messageReceivedEvent, commandName);
 
-        // The executor should send back a message:
-        verify(messageReceivedEvent).getChannel();
-        verify(messageChannel).sendMessage("Command not recognized...");
         verifyNoMoreInteractions(messageChannel);
         verifyNoMoreInteractions(messageReceivedEvent);
 

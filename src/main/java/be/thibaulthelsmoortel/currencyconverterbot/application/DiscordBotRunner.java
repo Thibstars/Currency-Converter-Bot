@@ -79,8 +79,6 @@ public class DiscordBotRunner extends ListenerAdapter implements CommandLineRunn
 
     private void handleMessage(MessageReceivedEvent event, String msg) {
         if (msg.startsWith(discordBotEnvironment.getCommandPrefix())) {
-            event.getChannel().sendTyping().queue();
-
             String parsedMessage = msg.substring(discordBotEnvironment.getCommandPrefix().length());
 
             commandExecutor.tryExecute(event, parsedMessage);

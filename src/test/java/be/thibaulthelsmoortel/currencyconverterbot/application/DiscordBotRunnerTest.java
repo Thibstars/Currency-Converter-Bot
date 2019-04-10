@@ -87,7 +87,6 @@ class DiscordBotRunnerTest extends BaseTest {
 
         discordBotRunner.onMessageReceived(messageReceivedEvent);
 
-        verify(messageChannel).sendTyping();
         verifyNoMoreInteractions(messageChannel);
         verify(commandExecutor).tryExecute(messageReceivedEvent, message);
         verifyNoMoreInteractions(commandExecutor);
@@ -138,7 +137,6 @@ class DiscordBotRunnerTest extends BaseTest {
 
         discordBotRunner.onMessageReceived(messageReceivedEvent);
 
-        verify(messageChannel).sendTyping();
         verifyNoMoreInteractions(messageChannel);
         verify(commandExecutor).tryExecute(messageReceivedEvent, message);
         verifyNoMoreInteractions(commandExecutor);

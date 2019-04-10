@@ -70,6 +70,7 @@ public class CommandExecutor {
 
                 if (commandMessage.startsWith(commandName)) {
                     commandRecognised.set(true);
+                    event.getChannel().sendTyping().queue();
                     command.setEvent(event);
                     String args = commandMessage.substring(commandMessage.indexOf(commandType.name()) + commandType.name().length()).trim();
 
@@ -86,7 +87,6 @@ public class CommandExecutor {
                 LOGGER.debug("Executed command: {}.", commandMessage);
             } else {
                 LOGGER.debug("Command not recognized: {}.", commandMessage);
-                event.getChannel().sendMessage("Command not recognized...").queue();
             }
         }
 
