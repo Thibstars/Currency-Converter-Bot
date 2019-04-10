@@ -121,7 +121,6 @@ class RatesParserTest {
     @DisplayName("Should not parse ISO code that isn't present.")
     @Test
     void shouldNotParseUnavailableIsoCode() {
-        // EUR is the base currency and is not available in the list
-        Assertions.assertThrows(NoSuchElementException.class, () -> ratesParser.parse("EUR"));
+        Assertions.assertThrows(NoSuchElementException.class, () -> ratesParser.parse("KFC"));
     }
 }
