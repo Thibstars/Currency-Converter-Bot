@@ -70,13 +70,6 @@ public class DiscordBotRunner extends ListenerAdapter implements CommandLineRunn
         return (discordBotEnvironment.isProcessBotMessages() && message.getAuthor().isBot()) || !message.getAuthor().isBot();
     }
 
-    @Override
-    public void onGuildReady(GuildReadyEvent event) {
-        TextChannel textChannel = Objects.requireNonNull(event.getGuild().getDefaultChannel());
-        textChannel.sendTyping().queue();
-        textChannel.sendMessage(discordBotEnvironment.getName() + " reporting for duty!").queue();
-    }
-
     private void handleMessage(MessageReceivedEvent event, String msg) {
         if (msg.startsWith(discordBotEnvironment.getCommandPrefix())) {
             event.getChannel().sendTyping().queue();
