@@ -24,6 +24,7 @@ import be.thibaulthelsmoortel.currencyconverterbot.api.parsers.RatesParser;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.NoSuchElementException;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -55,11 +56,15 @@ public class ConvertCommand extends BotCommand {
         String message = null;
 
         if (getEvent() instanceof MessageReceivedEvent) {
-            Rate sourceRate = ratesParser.parse(sourceIsoCode);
-            Rate targetRate = ratesParser.parse(targetIsoCode);
+            try {
+                Rate sourceRate = ratesParser.parse(sourceIsoCode);
+                Rate targetRate = ratesParser.parse(targetIsoCode);
 
-            BigDecimal result = getConvertedValue(sourceRate, targetRate);
-            message = String.format("%s %s", result.toPlainString(), targetRate.getCurrency().getIsoCode());
+                BigDecimal result = getConvertedValue(sourceRate, targetRate);
+                message = String.format("%s %s", result.toPlainString(), targetRate.getCurrency().getIsoCode());
+            } catch (NoSuchElementException e) {
+                message = "Input parameters not recognized.";
+            }
 
             ((MessageReceivedEvent) getEvent()).getChannel().sendMessage(message).queue();
         }
@@ -90,5 +95,20 @@ public class ConvertCommand extends BotCommand {
         } else {
             return BigDecimal.valueOf(sourceAmount).multiply(rate);
         }
+    }
+
+    // Visible for testing
+    void setSourceAmount(double sourceAmount) {
+        this.sourceAmount = sourceAmount;
+    }
+
+    // Visible for testing
+    void setSourceIsoCode(String sourceIsoCode) {
+        this.sourceIsoCode = sourceIsoCode;
+    }
+
+    // Visible for testing
+    void setTargetIsoCode(String targetIsoCode) {
+        this.targetIsoCode = targetIsoCode;
     }
 }
