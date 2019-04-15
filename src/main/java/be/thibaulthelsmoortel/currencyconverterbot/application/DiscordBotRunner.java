@@ -22,12 +22,11 @@ package be.thibaulthelsmoortel.currencyconverterbot.application;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.CommandExecutor;
 import be.thibaulthelsmoortel.currencyconverterbot.config.DiscordBotEnvironment;
 import be.thibaulthelsmoortel.currencyconverterbot.exceptions.MissingTokenException;
-import java.util.Objects;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.events.guild.GuildReadyEvent;
+import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
+import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.apache.commons.lang3.StringUtils;
@@ -64,6 +63,20 @@ public class DiscordBotRunner extends ListenerAdapter implements CommandLineRunn
             String msg = message.getContentDisplay();
             handleMessage(event, msg);
         }
+    }
+
+    @Override
+    public void onGuildJoin(GuildJoinEvent event) {
+        super.onGuildJoin(event);
+
+        LOGGER.info("Joined guild. Current amount of connected guilds: {}.", event.getJDA().getGuilds().size());
+    }
+
+    @Override
+    public void onGuildLeave(GuildLeaveEvent event) {
+        super.onGuildLeave(event);
+
+        LOGGER.info("Left guild. Current amount of connected guilds: {}.", event.getJDA().getGuilds().size());
     }
 
     private boolean processMessage(Message message) {
