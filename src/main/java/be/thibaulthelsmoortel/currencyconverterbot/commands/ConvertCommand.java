@@ -23,6 +23,7 @@ import be.thibaulthelsmoortel.currencyconverterbot.api.model.Rate;
 import be.thibaulthelsmoortel.currencyconverterbot.api.parsers.RatesParser;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -69,7 +70,25 @@ public class ConvertCommand extends BotCommand {
     private BigDecimal getConvertedValue(Rate sourceRate, Rate targetRate) {
         BigDecimal rate = sourceRate.getValue().multiply(targetRate.getValue());
 
-        // TODO: 2019-04-10 fix currency conversion
-        return BigDecimal.valueOf(sourceAmount).multiply(rate);
+        if (sourceRate.getValue().compareTo(BigDecimal.ONE) != 0 && targetRate.getValue().compareTo(BigDecimal.ONE) != 0) {
+            Rate baseRate = new Rate();
+            baseRate.setValue(BigDecimal.ONE);
+            BigDecimal interMediaryConversion = convert(sourceRate, baseRate, sourceRate.getValue());
+            Rate intermediaryRate = new Rate();
+            intermediaryRate.setValue(interMediaryConversion);
+
+            BigDecimal newRate = convert(intermediaryRate, targetRate, interMediaryConversion.multiply(targetRate.getValue()));
+            return convert(intermediaryRate, targetRate, newRate);
+        } else {
+            return convert(sourceRate, targetRate, rate);
+        }
+    }
+
+    private BigDecimal convert(Rate sourceRate, Rate targetRate, BigDecimal rate) {
+        if (sourceRate.getValue().compareTo(targetRate.getValue()) >= 0) {
+            return BigDecimal.valueOf(sourceAmount).divide(rate, 5, RoundingMode.HALF_UP);
+        } else {
+            return BigDecimal.valueOf(sourceAmount).multiply(rate);
+        }
     }
 }
