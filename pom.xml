@@ -41,6 +41,7 @@
 		<jda.version>3.8.3_462</jda.version>
 		<apache.commons.version>3.8.1</apache.commons.version>
 		<picocli.version>3.9.5</picocli.version>
+		<dbl.version>2.0.1</dbl.version>
 
 		<junit.version>5.3.2</junit.version>
 		<mockito.junit.version>2.25.1</mockito.junit.version>
@@ -75,6 +76,11 @@
 			<groupId>info.picocli</groupId>
 			<artifactId>picocli</artifactId>
 			<version>${picocli.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.discordbots</groupId>
+			<artifactId>DBL-Java-Library</artifactId>
+			<version>${dbl.version}</version>
 		</dependency>
 
 		<dependency>
@@ -164,6 +170,10 @@
 			<id>jcenter</id>
 			<name>jcenter-bintray</name>
 			<url>http://jcenter.bintray.com</url>
+		</repository>
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
 		</repository>
 	</repositories>
 
