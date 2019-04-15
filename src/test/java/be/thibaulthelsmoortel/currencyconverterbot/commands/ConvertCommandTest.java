@@ -22,6 +22,7 @@ package be.thibaulthelsmoortel.currencyconverterbot.commands;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import be.thibaulthelsmoortel.currencyconverterbot.api.conversion.CurrencyConverter;
 import be.thibaulthelsmoortel.currencyconverterbot.api.model.Currency;
 import be.thibaulthelsmoortel.currencyconverterbot.api.model.Rate;
 import be.thibaulthelsmoortel.currencyconverterbot.api.parsers.RatesParser;
@@ -29,7 +30,6 @@ import java.math.BigDecimal;
 import java.util.NoSuchElementException;
 import net.dv8tion.jda.core.events.Event;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -39,9 +39,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 /**
  * @author Thibault Helsmoortel
  */
-class RateCommandTest extends CommandBaseTest {
+class ConvertCommandTest extends CommandBaseTest {
 
-    private RateCommand rateCommand;
+    private ConvertCommand convertCommand;
 
     @MockBean
     private RatesParser ratesParser;
@@ -50,69 +50,72 @@ class RateCommandTest extends CommandBaseTest {
     @BeforeEach
     void setUp() {
         super.setUp();
-        this.rateCommand = new RateCommand(ratesParser);
-        rateCommand.setEvent(messageReceivedEvent);
+        this.convertCommand = new ConvertCommand(ratesParser, new CurrencyConverter());
+        convertCommand.setEvent(messageReceivedEvent);
     }
 
-    @DisplayName("Should send rate message.")
+    @DisplayName("Should send convert message.")
     @Test
-    void shouldSendRateMessage() {
-        String isoCode = "USD";
-        Rate rate = createRate();
-        when(ratesParser.parse(isoCode)).thenReturn(rate);
-        rateCommand.setIsoCode(isoCode);
-        String message = (String) rateCommand.call();
+    void shouldSendConvertMessage() {
+        String usdIso = "USD";
+        Rate usdRate = createRate(usdIso, new BigDecimal("0.7532"));
+        when(ratesParser.parse(usdIso)).thenReturn(usdRate);
+
+        String eurIso = "EUR";
+        Rate eurRate = createRate(eurIso, BigDecimal.ONE);
+        when(ratesParser.parse(eurIso)).thenReturn(eurRate);
+
+        convertCommand.setSourceAmount(1);
+        convertCommand.setSourceIsoCode(usdIso);
+        convertCommand.setTargetIsoCode(eurIso);
+
+        String message = (String) convertCommand.call();
 
         Assertions.assertTrue(StringUtils.isNotBlank(message), "Message should not be empty.");
-        Assertions.assertTrue(message.contains(isoCode), "Message should contain USD.");
-        Assertions.assertTrue(message.contains("0.7532"), "Message should contain rate.");
+        Assertions.assertTrue(message.contains(eurIso), "Message should contain USD.");
+        Assertions.assertTrue(message.contains(usdRate.getValue().toPlainString()), "Message should contain rate.");
         verifyOneMessageSent(message);
     }
 
-    private Rate createRate() {
+    private Rate createRate(String iso, BigDecimal value) {
         Rate rate = new Rate();
         Currency currency = new Currency();
-        currency.setIsoCode("USD");
+        currency.setIsoCode(iso);
         rate.setCurrency(currency);
-        rate.setValue(new BigDecimal("0.7532"));
+        rate.setValue(value);
 
         return rate;
     }
 
-    @DisplayName("Should send ISO code not found message.")
+    @DisplayName("Should send input not recognized message.")
     @Test
-    void shouldSendIsoCodeNotFoundMessage() {
-        String isoCode = "myIsoCode";
-        when(ratesParser.parse(isoCode)).thenThrow(NoSuchElementException.class);
-        rateCommand.setIsoCode(isoCode);
-        String message = (String) rateCommand.call();
+    void shouldSendInputNotRecognizedMessage() {
+        String usdIso = "USD";
+        Rate usdRate = createRate(usdIso, new BigDecimal("0.7532"));
+        when(ratesParser.parse(usdIso)).thenReturn(usdRate);
+
+        String eurIso = "EUR";
+        Rate eurRate = createRate(eurIso, BigDecimal.ONE);
+        when(ratesParser.parse(eurIso)).thenReturn(eurRate);
+
+        String unrecognizedIsoCode = "Karman";
+        when(ratesParser.parse(unrecognizedIsoCode)).thenThrow(NoSuchElementException.class);
+
+        convertCommand.setSourceAmount(6);
+        convertCommand.setSourceIsoCode(usdIso);
+        convertCommand.setTargetIsoCode(unrecognizedIsoCode);
+
+        String message = (String) convertCommand.call();
 
         Assertions.assertTrue(StringUtils.isNotBlank(message), "Message should not be empty.");
-        Assertions.assertEquals("Currency ISO code not found.", message, "Message should match.");
-        verifyOneMessageSent(message);
-    }
-
-    @DisplayName("Should send could not find message when rate is null.")
-    @Test
-    void shouldSendCouldNotFindMessageWhenRateIsNull() {
-        String isoCode = "USD";
-        when(ratesParser.parse(isoCode)).thenReturn(null); // Simulates fail fetch
-        rateCommand.setIsoCode(isoCode);
-        String message = (String) rateCommand.call();
-
-        Assertions.assertTrue(StringUtils.isNotBlank(message), "Message should not be empty.");
-        Assertions.assertEquals("Couldn't find rate for specified ISO code.", message, "Message should match.");
+        Assertions.assertEquals("Input parameters not recognized.", message, "Message should match.");
         verifyOneMessageSent(message);
     }
 
     @DisplayName("Should not process event.")
     @Test
     void shouldNotProcessEvent() throws Exception {
-        verifyDoNotProcessEvent(rateCommand, mock(Event.class));
+        verifyDoNotProcessEvent(convertCommand, mock(Event.class));
     }
 
-    @AfterEach
-    void tearDown() {
-        rateCommand.setIsoCode(null);
-    }
 }
