@@ -93,24 +93,6 @@ class DiscordBotRunnerTest extends BaseTest {
         verifyNoMoreInteractions(commandExecutor);
     }
 
-    @DisplayName("Should send message on guild ready.")
-    @Test
-    void shouldSendMessageOnGuildReady() {
-        GuildReadyEvent event = mock(GuildReadyEvent.class);
-        Guild guild = mock(Guild.class);
-        when(event.getGuild()).thenReturn(guild);
-        TextChannel textChannel = mock(TextChannel.class);
-        when(guild.getDefaultChannel()).thenReturn(textChannel);
-        when(textChannel.sendTyping()).thenReturn(mock(RestAction.class));
-        when(textChannel.sendMessage(anyString())).thenReturn(mock(MessageAction.class));
-
-        discordBotRunner.onGuildReady(event);
-
-        verify(textChannel).sendTyping();
-        verify(textChannel).sendMessage(discordBotEnvironment.getName() + " reporting for duty!");
-        verifyNoMoreInteractions(textChannel);
-    }
-
     @DisplayName("Should not process bot messages.")
     @Test
     void shouldNotProcessBotMessages() {
