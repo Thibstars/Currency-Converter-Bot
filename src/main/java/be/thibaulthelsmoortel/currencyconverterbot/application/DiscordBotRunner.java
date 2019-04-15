@@ -23,6 +23,7 @@ import be.thibaulthelsmoortel.currencyconverterbot.commands.core.CommandExecutor
 import be.thibaulthelsmoortel.currencyconverterbot.config.DiscordBotEnvironment;
 import be.thibaulthelsmoortel.currencyconverterbot.exceptions.MissingTokenException;
 import net.dv8tion.jda.core.AccountType;
+import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
@@ -30,6 +31,8 @@ import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.apache.commons.lang3.StringUtils;
+import org.discordbots.api.client.DiscordBotListAPI;
+import org.discordbots.api.client.DiscordBotListAPI.Builder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,9 +52,10 @@ public class DiscordBotRunner extends ListenerAdapter implements CommandLineRunn
     private final DiscordBotEnvironment discordBotEnvironment;
     private final CommandExecutor commandExecutor;
 
+    private DiscordBotListAPI dblApi;
+
     @Autowired
-    public DiscordBotRunner(DiscordBotEnvironment discordBotEnvironment,
-        CommandExecutor commandExecutor) {
+    public DiscordBotRunner(DiscordBotEnvironment discordBotEnvironment, CommandExecutor commandExecutor) {
         this.discordBotEnvironment = discordBotEnvironment;
         this.commandExecutor = commandExecutor;
     }
@@ -70,6 +74,8 @@ public class DiscordBotRunner extends ListenerAdapter implements CommandLineRunn
         super.onGuildJoin(event);
 
         LOGGER.info("Joined guild. Current amount of connected guilds: {}.", event.getJDA().getGuilds().size());
+
+        updateServerCount(event.getJDA());
     }
 
     @Override
@@ -77,6 +83,12 @@ public class DiscordBotRunner extends ListenerAdapter implements CommandLineRunn
         super.onGuildLeave(event);
 
         LOGGER.info("Left guild. Current amount of connected guilds: {}.", event.getJDA().getGuilds().size());
+
+        updateServerCount(event.getJDA());
+    }
+
+    private void updateServerCount(JDA jda) {
+        dblApi.setStats(jda.getGuilds().size());
     }
 
     private boolean processMessage(Message message) {
@@ -106,20 +118,39 @@ public class DiscordBotRunner extends ListenerAdapter implements CommandLineRunn
                 token = null;
             }
         }
+        String dblToken;
+        if (StringUtils.isNotBlank(discordBotEnvironment.getDblToken())) {
+            dblToken = discordBotEnvironment.getDblToken();
+        } else {
+            if (args != null && args.length > 1) {
+                dblToken = args[1];
+            } else {
+                dblToken = null;
+            }
+        }
 
         if (StringUtils.isBlank(token)) {
             throw new MissingTokenException();
         }
 
         try {
-            new JDABuilder(AccountType.BOT)
+            JDA jda = new JDABuilder(AccountType.BOT)
                 .setToken(token)
                 .addEventListener(this)
                 .build()
                 .awaitReady();
+
+            this.dblApi = new Builder()
+                .token(dblToken)
+                .botId(jda.getSelfUser().getId())
+                .build();
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
+    }
 
+    // Visible for testing
+    void setDblApi(DiscordBotListAPI dblApi) {
+        this.dblApi = dblApi;
     }
 }

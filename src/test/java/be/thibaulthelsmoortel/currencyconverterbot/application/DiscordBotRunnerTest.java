@@ -19,7 +19,6 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.application;
 
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -28,16 +27,19 @@ import static org.mockito.Mockito.when;
 import be.thibaulthelsmoortel.currencyconverterbot.BaseTest;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.CommandExecutor;
 import be.thibaulthelsmoortel.currencyconverterbot.config.DiscordBotEnvironment;
+import java.util.Collections;
+import java.util.List;
+import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.ReceivedMessage;
-import net.dv8tion.jda.core.events.guild.GuildReadyEvent;
+import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
+import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.requests.restaction.MessageAction;
+import org.discordbots.api.client.DiscordBotListAPI;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -65,9 +67,13 @@ class DiscordBotRunnerTest extends BaseTest {
     @Mock
     private User user;
 
+    @Mock
+    private DiscordBotListAPI dblApi;
+
     @BeforeEach
     void setUp() {
         this.discordBotRunner = new DiscordBotRunner(discordBotEnvironment, commandExecutor);
+        discordBotRunner.setDblApi(dblApi);
     }
 
     @DisplayName("Should handle message received.")
@@ -124,6 +130,34 @@ class DiscordBotRunnerTest extends BaseTest {
         verifyNoMoreInteractions(messageChannel);
         verify(commandExecutor).tryExecute(messageReceivedEvent, message);
         verifyNoMoreInteractions(commandExecutor);
+    }
+
+    @DisplayName("Should update server count on guild join.")
+    @Test
+    void shouldUpdateServerCountOnGuildJoin() {
+        GuildJoinEvent event = mock(GuildJoinEvent.class);
+        JDA jda = mock(JDA.class);
+        when(event.getJDA()).thenReturn(jda);
+        List<Guild> guilds = Collections.singletonList(mock(Guild.class));
+        when(jda.getGuilds()).thenReturn(guilds);
+
+        discordBotRunner.onGuildJoin(event);
+
+        verify(dblApi).setStats(guilds.size());
+    }
+
+    @DisplayName("Should update server count on guild leave.")
+    @Test
+    void shouldUpdateServerCountOnGuildLeave() {
+        GuildLeaveEvent event = mock(GuildLeaveEvent.class);
+        JDA jda = mock(JDA.class);
+        when(event.getJDA()).thenReturn(jda);
+        List<Guild> guilds = Collections.singletonList(mock(Guild.class));
+        when(jda.getGuilds()).thenReturn(guilds);
+
+        discordBotRunner.onGuildLeave(event);
+
+        verify(dblApi).setStats(guilds.size());
     }
 
     private Message configureAsBot() {

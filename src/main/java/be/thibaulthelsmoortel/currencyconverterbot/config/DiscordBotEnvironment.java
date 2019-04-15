@@ -43,6 +43,8 @@ public class DiscordBotEnvironment {
 
     private boolean processBotMessages;
 
+    private String dblToken;
+
     public String getToken() {
         return token;
     }
@@ -97,5 +99,13 @@ public class DiscordBotEnvironment {
 
     public void setProcessBotMessages(boolean processBotMessages) {
         this.processBotMessages = processBotMessages;
+    }
+
+    public String getDblToken() {
+        return dblToken;
+    }
+
+    public void setDblToken(String dblToken) {
+        this.dblToken = dblToken;
     }
 }
