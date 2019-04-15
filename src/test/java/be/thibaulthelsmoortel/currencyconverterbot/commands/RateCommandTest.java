@@ -19,6 +19,7 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import be.thibaulthelsmoortel.currencyconverterbot.api.model.Currency;
@@ -26,6 +27,7 @@ import be.thibaulthelsmoortel.currencyconverterbot.api.model.Rate;
 import be.thibaulthelsmoortel.currencyconverterbot.api.parsers.RatesParser;
 import java.math.BigDecimal;
 import java.util.NoSuchElementException;
+import net.dv8tion.jda.core.events.Event;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -101,6 +103,12 @@ class RateCommandTest extends CommandBaseTest {
         Assertions.assertTrue(StringUtils.isNotBlank(message), "Message should not be empty.");
         Assertions.assertEquals("Couldn't find rate for specified ISO code.", message, "Message should match.");
         verifyOneMessageSent(message);
+    }
+
+    @DisplayName("Should not process event.")
+    @Test
+    void shouldNotProcessEvent() throws Exception {
+        verifyDoNotProcessEvent(rateCommand, mock(Event.class));
     }
 
     @AfterEach

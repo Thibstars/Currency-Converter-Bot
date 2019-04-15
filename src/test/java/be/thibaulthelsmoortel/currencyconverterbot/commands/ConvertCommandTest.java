@@ -19,13 +19,16 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import be.thibaulthelsmoortel.currencyconverterbot.api.conversion.CurrencyConverter;
 import be.thibaulthelsmoortel.currencyconverterbot.api.model.Currency;
 import be.thibaulthelsmoortel.currencyconverterbot.api.model.Rate;
 import be.thibaulthelsmoortel.currencyconverterbot.api.parsers.RatesParser;
 import java.math.BigDecimal;
 import java.util.NoSuchElementException;
+import net.dv8tion.jda.core.events.Event;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,7 +50,7 @@ class ConvertCommandTest extends CommandBaseTest {
     @BeforeEach
     void setUp() {
         super.setUp();
-        this.convertCommand = new ConvertCommand(ratesParser);
+        this.convertCommand = new ConvertCommand(ratesParser, new CurrencyConverter());
         convertCommand.setEvent(messageReceivedEvent);
     }
 
@@ -72,6 +75,16 @@ class ConvertCommandTest extends CommandBaseTest {
         Assertions.assertTrue(message.contains(eurIso), "Message should contain USD.");
         Assertions.assertTrue(message.contains(usdRate.getValue().toPlainString()), "Message should contain rate.");
         verifyOneMessageSent(message);
+    }
+
+    private Rate createRate(String iso, BigDecimal value) {
+        Rate rate = new Rate();
+        Currency currency = new Currency();
+        currency.setIsoCode(iso);
+        rate.setCurrency(currency);
+        rate.setValue(value);
+
+        return rate;
     }
 
     @DisplayName("Should send input not recognized message.")
@@ -99,14 +112,10 @@ class ConvertCommandTest extends CommandBaseTest {
         verifyOneMessageSent(message);
     }
 
-    private Rate createRate(String iso, BigDecimal value) {
-        Rate rate = new Rate();
-        Currency currency = new Currency();
-        currency.setIsoCode(iso);
-        rate.setCurrency(currency);
-        rate.setValue(value);
-
-        return rate;
+    @DisplayName("Should not process event.")
+    @Test
+    void shouldNotProcessEvent() throws Exception {
+        verifyDoNotProcessEvent(convertCommand, mock(Event.class));
     }
 
 }
