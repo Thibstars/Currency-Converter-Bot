@@ -30,5 +30,11 @@
       "type": "java.lang.Boolean",
       "defaultValue": false,
       "description": "Defines whether or not to process messages from other bots.."
+    },
+    {
+      "name": "bot.dblToken",
+      "type": "java.lang.String",
+      "description": "Discord Bot List API Token."
     }
-  ] }
+  ]
+}
