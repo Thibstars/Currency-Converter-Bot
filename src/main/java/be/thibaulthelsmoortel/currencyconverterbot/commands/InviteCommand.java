@@ -39,7 +39,6 @@ import picocli.CommandLine.Parameters;
 @Component
 public class InviteCommand extends BotCommand {
 
-    @SuppressWarnings("MismatchedReadAndWriteOfArray") // Written to via Picocli
     @Option(names = {"-p", "--permission"}, description = "Target bot permission.", arity = "0..1")
     private boolean[] permissionsRequested = new boolean[0];
 
