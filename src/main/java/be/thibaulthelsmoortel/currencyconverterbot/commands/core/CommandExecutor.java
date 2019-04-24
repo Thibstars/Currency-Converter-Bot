@@ -68,7 +68,7 @@ public class CommandExecutor {
                 Command commandType = command.getClass().getAnnotation(Command.class);
                 String commandName = commandType.name();
 
-                if (commandMessage.startsWith(commandName)) {
+                if (commandMessage.split(" ")[0].equals(commandName)) {
                     commandRecognised.set(true);
                     command.setEvent(event);
                     String args = commandMessage.substring(commandMessage.indexOf(commandType.name()) + commandType.name().length()).trim();
