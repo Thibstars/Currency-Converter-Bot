@@ -35,8 +35,8 @@
 
 	<scm>
 		<url>https://github.com/Thibstars/Currency-Converter-Bot</url>
-		<connection>scm:git:git://github.com/Thibstars/Currency-Converter-Bot.git</connection>
-		<developerConnection>scm:git:git@github.com:Thibstars/Currency-Converter-Bot.git</developerConnection>
+		<connection>scm:git:ssh://git@github.com/Thibstars/Currency-Converter-Bot.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/Thibstars/Currency-Converter-Bot.git</developerConnection>
 	</scm>
 
 	<properties>
@@ -166,6 +166,14 @@
 							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
 						</manifest>
 					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-release-plugin</artifactId>
+				<configuration>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
+					<tagNameFormat>@{project.version}</tagNameFormat>
+					<releaseProfiles>release</releaseProfiles>
 				</configuration>
 			</plugin>
 		</plugins>
