@@ -33,6 +33,12 @@
 	<name>Currency Converter Bot</name>
 	<description>Discord bot allowing currency conversions and rates listing. Rates provided by ECB.</description>
 
+	<scm>
+		<url>https://github.com/Thibstars/Currency-Converter-Bot</url>
+		<connection>scm:git:git://github.com/Thibstars/Currency-Converter-Bot.git</connection>
+		<developerConnection>scm:git:git@github.com:Thibstars/Currency-Converter-Bot.git</developerConnection>
+	</scm>
+
 	<properties>
 		<java.version>11</java.version>
 		<maven.compiler.source>${java.version}</maven.compiler.source>
