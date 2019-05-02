@@ -15,16 +15,17 @@
   ~ GNU General Public License for more details.
   ~
   ~ You should have received a copy of the GNU General Public License
-  ~ along with Currency Converter Bot.  If not, see <https://www.gnu.org/licenses />.
+  ~ along with Currency Converter Bot.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.1.3.RELEASE</version>
-		<relativePath /> <!-- lookup parent from repository -->
+		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>be.thibaulthelsmoortel</groupId>
 	<artifactId>currency-converter-bot</artifactId>
@@ -32,11 +33,13 @@
 	<name>Currency Converter Bot</name>
 	<description>Discord bot allowing currency conversions and rates listing. Rates provided by ECB.</description>
 
+	<packaging>jar</packaging>
+
 	<scm>
 		<url>https://github.com/Thibstars/Currency-Converter-Bot</url>
 		<connection>scm:git:ssh://git@github.com/Thibstars/Currency-Converter-Bot.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/Thibstars/Currency-Converter-Bot.git</developerConnection>
-  </scm>
+	</scm>
 
 	<properties>
 		<java.version>11</java.version>
@@ -170,8 +173,6 @@
 			<plugin>
 				<artifactId>maven-release-plugin</artifactId>
 				<configuration>
-					<useReleaseProfile>false</useReleaseProfile>
-					<releaseProfiles>release</releaseProfiles>
 					<autoVersionSubmodules>true</autoVersionSubmodules>
 					<tagNameFormat>@{project.version}</tagNameFormat>
 					<releaseProfiles>release</releaseProfiles>
