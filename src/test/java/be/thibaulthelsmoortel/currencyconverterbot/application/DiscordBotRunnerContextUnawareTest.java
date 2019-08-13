@@ -64,7 +64,7 @@ class DiscordBotRunnerContextUnawareTest {
     @Test
     void shouldNotThrowMissingTokenException() {
         when(discordBotEnvironment.getToken()).thenReturn("testToken");
-        discordBotRunner.run();
+        Assertions.assertDoesNotThrow(() -> discordBotRunner.run());
     }
 
     static Stream<String> blankStrings() {
