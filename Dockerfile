@@ -3,7 +3,7 @@ COPY pom.xml /tmp/
 COPY src /tmp/src/
 WORKDIR /tmp/
 
-RUN mvn clean package -f pom.xml
+RUN mvn clean -Dmaven.test.skip=true package -f pom.xml
 
 FROM adoptopenjdk/openjdk12
 COPY --from=MAVEN_TOOL_CHAIN /tmp/target/*.jar app.jar
