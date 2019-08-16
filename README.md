@@ -2,21 +2,21 @@
 Discord bot allowing currency conversions and rates listing. The bot uses data published by the European Central Bank (ECB), so the base currency applied is EUR.
 
 ## Hosting ##
-#### Public ####
+### Public ###
 This bot is currently publicly hosted and available. It is listed on discordbots.org, so you could simply invite the bot to your server from there.
 
 [![Discord Bots](https://discordbots.org/api/widget/563655936263061544.svg)](https://discordbots.org/bot/563655936263061544)
 
-#### Private ####
+### Private ###
 This bot can also be self-hosted.
 
-##### Usage #####
+#### Usage ####
 
 In order to run the application, one must first add a Discord bot token to `bot.token` in the `token.properties` file.
 **Note that a bot token should never be committed in git!**
 
 When running directly using `java -jar` you can also pass your token as a first run argument instead. This is also the used approach in the `Dockerfile`.
 
-###### Docker ######
+##### Docker #####
 When running the application from the `Dockerfile` make sure to add a new `BOT_TOKEN` environment variable with the bot token as value so it can be picked up 
 in the underlying `java -jar` entrypoint command.
