@@ -19,14 +19,16 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
-import be.thibaulthelsmoortel.currencyconverterbot.api.conversion.CurrencyConverter;
-import be.thibaulthelsmoortel.currencyconverterbot.api.model.Rate;
-import be.thibaulthelsmoortel.currencyconverterbot.api.parsers.RatesParser;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
-import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.NoSuchElementException;
+import javax.money.CurrencyUnit;
+import javax.money.Monetary;
+import javax.money.MonetaryAmount;
+import javax.money.convert.CurrencyConversion;
+import javax.money.convert.MonetaryConversions;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.javamoney.moneta.Money;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
@@ -38,9 +40,6 @@ import picocli.CommandLine.Parameters;
 @Component
 public class ConvertCommand extends BotCommand {
 
-    private final RatesParser ratesParser;
-    private final CurrencyConverter currencyConverter;
-
     @Parameters(description = "Value of the currency to convert.", arity = "1", index = "0")
     private double sourceAmount;
     @Parameters(description = "ISO code of the source currency.", arity = "1", index = "1")
@@ -48,23 +47,29 @@ public class ConvertCommand extends BotCommand {
     @Parameters(description = "ISO code of the target currency.", arity = "1", index = "2")
     private String targetIsoCode;
 
-    @Autowired
-    public ConvertCommand(RatesParser ratesParser, CurrencyConverter currencyConverter) {
-        this.ratesParser = ratesParser;
-        this.currencyConverter = currencyConverter;
-    }
-
     @Override
     public Object call() {
         String message = null;
 
         if (getEvent() instanceof MessageReceivedEvent) {
             try {
-                Rate sourceRate = ratesParser.parse(sourceIsoCode);
-                Rate targetRate = ratesParser.parse(targetIsoCode);
+                Collection<CurrencyUnit> currencies = Monetary.getCurrencies();
+                CurrencyUnit sourceUnit = currencies.stream()
+                    .filter(unit -> unit.getCurrencyCode().equalsIgnoreCase(sourceIsoCode))
+                    .findFirst()
+                    .orElseThrow();
 
-                BigDecimal result = currencyConverter.getConvertedValue(sourceAmount, sourceRate, targetRate);
-                message = String.format("%s %s", result.toPlainString(), targetRate.getCurrency().getIsoCode());
+                CurrencyUnit targetUnit =
+                    currencies.stream()
+                        .filter(unit -> unit.getCurrencyCode().equalsIgnoreCase(targetIsoCode))
+                        .findFirst()
+                        .orElseThrow();
+
+                CurrencyConversion conversion = MonetaryConversions.getConversion(targetUnit);
+
+                MonetaryAmount monetarySourceAmount = Money.of(sourceAmount, sourceUnit);
+
+                message = monetarySourceAmount.with(conversion).toString();
             } catch (NoSuchElementException e) {
                 message = "Input parameters not recognized.";
             }
