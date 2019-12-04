@@ -21,6 +21,8 @@ package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
 import be.thibaulthelsmoortel.currencyconverterbot.config.DiscordBotEnvironment;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,21 +47,24 @@ public class AboutCommand extends BotCommand {
 
     @Override
     public Object call() {
-        String message = null;
+        MessageEmbed embed = null;
 
         if (getEvent() instanceof MessageReceivedEvent) {
+            EmbedBuilder embedBuilder = new EmbedBuilder();
             if (StringUtils.isAllBlank(discordBotEnvironment.getName(), discordBotEnvironment.getAuthor())) {
-                message = "Mystery bot by mystery author.";
+                embedBuilder.setTitle("Mystery bot by mystery author.");
             } else {
-                message = whenNotBlankPrint(discordBotEnvironment.getName(), "Bot")
+                embedBuilder.setDescription(whenNotBlankPrint(discordBotEnvironment.getName(), "Bot")
                     + (StringUtils.isNotBlank(discordBotEnvironment.getAuthor()) ? " created by " + discordBotEnvironment.getAuthor() + "." : "")
                     + (StringUtils.isNotBlank(discordBotEnvironment.getVersion()) ? " Version: " + discordBotEnvironment.getVersion() : "")
-                    + (StringUtils.isNotBlank(discordBotEnvironment.getDescription()) ? System.lineSeparator() + discordBotEnvironment.getDescription() : "");
+                    + (StringUtils.isNotBlank(discordBotEnvironment.getDescription()) ? System.lineSeparator() + discordBotEnvironment.getDescription() : ""));
             }
-            ((MessageReceivedEvent) getEvent()).getChannel().sendMessage(message).queue();
+
+            embed = embedBuilder.build();
+            ((MessageReceivedEvent) getEvent()).getChannel().sendMessage(embed).queue();
         }
 
-        return message;
+        return embed;
     }
 
     private String whenNotBlankPrint(String toPrint, String fallBack) {
