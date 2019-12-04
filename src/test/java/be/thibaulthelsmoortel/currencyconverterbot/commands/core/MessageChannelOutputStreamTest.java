@@ -56,6 +56,7 @@ class MessageChannelOutputStreamTest extends BaseTest {
         when(messageChannel.sendMessage(anyString())).thenReturn(mock(MessageAction.class));
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @DisplayName("Should write message to channel.")
     @Test
     void shouldWriteMessageToChannel() {
@@ -65,6 +66,7 @@ class MessageChannelOutputStreamTest extends BaseTest {
         verify(messageChannel).sendMessage(message);
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @DisplayName("Should write char code to channel.")
     @Test
     void shouldWriteCharCodeToChannel() {
