@@ -21,7 +21,7 @@ package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
 import static org.mockito.Mockito.mock;
 
-import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.api.events.Event;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

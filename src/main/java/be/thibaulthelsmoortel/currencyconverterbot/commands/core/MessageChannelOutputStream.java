@@ -20,7 +20,7 @@
 package be.thibaulthelsmoortel.currencyconverterbot.commands.core;
 
 import java.io.OutputStream;
-import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 

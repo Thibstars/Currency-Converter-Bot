@@ -26,11 +26,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import net.dv8tion.jda.bot.JDABot;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.events.Event;
-import net.dv8tion.jda.core.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -52,7 +51,7 @@ class InviteCommandTest extends CommandBaseTest {
     private final InviteCommand inviteCommand;
 
     @Mock
-    private JDABot jdaBot;
+    private JDA jda;
 
     @Autowired
     InviteCommandTest(InviteCommand inviteCommand) {
@@ -61,10 +60,8 @@ class InviteCommandTest extends CommandBaseTest {
 
     @BeforeEach
     void setUp() {
-        JDA jda = mock(JDA.class);
         when(messageReceivedEvent.getJDA()).thenReturn(jda);
-        when(jda.asBot()).thenReturn(jdaBot);
-        when(jdaBot.getInviteUrl(Permission.EMPTY_PERMISSIONS)).thenReturn(INVITE_URL_NO_PERMISSIONS);
+        when(jda.getInviteUrl(Permission.EMPTY_PERMISSIONS)).thenReturn(INVITE_URL_NO_PERMISSIONS);
         when(messageReceivedEvent.getChannel()).thenReturn(messageChannel);
         when(messageChannel.sendMessage(anyString())).thenReturn(mock(MessageAction.class));
     }
@@ -96,7 +93,7 @@ class InviteCommandTest extends CommandBaseTest {
         inviteCommand.setPermissionsRequested(new boolean[]{true});
         inviteCommand.setPermissions(permissions);
 
-        when(jdaBot.getInviteUrl(permissions)).thenReturn(INVITE_URL_WITH_PERMISSIONS);
+        when(jda.getInviteUrl(permissions)).thenReturn(INVITE_URL_WITH_PERMISSIONS);
         inviteCommand.setEvent(messageReceivedEvent);
 
         String message = (String) inviteCommand.call();
@@ -113,7 +110,7 @@ class InviteCommandTest extends CommandBaseTest {
         inviteCommand.setPermissionsRequested(new boolean[]{true});
         inviteCommand.setPermissions(null);
 
-        when(jdaBot.getInviteUrl(any(Permission[].class))).thenReturn(INVITE_URL_WITH_PERMISSIONS);
+        when(jda.getInviteUrl(any(Permission[].class))).thenReturn(INVITE_URL_WITH_PERMISSIONS);
         inviteCommand.setEvent(messageReceivedEvent);
 
         String message = (String) inviteCommand.call();
