@@ -19,11 +19,14 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import be.thibaulthelsmoortel.currencyconverterbot.config.DiscordBotEnvironment;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,11 +47,15 @@ class AboutCommandTest extends CommandBaseTest {
         when(discordBotEnvironment.getAuthor()).thenReturn(null);
         AboutCommand command = new AboutCommand(discordBotEnvironment);
         command.setEvent(messageReceivedEvent);
-        String message = (String) command.call();
 
-        Assertions.assertEquals("Mystery bot by mystery author.", message, "Message should be correct.");
+        when(messageChannel.sendMessage(any(MessageEmbed.class))).thenReturn(mock(MessageAction.class));
 
-        verifyOneMessageSent(message);
+        MessageEmbed embed = (MessageEmbed) command.call();
+
+        Assertions.assertNotNull(embed, "Message should not be null.");
+        Assertions.assertEquals("Mystery bot by mystery author.", embed.getTitle(), "Message should be correct.");
+
+        verifyOneMessageSent(embed);
     }
 
     @DisplayName("Should reply about message.")
@@ -64,11 +71,14 @@ class AboutCommandTest extends CommandBaseTest {
         AboutCommand command = new AboutCommand(discordBotEnvironment);
         command.setEvent(messageReceivedEvent);
 
-        String message = (String) command.call();
+        when(messageChannel.sendMessage(any(MessageEmbed.class))).thenReturn(mock(MessageAction.class));
 
-        Assertions.assertEquals(name + " created by " + author + "." + System.lineSeparator() + description, message, "Message should be correct.");
+        MessageEmbed embed = (MessageEmbed) command.call();
 
-        verifyOneMessageSent(message);
+        Assertions.assertNotNull(embed, "Message should not be null.");
+        Assertions.assertEquals(name + " created by " + author + "." + System.lineSeparator() + description, embed.getDescription(), "Message should be correct.");
+
+        verifyOneMessageSent(embed);
     }
 
     @DisplayName("Should reply about message without bot name.")
@@ -83,11 +93,14 @@ class AboutCommandTest extends CommandBaseTest {
         AboutCommand command = new AboutCommand(discordBotEnvironment);
         command.setEvent(messageReceivedEvent);
 
-        String message = (String) command.call();
+        when(messageChannel.sendMessage(any(MessageEmbed.class))).thenReturn(mock(MessageAction.class));
 
-        Assertions.assertEquals("Bot created by " + author + "." + System.lineSeparator() + description, message, "Message should be correct.");
+        MessageEmbed embed = (MessageEmbed) command.call();
 
-        verifyOneMessageSent(message);
+        Assertions.assertNotNull(embed, "Message should not be null.");
+        Assertions.assertEquals("Bot created by " + author + "." + System.lineSeparator() + description, embed.getDescription(), "Message should be correct.");
+
+        verifyOneMessageSent(embed);
     }
 
     @DisplayName("Should not process event.")

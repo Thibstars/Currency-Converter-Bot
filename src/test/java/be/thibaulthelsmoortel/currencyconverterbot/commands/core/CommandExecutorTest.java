@@ -19,6 +19,7 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.commands.core;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -29,6 +30,7 @@ import static org.mockito.Mockito.when;
 import be.thibaulthelsmoortel.currencyconverterbot.BaseTest;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.AboutCommand;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.junit.jupiter.api.Assertions;
@@ -63,9 +65,12 @@ class CommandExecutorTest extends BaseTest {
     @BeforeEach
     void setUp() {
         when(messageReceivedEvent.getChannel()).thenReturn(messageChannel);
-        when(messageChannel.sendMessage(anyString())).thenReturn(mock(MessageAction.class));
+        MessageAction messageAction = mock(MessageAction.class);
+        when(messageChannel.sendMessage(anyString())).thenReturn(messageAction);
+        when(messageChannel.sendMessage(any(MessageEmbed.class))).thenReturn(messageAction);
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @DisplayName("Should execute command.")
     @Test
     void shouldExecuteCommand() {
@@ -76,13 +81,14 @@ class CommandExecutorTest extends BaseTest {
 
         // Assuming the command sends a message back:
         verify(messageReceivedEvent, times(2)).getChannel(); // Once for sending the message, once to pass to the output stream
-        verify(messageChannel).sendMessage(anyString());
+        verify(messageChannel).sendMessage(any(MessageEmbed.class));
         verifyNoMoreInteractions(messageChannel);
         verifyNoMoreInteractions(messageReceivedEvent);
 
         Assertions.assertTrue(executed, "Command should be executed.");
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @DisplayName("Should execute command with arguments.")
     @Test
     void shouldExecuteCommandWithArguments() {
@@ -100,6 +106,7 @@ class CommandExecutorTest extends BaseTest {
         Assertions.assertTrue(executed, "Command should be executed.");
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @DisplayName("Should not execute command.")
     @Test
     void shouldNotExecuteCommand() {

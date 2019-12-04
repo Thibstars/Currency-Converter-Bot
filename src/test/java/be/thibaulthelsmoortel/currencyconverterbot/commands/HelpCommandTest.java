@@ -29,11 +29,11 @@ import be.thibaulthelsmoortel.currencyconverterbot.config.DiscordBotEnvironment;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.Event;
-import net.dv8tion.jda.api.requests.Request;
-import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.requests.Requester;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -61,27 +61,29 @@ class HelpCommandTest extends CommandBaseTest {
 
         when(messageChannel.getType()).thenReturn(ChannelType.UNKNOWN);
         when(messageChannel.getId()).thenReturn("id");
-        JDAImpl jda = mock(JDAImpl.class);
-        Requester requester = mock(Requester.class);
-        when(jda.getRequester()).thenReturn(requester);
-        when(messageChannel.getJDA()).thenReturn(jda);
+        MessageAction messageAction = mock(MessageAction.class);
+        when(messageChannel.sendMessage(any(MessageEmbed.class))).thenReturn(messageAction);
 
-        String message = (String) command.call();
-
-        Assertions.assertTrue(StringUtils.isNotBlank(message), "Message should not be empty.");
+        MessageEmbed embedded = (MessageEmbed) command.call();
+        Assertions.assertNotNull(embedded, "Message must not be null.");
+        Assertions.assertTrue(StringUtils.isNotBlank(embedded.getDescription()), "Description should not be empty.");
+        Assertions.assertNotNull(embedded.getFields(), "Message fields must not be null.");
+        Assertions.assertFalse(embedded.getFields().isEmpty(), "Message fields must not be empty.");
         botCommands.forEach(botCommand -> {
             if (!(botCommand instanceof HelpCommand)) {
                 Command annotation = botCommand.getClass().getAnnotation(Command.class);
-                Assertions.assertTrue(StringUtils.contains(message, annotation.name()), "Message should contain command name.");
-                Assertions.assertTrue(StringUtils.contains(message, parseDescription(annotation)), "Message should contain command name.");
+                Assertions.assertTrue(embedded.getFields().stream().anyMatch(field -> Objects.equals(field.getName(), annotation.name())),
+                    "Message should contain command name.");
+                Assertions.assertTrue(embedded.getFields().stream().anyMatch(field -> Objects.equals(field.getValue(), parseDescription(annotation))),
+                    "Message should contain command description.");
             }
         });
 
-        verifyOneMessageSent(requester);
+        verifyOneMessageSent(messageAction);
     }
 
-    void verifyOneMessageSent(Requester requester) {
-        verify(requester).request(any(Request.class));
+    void verifyOneMessageSent(MessageAction messageAction) {
+        verify(messageAction).queue();
     }
 
     private String parseDescription(Command annotation) {

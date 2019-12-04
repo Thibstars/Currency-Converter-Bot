@@ -19,6 +19,7 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -28,7 +29,10 @@ import be.thibaulthelsmoortel.currencyconverterbot.api.parsers.RatesParser;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -70,12 +74,15 @@ class RatesCommandTest extends CommandBaseTest {
     @DisplayName("Should send rates message.")
     @Test
     void shouldSendRatesMessage() {
-        String message = (String) ratesCommand.call();
+        when(messageChannel.sendMessage(any(MessageEmbed.class))).thenReturn(mock(MessageAction.class));
 
-        Assertions.assertTrue(StringUtils.isNotBlank(message), "Message should not be empty.");
-        Assertions.assertTrue(message.contains("USD"), "Message should contain USD.");
-        Assertions.assertTrue(message.contains("CAD"), "Message should contain CAD.");
-        verifyOneMessageSent(message);
+        MessageEmbed embed = (MessageEmbed) ratesCommand.call();
+
+        Assertions.assertNotNull(embed, "Message should not be null.");
+        Assertions.assertTrue(StringUtils.isNotBlank(embed.getTitle()), "Title should not be empty.");
+        Assertions.assertTrue(embed.getFields().stream().anyMatch(field -> Objects.equals(field.getName(), "USD")), "Message should contain USD.");
+        Assertions.assertTrue(embed.getFields().stream().anyMatch(field -> Objects.equals(field.getName(), "CAD")), "Message should contain CAD.");
+        verifyOneMessageSent(embed);
     }
 
     @DisplayName("Should not process event.")
