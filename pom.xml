@@ -30,7 +30,7 @@
 	<artifactId>currency-converter-bot</artifactId>
 	<version>0.0.6-SNAPSHOT</version>
 	<name>Currency Converter Bot</name>
-	<description>Discord bot allowing currency conversions and rates listing. Rates provided by ECB.</description>
+	<description>Discord bot allowing currency conversions and rates listing.</description>
 
 	<packaging>jar</packaging>
 
