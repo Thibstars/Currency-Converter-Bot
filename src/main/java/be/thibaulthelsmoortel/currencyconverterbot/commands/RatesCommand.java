@@ -23,7 +23,8 @@ import be.thibaulthelsmoortel.currencyconverterbot.api.model.Rate;
 import be.thibaulthelsmoortel.currencyconverterbot.api.parsers.RatesParser;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -36,8 +37,7 @@ import picocli.CommandLine.Command;
 @Component
 public class RatesCommand extends BotCommand {
 
-    private static final String HEADER = "Currency: rate";
-    private static final String HEADER_SEPARATOR = "-";
+    private static final String HEADER = "Currency rates";
 
     private final RatesParser ratesParser;
 
@@ -48,24 +48,21 @@ public class RatesCommand extends BotCommand {
 
     @Override
     public Object call() {
-        AtomicReference<String> message = new AtomicReference<>();
+        MessageEmbed embed = null;
 
         if (getEvent() instanceof MessageReceivedEvent) {
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+            embedBuilder.setTitle(HEADER);
+
             List<Rate> rates = ratesParser.parse();
             if (rates != null && !rates.isEmpty()) {
-                message.set(HEADER + System.lineSeparator());
-                for (int i = 0; i <= HEADER.length(); i++) {
-                    message.set(message.get() + HEADER_SEPARATOR);
-                    if (i == HEADER.length()) {
-                        message.set(message.get() + System.lineSeparator());
-                    }
-                }
-                rates.forEach(rate -> message.set(message.get() + rate.toString() + System.lineSeparator()));
+                rates.forEach(rate -> embedBuilder.addField(rate.getCurrency().getIsoCode(), rate.getValue().toPlainString(), true));
             }
 
-            ((MessageReceivedEvent) getEvent()).getChannel().sendMessage(message.get()).queue();
+            embed = embedBuilder.build();
+            ((MessageReceivedEvent) getEvent()).getChannel().sendMessage(embed).queue();
         }
 
-        return message.get();
+        return embed;
     }
 }
