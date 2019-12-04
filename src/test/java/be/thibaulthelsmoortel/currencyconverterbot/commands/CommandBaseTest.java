@@ -60,6 +60,7 @@ abstract class CommandBaseTest extends BaseTest {
         when(messageChannel.sendMessage(anyString())).thenReturn(mock(MessageAction.class));
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     void verifyOneMessageSent(String message) {
         verify(messageReceivedEvent).getChannel();
         verify(messageChannel).sendMessage(message);
@@ -67,6 +68,7 @@ abstract class CommandBaseTest extends BaseTest {
         verifyNoMoreInteractions(messageReceivedEvent);
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     void verifyOneMessageSent(MessageEmbed embed) {
         verify(messageReceivedEvent).getChannel();
         verify(messageChannel).sendMessage(embed);
