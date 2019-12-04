@@ -20,7 +20,7 @@
 package be.thibaulthelsmoortel.currencyconverterbot.commands.core;
 
 import java.util.concurrent.Callable;
-import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.api.events.Event;
 import picocli.CommandLine.Command;
 
 /**

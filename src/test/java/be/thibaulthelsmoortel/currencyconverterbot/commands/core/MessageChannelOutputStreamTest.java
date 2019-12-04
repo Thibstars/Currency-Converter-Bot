@@ -29,8 +29,8 @@ import static org.mockito.Mockito.when;
 
 import be.thibaulthelsmoortel.currencyconverterbot.BaseTest;
 import java.util.stream.Stream;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
