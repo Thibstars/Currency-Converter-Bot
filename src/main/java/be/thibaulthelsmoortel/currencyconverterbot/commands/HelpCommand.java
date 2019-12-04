@@ -23,9 +23,9 @@ import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
 import be.thibaulthelsmoortel.currencyconverterbot.config.DiscordBotEnvironment;
 import java.util.Arrays;
 import java.util.List;
-import net.dv8tion.jda.api.MessageBuilder;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
@@ -49,29 +49,27 @@ public class HelpCommand extends BotCommand {
 
     @Override
     public Object call() {
-        MessageBuilder messageBuilder = new MessageBuilder();
+        EmbedBuilder embedBuilder = new EmbedBuilder();
         if (getEvent() instanceof MessageReceivedEvent) {
-            messageBuilder.setContent("Usage: " + discordBotEnvironment.getCommandPrefix() + "COMMAND [OPTIONS]")
-                .appendFormat("%n%n%s%n%n", discordBotEnvironment.getDescription());
-            createCommandOverview(messageBuilder);
-            messageBuilder.appendFormat("%n%s '%s", "Run", discordBotEnvironment.getCommandPrefix())
-                .append("COMMAND --help' for more information on a command.")
-                .sendTo(((MessageReceivedEvent) getEvent()).getChannel())
-                .queue();
+            StringBuilder descriptionBuilder = embedBuilder.getDescriptionBuilder();
+            descriptionBuilder.append("Usage: ").append(discordBotEnvironment.getCommandPrefix()).append("COMMAND [OPTIONS]")
+                .append(String.format("%n%n%s%n%n", discordBotEnvironment.getDescription()))
+                .append(String.format("%s%n", "Commands:"));
+
+            botCommands.forEach(botCommand -> {
+                if (!(botCommand instanceof HelpCommand)) {
+                    Command annotation = botCommand.getClass().getAnnotation(Command.class);
+                    embedBuilder.addField(annotation.name(), parseDescription(annotation), false);
+                }
+            });
+
+            MessageEmbed embed = embedBuilder.build();
+            ((MessageReceivedEvent) getEvent()).getChannel().sendMessage(embed).queue();
+
+            return embed;
         }
 
-        String message = messageBuilder.getStringBuilder().toString();
-        return StringUtils.isNotBlank(message) ? message : null;
-    }
-
-    private void createCommandOverview(MessageBuilder messageBuilder) {
-        messageBuilder.appendFormat("%s %n", "Commands:");
-        botCommands.forEach(botCommand -> {
-            if (!(botCommand instanceof HelpCommand)) {
-                Command annotation = botCommand.getClass().getAnnotation(Command.class);
-                messageBuilder.appendFormat("%-15s %s %n", annotation.name(), parseDescription(annotation));
-            }
-        });
+        return null;
     }
 
     private String parseDescription(Command annotation) {
