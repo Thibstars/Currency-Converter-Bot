@@ -47,6 +47,8 @@ public class RatesCommand extends BotCommand {
 
     private static final String HEADER = "Currency rates";
 
+    private static final String DEFAULT_BASE_CURRENCY_CODE = BASE_CURRENCY.getCurrencyCode();
+
     // TODO: 05/12/2019 Add base currency option (default to EUR)
 
     // TODO: 05/12/2019 add exchange rate provider option (array of possible values: IDENT,ECB,IMF,ECB-HIST,ECB-HIST90)
@@ -64,10 +66,10 @@ public class RatesCommand extends BotCommand {
             Collection<CurrencyUnit> currencies = Monetary.getCurrencies();
 
             List<ExchangeRate> exchangeRates = currencies.stream()
-                .filter(currency -> rateProvider.isAvailable(BASE_CURRENCY.getCurrencyCode(), currency.getCurrencyCode()))
+                .filter(currency -> rateProvider.isAvailable(DEFAULT_BASE_CURRENCY_CODE, currency.getCurrencyCode()))
                 .map(currency -> {
                     try {
-                        return rateProvider.getExchangeRate(BASE_CURRENCY.getCurrencyCode(), currency.getCurrencyCode());
+                        return rateProvider.getExchangeRate(DEFAULT_BASE_CURRENCY_CODE, currency.getCurrencyCode());
                     } catch (Exception e) {
                         return null;
                     }
