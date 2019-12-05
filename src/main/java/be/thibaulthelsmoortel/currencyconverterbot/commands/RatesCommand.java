@@ -19,14 +19,22 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
-import be.thibaulthelsmoortel.currencyconverterbot.api.model.Rate;
-import be.thibaulthelsmoortel.currencyconverterbot.api.parsers.RatesParser;
+import static org.javamoney.moneta.convert.ecb.ECBCurrentRateProvider.BASE_CURRENCY;
+
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import javax.money.CurrencyUnit;
+import javax.money.Monetary;
+import javax.money.convert.ExchangeRate;
+import javax.money.convert.ExchangeRateProvider;
+import javax.money.convert.MonetaryConversions;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
 
@@ -39,12 +47,9 @@ public class RatesCommand extends BotCommand {
 
     private static final String HEADER = "Currency rates";
 
-    private final RatesParser ratesParser;
+    // TODO: 05/12/2019 Add base currency option (default to EUR)
 
-    @Autowired
-    public RatesCommand(RatesParser ratesParser) {
-        this.ratesParser = ratesParser;
-    }
+    // TODO: 05/12/2019 add exchange rate provider option (array of possible values: IDENT,ECB,IMF,ECB-HIST,ECB-HIST90)
 
     @Override
     public Object call() {
@@ -54,10 +59,25 @@ public class RatesCommand extends BotCommand {
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setTitle(HEADER);
 
-            List<Rate> rates = ratesParser.parse();
-            if (rates != null && !rates.isEmpty()) {
-                rates.forEach(rate -> embedBuilder.addField(rate.getCurrency().getIsoCode(), rate.getValue().toPlainString(), true));
-            }
+            ExchangeRateProvider rateProvider = MonetaryConversions.getExchangeRateProvider();
+
+            Collection<CurrencyUnit> currencies = Monetary.getCurrencies();
+
+            List<ExchangeRate> exchangeRates = currencies.stream()
+                .filter(currency -> rateProvider.isAvailable(BASE_CURRENCY.getCurrencyCode(), currency.getCurrencyCode()))
+                .map(currency -> {
+                    try {
+                        return rateProvider.getExchangeRate(BASE_CURRENCY.getCurrencyCode(), currency.getCurrencyCode());
+                    } catch (Exception e) {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .sorted(Comparator.comparing(ExchangeRate::getFactor))
+                .collect(Collectors.toList());
+
+            exchangeRates.forEach(
+                exchangeRate -> embedBuilder.addField(exchangeRate.getCurrency().getCurrencyCode(), exchangeRate.getFactor().toString(), true));
 
             embed = embedBuilder.build();
             ((MessageReceivedEvent) getEvent()).getChannel().sendMessage(embed).queue();
