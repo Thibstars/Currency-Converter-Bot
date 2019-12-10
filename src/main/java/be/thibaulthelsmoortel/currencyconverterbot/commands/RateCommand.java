@@ -20,6 +20,7 @@
 package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
 import be.thibaulthelsmoortel.currencyconverterbot.commands.candidates.ExchangeRateProviderCandidates;
+import be.thibaulthelsmoortel.currencyconverterbot.commands.converters.LowerToUpperCaseConverter;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
 import javax.money.UnknownCurrencyException;
 import javax.money.convert.ExchangeRate;
@@ -39,15 +40,16 @@ import picocli.CommandLine.Parameters;
 @Component
 public class RateCommand extends BotCommand {
 
-    @Parameters(description = "ISO code of the currency to lookup.", arity = "1", index = "0")
+    @Parameters(description = "ISO code of the currency to lookup.", arity = "1", index = "0", converter = LowerToUpperCaseConverter.class)
     private String isoCode;
 
     @SuppressWarnings("unused") // Used through option
-    @Option(names = {"-c", "--currency"}, paramLabel = "CURRENCY", description = "The base currency iso code.", defaultValue = "EUR", arity = "0..1")
+    @Option(names = {"-c", "--currency"}, paramLabel = "CURRENCY", description = "The base currency iso code.", defaultValue = "EUR", arity = "0..1",
+    converter = LowerToUpperCaseConverter.class)
     private String baseCurrencyIsoCode;
 
     @Option(names = {"-p", "--providers"}, paramLabel = "PROVIDERS", description = "Exchange rate providers. Candidates: ${COMPLETION-CANDIDATES}", arity = "0..*",
-        completionCandidates = ExchangeRateProviderCandidates.class)
+        completionCandidates = ExchangeRateProviderCandidates.class, converter = LowerToUpperCaseConverter.class)
     private String[] providers;
 
     @Override
