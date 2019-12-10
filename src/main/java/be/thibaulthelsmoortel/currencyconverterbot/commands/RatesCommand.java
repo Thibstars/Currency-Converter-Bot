@@ -19,8 +19,6 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
-import static org.javamoney.moneta.convert.ecb.ECBCurrentRateProvider.BASE_CURRENCY;
-
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
 import java.util.Collection;
 import java.util.Comparator;
@@ -37,6 +35,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
 /**
  * @author Thibault Helsmoortel
@@ -47,9 +46,9 @@ public class RatesCommand extends BotCommand {
 
     private static final String HEADER = "Currency rates";
 
-    private static final String DEFAULT_BASE_CURRENCY_CODE = BASE_CURRENCY.getCurrencyCode();
-
-    // TODO: 05/12/2019 Add base currency option (default to EUR)
+    @SuppressWarnings("unused") // Used through option
+    @Option(names = {"-c", "--currency"}, paramLabel = "CURRENCY", description = "The base currency iso code.", defaultValue = "EUR")
+    private String baseCurrencyIsoCode;
 
     // TODO: 05/12/2019 add exchange rate provider option (array of possible values: IDENT,ECB,IMF,ECB-HIST,ECB-HIST90)
 
@@ -66,10 +65,10 @@ public class RatesCommand extends BotCommand {
             Collection<CurrencyUnit> currencies = Monetary.getCurrencies();
 
             List<ExchangeRate> exchangeRates = currencies.stream()
-                .filter(currency -> rateProvider.isAvailable(DEFAULT_BASE_CURRENCY_CODE, currency.getCurrencyCode()))
+                .filter(currency -> rateProvider.isAvailable(baseCurrencyIsoCode, currency.getCurrencyCode()))
                 .map(currency -> {
                     try {
-                        return rateProvider.getExchangeRate(DEFAULT_BASE_CURRENCY_CODE, currency.getCurrencyCode());
+                        return rateProvider.getExchangeRate(baseCurrencyIsoCode, currency.getCurrencyCode());
                     } catch (Exception e) {
                         return null;
                     }
