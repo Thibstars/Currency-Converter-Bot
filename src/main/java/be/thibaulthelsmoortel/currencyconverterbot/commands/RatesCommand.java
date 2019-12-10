@@ -19,6 +19,7 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
+import be.thibaulthelsmoortel.currencyconverterbot.commands.candidates.ExchangeRateProviderCandidates;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
 import java.util.Collection;
 import java.util.Comparator;
@@ -36,6 +37,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
 
 /**
  * @author Thibault Helsmoortel
@@ -50,7 +52,12 @@ public class RatesCommand extends BotCommand {
     @Option(names = {"-c", "--currency"}, paramLabel = "CURRENCY", description = "The base currency iso code.", defaultValue = "EUR")
     private String baseCurrencyIsoCode;
 
-    // TODO: 05/12/2019 add exchange rate provider option (array of possible values: IDENT,ECB,IMF,ECB-HIST,ECB-HIST90)
+    @Option(names = {"-p", "--provider"}, description = "Exchange rate provider.", arity = "0..1")
+    private boolean providersProvided;
+
+    @Parameters(paramLabel = "PROVIDER", description = "Exchange rate providers. Candidates: ${COMPLETION-CANDIDATES}", arity = "0..*",
+        completionCandidates = ExchangeRateProviderCandidates.class)
+    private String[] providers;
 
     @Override
     public Object call() {
@@ -60,7 +67,13 @@ public class RatesCommand extends BotCommand {
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setTitle(HEADER);
 
-            ExchangeRateProvider rateProvider = MonetaryConversions.getExchangeRateProvider();
+            ExchangeRateProvider rateProvider;
+
+            if (providersProvided && providers.length > 0) {
+                rateProvider = MonetaryConversions.getExchangeRateProvider(providers);
+            } else {
+                rateProvider = MonetaryConversions.getExchangeRateProvider();
+            }
 
             Collection<CurrencyUnit> currencies = Monetary.getCurrencies();
 
@@ -84,6 +97,13 @@ public class RatesCommand extends BotCommand {
             ((MessageReceivedEvent) getEvent()).getChannel().sendMessage(embed).queue();
         }
 
+        reset();
+
         return embed;
+    }
+
+    private void reset() {
+        providersProvided = false;
+        providers = null;
     }
 }
