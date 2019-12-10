@@ -23,12 +23,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import be.thibaulthelsmoortel.currencyconverterbot.api.model.Currency;
-import be.thibaulthelsmoortel.currencyconverterbot.api.model.Rate;
-import be.thibaulthelsmoortel.currencyconverterbot.api.parsers.RatesParser;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.Event;
@@ -38,7 +32,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 /**
  * @author Thibault Helsmoortel
@@ -47,28 +40,13 @@ class RatesCommandTest extends CommandBaseTest {
 
     private RatesCommand ratesCommand;
 
-    @MockBean
-    private RatesParser ratesParser;
-
     @Override
     @BeforeEach
     void setUp() {
         super.setUp();
-        this.ratesCommand = new RatesCommand(ratesParser);
-        List<Rate> rates = new ArrayList<>();
-        addRate(rates, "USD", "0.7532");
-        addRate(rates, "CAD", "1.0248");
-        when(ratesParser.parse()).thenReturn(rates);
+        this.ratesCommand = new RatesCommand();
         ratesCommand.setEvent(messageReceivedEvent);
-    }
-
-    private void addRate(List<Rate> rates, String isoCode, String rawRate) {
-        Rate rate = new Rate();
-        Currency currency = new Currency();
-        currency.setIsoCode(isoCode);
-        rate.setCurrency(currency);
-        rate.setValue(new BigDecimal(rawRate));
-        rates.add(rate);
+        ratesCommand.setBaseCurrencyIsoCode("EUR");
     }
 
     @DisplayName("Should send rates message.")
@@ -88,7 +66,7 @@ class RatesCommandTest extends CommandBaseTest {
     @DisplayName("Should not process event.")
     @Test
     void shouldNotProcessEvent() throws Exception {
-        RatesCommand ratesCommand = new RatesCommand(ratesParser);
+        RatesCommand ratesCommand = new RatesCommand();
 
         verifyDoNotProcessEvent(ratesCommand, mock(Event.class));
     }

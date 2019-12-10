@@ -19,16 +19,24 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
-import be.thibaulthelsmoortel.currencyconverterbot.api.model.Rate;
-import be.thibaulthelsmoortel.currencyconverterbot.api.parsers.RatesParser;
+import be.thibaulthelsmoortel.currencyconverterbot.commands.candidates.ExchangeRateProviderCandidates;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import javax.money.CurrencyUnit;
+import javax.money.Monetary;
+import javax.money.convert.ExchangeRate;
+import javax.money.convert.ExchangeRateProvider;
+import javax.money.convert.MonetaryConversions;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
 /**
  * @author Thibault Helsmoortel
@@ -39,12 +47,13 @@ public class RatesCommand extends BotCommand {
 
     private static final String HEADER = "Currency rates";
 
-    private final RatesParser ratesParser;
+    @SuppressWarnings("unused") // Used through option
+    @Option(names = {"-c", "--currency"}, paramLabel = "CURRENCY", description = "The base currency iso code.", defaultValue = "EUR", arity = "0..1")
+    private String baseCurrencyIsoCode;
 
-    @Autowired
-    public RatesCommand(RatesParser ratesParser) {
-        this.ratesParser = ratesParser;
-    }
+    @Option(names = {"-p", "--providers"}, paramLabel = "PROVIDERS", description = "Exchange rate providers. Candidates: ${COMPLETION-CANDIDATES}", arity = "0..*",
+        completionCandidates = ExchangeRateProviderCandidates.class)
+    private String[] providers;
 
     @Override
     public Object call() {
@@ -54,15 +63,47 @@ public class RatesCommand extends BotCommand {
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setTitle(HEADER);
 
-            List<Rate> rates = ratesParser.parse();
-            if (rates != null && !rates.isEmpty()) {
-                rates.forEach(rate -> embedBuilder.addField(rate.getCurrency().getIsoCode(), rate.getValue().toPlainString(), true));
+            ExchangeRateProvider rateProvider;
+
+            if (providers != null && providers.length > 0) {
+                rateProvider = MonetaryConversions.getExchangeRateProvider(providers);
+            } else {
+                rateProvider = MonetaryConversions.getExchangeRateProvider();
             }
+
+            Collection<CurrencyUnit> currencies = Monetary.getCurrencies();
+
+            List<ExchangeRate> exchangeRates = currencies.stream()
+                .filter(currency -> baseCurrencyIsoCode != null && rateProvider.isAvailable(baseCurrencyIsoCode, currency.getCurrencyCode()))
+                .map(currency -> {
+                    try {
+                        return rateProvider.getExchangeRate(baseCurrencyIsoCode, currency.getCurrencyCode());
+                    } catch (Exception e) {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .sorted(Comparator.comparing(ExchangeRate::getFactor))
+                .collect(Collectors.toList());
+
+            exchangeRates.forEach(
+                exchangeRate -> embedBuilder.addField(exchangeRate.getCurrency().getCurrencyCode(), exchangeRate.getFactor().toString(), true));
 
             embed = embedBuilder.build();
             ((MessageReceivedEvent) getEvent()).getChannel().sendMessage(embed).queue();
         }
 
+        reset();
+
         return embed;
+    }
+
+    // Visible for testing
+    void setBaseCurrencyIsoCode(String baseCurrencyIsoCode) {
+        this.baseCurrencyIsoCode = baseCurrencyIsoCode;
+    }
+
+    private void reset() {
+        providers = null;
     }
 }

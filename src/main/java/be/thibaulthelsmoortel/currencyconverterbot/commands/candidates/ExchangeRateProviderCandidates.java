@@ -17,36 +17,19 @@
  * along with Currency Converter Bot.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package be.thibaulthelsmoortel.currencyconverterbot.api.model;
+package be.thibaulthelsmoortel.currencyconverterbot.commands.candidates;
 
-import java.math.BigDecimal;
+import java.util.ArrayList;
+import javax.money.convert.MonetaryConversions;
 
 /**
+ * List of all existing exchange rate providers.
+ *
  * @author Thibault Helsmoortel
  */
-public class Rate {
+public class ExchangeRateProviderCandidates extends ArrayList<String> {
 
-    private Currency currency;
-    private BigDecimal value;
-
-    public Currency getCurrency() {
-        return currency;
-    }
-
-    public void setCurrency(Currency currency) {
-        this.currency = currency;
-    }
-
-    public BigDecimal getValue() {
-        return value;
-    }
-
-    public void setValue(BigDecimal value) {
-        this.value = value;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("%3s: %s", currency.toString(), value.toPlainString());
+    public ExchangeRateProviderCandidates() {
+        super(MonetaryConversions.getDefaultConversionProviderChain());
     }
 }

@@ -20,13 +20,7 @@
 package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-import be.thibaulthelsmoortel.currencyconverterbot.api.model.Currency;
-import be.thibaulthelsmoortel.currencyconverterbot.api.model.Rate;
-import be.thibaulthelsmoortel.currencyconverterbot.api.parsers.RatesParser;
-import java.math.BigDecimal;
-import java.util.NoSuchElementException;
 import net.dv8tion.jda.api.events.Event;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -34,7 +28,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 /**
  * @author Thibault Helsmoortel
@@ -43,65 +36,36 @@ class RateCommandTest extends CommandBaseTest {
 
     private RateCommand rateCommand;
 
-    @MockBean
-    private RatesParser ratesParser;
-
     @Override
     @BeforeEach
     void setUp() {
         super.setUp();
-        this.rateCommand = new RateCommand(ratesParser);
+        this.rateCommand = new RateCommand();
         rateCommand.setEvent(messageReceivedEvent);
+        rateCommand.setBaseCurrencyIsoCode("EUR");
     }
 
     @DisplayName("Should send rate message.")
     @Test
     void shouldSendRateMessage() {
         String isoCode = "USD";
-        Rate rate = createRate();
-        when(ratesParser.parse(isoCode)).thenReturn(rate);
         rateCommand.setIsoCode(isoCode);
         String message = (String) rateCommand.call();
 
         Assertions.assertTrue(StringUtils.isNotBlank(message), "Message should not be empty.");
         Assertions.assertTrue(message.contains(isoCode), "Message should contain USD.");
-        Assertions.assertTrue(message.contains("0.7532"), "Message should contain rate.");
         verifyOneMessageSent(message);
     }
 
-    private Rate createRate() {
-        Rate rate = new Rate();
-        Currency currency = new Currency();
-        currency.setIsoCode("USD");
-        rate.setCurrency(currency);
-        rate.setValue(new BigDecimal("0.7532"));
-
-        return rate;
-    }
-
-    @DisplayName("Should send ISO code not found message.")
+    @DisplayName("Should send appropriate message with unavailable ISO code.")
     @Test
-    void shouldSendIsoCodeNotFoundMessage() {
+    void shouldSendAppropriateMessageWithUnavailableIsoCode() {
         String isoCode = "myIsoCode";
-        when(ratesParser.parse(isoCode)).thenThrow(NoSuchElementException.class);
         rateCommand.setIsoCode(isoCode);
         String message = (String) rateCommand.call();
 
         Assertions.assertTrue(StringUtils.isNotBlank(message), "Message should not be empty.");
         Assertions.assertEquals("Currency ISO code not found.", message, "Message should match.");
-        verifyOneMessageSent(message);
-    }
-
-    @DisplayName("Should send could not find message when rate is null.")
-    @Test
-    void shouldSendCouldNotFindMessageWhenRateIsNull() {
-        String isoCode = "USD";
-        when(ratesParser.parse(isoCode)).thenReturn(null); // Simulates fail fetch
-        rateCommand.setIsoCode(isoCode);
-        String message = (String) rateCommand.call();
-
-        Assertions.assertTrue(StringUtils.isNotBlank(message), "Message should not be empty.");
-        Assertions.assertEquals("Couldn't find rate for specified ISO code.", message, "Message should match.");
         verifyOneMessageSent(message);
     }
 
