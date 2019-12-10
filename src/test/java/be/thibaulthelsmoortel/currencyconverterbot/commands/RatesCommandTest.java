@@ -36,7 +36,6 @@ import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -44,7 +43,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 /**
  * @author Thibault Helsmoortel
  */
-@Disabled // TODO: 05/12/2019 update tests and enable again
 class RatesCommandTest extends CommandBaseTest {
 
     private RatesCommand ratesCommand;
@@ -62,6 +60,7 @@ class RatesCommandTest extends CommandBaseTest {
         addRate(rates, "CAD", "1.0248");
         when(ratesParser.parse()).thenReturn(rates);
         ratesCommand.setEvent(messageReceivedEvent);
+        ratesCommand.setBaseCurrencyIsoCode("EUR");
     }
 
     private void addRate(List<Rate> rates, String isoCode, String rawRate) {

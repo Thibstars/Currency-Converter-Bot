@@ -78,7 +78,7 @@ public class RatesCommand extends BotCommand {
             Collection<CurrencyUnit> currencies = Monetary.getCurrencies();
 
             List<ExchangeRate> exchangeRates = currencies.stream()
-                .filter(currency -> rateProvider.isAvailable(baseCurrencyIsoCode, currency.getCurrencyCode()))
+                .filter(currency -> baseCurrencyIsoCode != null && rateProvider.isAvailable(baseCurrencyIsoCode, currency.getCurrencyCode()))
                 .map(currency -> {
                     try {
                         return rateProvider.getExchangeRate(baseCurrencyIsoCode, currency.getCurrencyCode());
@@ -100,6 +100,11 @@ public class RatesCommand extends BotCommand {
         reset();
 
         return embed;
+    }
+
+    // Visible for testing
+    void setBaseCurrencyIsoCode(String baseCurrencyIsoCode) {
+        this.baseCurrencyIsoCode = baseCurrencyIsoCode;
     }
 
     private void reset() {
