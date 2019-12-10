@@ -37,7 +37,6 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
 
 /**
  * @author Thibault Helsmoortel
@@ -49,13 +48,10 @@ public class RatesCommand extends BotCommand {
     private static final String HEADER = "Currency rates";
 
     @SuppressWarnings("unused") // Used through option
-    @Option(names = {"-c", "--currency"}, paramLabel = "CURRENCY", description = "The base currency iso code.", defaultValue = "EUR")
+    @Option(names = {"-c", "--currency"}, paramLabel = "CURRENCY", description = "The base currency iso code.", defaultValue = "EUR", arity = "0..1")
     private String baseCurrencyIsoCode;
 
-    @Option(names = {"-p", "--provider"}, description = "Exchange rate provider.", arity = "0..1")
-    private boolean providersProvided;
-
-    @Parameters(paramLabel = "PROVIDER", description = "Exchange rate providers. Candidates: ${COMPLETION-CANDIDATES}", arity = "0..*",
+    @Option(names = {"-p", "--providers"}, paramLabel = "PROVIDERS", description = "Exchange rate providers. Candidates: ${COMPLETION-CANDIDATES}", arity = "0..*",
         completionCandidates = ExchangeRateProviderCandidates.class)
     private String[] providers;
 
@@ -69,7 +65,7 @@ public class RatesCommand extends BotCommand {
 
             ExchangeRateProvider rateProvider;
 
-            if (providersProvided && providers.length > 0) {
+            if (providers != null && providers.length > 0) {
                 rateProvider = MonetaryConversions.getExchangeRateProvider(providers);
             } else {
                 rateProvider = MonetaryConversions.getExchangeRateProvider();
@@ -108,7 +104,6 @@ public class RatesCommand extends BotCommand {
     }
 
     private void reset() {
-        providersProvided = false;
         providers = null;
     }
 }
