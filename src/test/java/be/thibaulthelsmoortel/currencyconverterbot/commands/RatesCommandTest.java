@@ -25,7 +25,6 @@ import static org.mockito.Mockito.when;
 
 import be.thibaulthelsmoortel.currencyconverterbot.api.model.Currency;
 import be.thibaulthelsmoortel.currencyconverterbot.api.model.Rate;
-import be.thibaulthelsmoortel.currencyconverterbot.api.parsers.RatesParser;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +37,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 /**
  * @author Thibault Helsmoortel
@@ -46,9 +44,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 class RatesCommandTest extends CommandBaseTest {
 
     private RatesCommand ratesCommand;
-
-    @MockBean
-    private RatesParser ratesParser;
 
     @Override
     @BeforeEach
@@ -58,7 +53,6 @@ class RatesCommandTest extends CommandBaseTest {
         List<Rate> rates = new ArrayList<>();
         addRate(rates, "USD", "0.7532");
         addRate(rates, "CAD", "1.0248");
-        when(ratesParser.parse()).thenReturn(rates);
         ratesCommand.setEvent(messageReceivedEvent);
         ratesCommand.setBaseCurrencyIsoCode("EUR");
     }
