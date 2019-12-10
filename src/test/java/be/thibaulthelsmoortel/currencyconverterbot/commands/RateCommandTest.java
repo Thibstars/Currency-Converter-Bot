@@ -65,19 +65,7 @@ class RateCommandTest extends CommandBaseTest {
         String message = (String) rateCommand.call();
 
         Assertions.assertTrue(StringUtils.isNotBlank(message), "Message should not be empty.");
-        Assertions.assertEquals("Couldn't find rate for specified ISO code.", message, "Message should match.");
-        verifyOneMessageSent(message);
-    }
-
-    @DisplayName("Should send could not find message when rate is null.")
-    @Test
-    void shouldSendCouldNotFindMessageWhenRateIsNull() {
-        String isoCode = "USD";
-        rateCommand.setIsoCode(isoCode);
-        String message = (String) rateCommand.call();
-
-        Assertions.assertTrue(StringUtils.isNotBlank(message), "Message should not be empty.");
-        Assertions.assertEquals("Couldn't find rate for specified ISO code.", message, "Message should match.");
+        Assertions.assertEquals("Currency ISO code not found.", message, "Message should match.");
         verifyOneMessageSent(message);
     }
 
