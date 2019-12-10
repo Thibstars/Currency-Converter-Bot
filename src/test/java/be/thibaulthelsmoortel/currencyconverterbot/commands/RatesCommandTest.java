@@ -23,11 +23,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import be.thibaulthelsmoortel.currencyconverterbot.api.model.Currency;
-import be.thibaulthelsmoortel.currencyconverterbot.api.model.Rate;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.Event;
@@ -50,20 +45,8 @@ class RatesCommandTest extends CommandBaseTest {
     void setUp() {
         super.setUp();
         this.ratesCommand = new RatesCommand();
-        List<Rate> rates = new ArrayList<>();
-        addRate(rates, "USD", "0.7532");
-        addRate(rates, "CAD", "1.0248");
         ratesCommand.setEvent(messageReceivedEvent);
         ratesCommand.setBaseCurrencyIsoCode("EUR");
-    }
-
-    private void addRate(List<Rate> rates, String isoCode, String rawRate) {
-        Rate rate = new Rate();
-        Currency currency = new Currency();
-        currency.setIsoCode(isoCode);
-        rate.setCurrency(currency);
-        rate.setValue(new BigDecimal(rawRate));
-        rates.add(rate);
     }
 
     @DisplayName("Should send rates message.")
