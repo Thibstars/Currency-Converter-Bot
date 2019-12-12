@@ -19,6 +19,7 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.commands.converters;
 
+import org.apache.commons.lang3.StringUtils;
 import picocli.CommandLine.ITypeConverter;
 
 /**
@@ -30,10 +31,10 @@ public class LowerToUpperCaseConverter implements ITypeConverter<String> {
 
     @Override
     public String convert(String value) {
-        if (value != null) {
+        if (StringUtils.isNotBlank(value)) {
             return value.toUpperCase();
         }
 
-        return null;
+        return value;
     }
 }
