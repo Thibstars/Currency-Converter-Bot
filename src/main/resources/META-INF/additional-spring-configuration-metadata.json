@@ -35,6 +35,11 @@
       "name": "bot.dblToken",
       "type": "java.lang.String",
       "description": "Discord Bot List API Token."
+    },
+    {
+      "name": "bot.donation.url",
+      "type": "java.lang.String",
+      "description": "Donation url."
     }
   ]
 }
