@@ -53,7 +53,7 @@
 		<moneta.version>1.4</moneta.version>
 
 		<junit.version>5.5.2</junit.version>
-		<mockito.junit.version>3.3.1</mockito.junit.version>
+		<mockito.junit.version>3.4.4</mockito.junit.version>
 
 		<jacoco.version>0.8.5</jacoco.version>
 	</properties>
