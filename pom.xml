@@ -50,7 +50,7 @@
 		<apache.commons.version>3.11</apache.commons.version>
 		<picocli.version>4.4.0</picocli.version>
 		<dbl.version>2.0.1</dbl.version>
-		<moneta.version>1.4</moneta.version>
+		<moneta.version>1.4.1</moneta.version>
 
 		<junit.version>5.5.2</junit.version>
 		<mockito.junit.version>3.4.4</mockito.junit.version>
