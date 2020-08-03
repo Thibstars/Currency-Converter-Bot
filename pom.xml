@@ -48,7 +48,7 @@
 
 		<jda.version>4.2.0_180</jda.version>
 		<apache.commons.version>3.11</apache.commons.version>
-		<picocli.version>4.4.0</picocli.version>
+		<picocli.version>4.5.0</picocli.version>
 		<dbl.version>2.0.1</dbl.version>
 		<moneta.version>1.4</moneta.version>
 
