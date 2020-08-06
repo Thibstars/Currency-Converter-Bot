@@ -22,7 +22,6 @@ package be.thibaulthelsmoortel.currencyconverterbot.application;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.CommandExecutor;
 import be.thibaulthelsmoortel.currencyconverterbot.config.DiscordBotEnvironment;
 import be.thibaulthelsmoortel.currencyconverterbot.exceptions.MissingTokenException;
-import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -134,8 +133,7 @@ public class DiscordBotRunner extends ListenerAdapter implements CommandLineRunn
         }
 
         try {
-            JDA jda = new JDABuilder(AccountType.BOT)
-                .setToken(token)
+            JDA jda = JDABuilder.createDefault(token)
                 .addEventListeners(this)
                 .build()
                 .awaitReady();
