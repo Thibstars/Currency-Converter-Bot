@@ -17,6 +17,9 @@ In order to run the application, one must first add a Discord bot token to `bot.
 
 When running directly using `java -jar` you can also pass your token as a first run argument instead. This is also the used approach in the `Dockerfile`.
 
+To start using the bot itself, it is recommended to issue the 'help' command (don't forget the prefix, which is '/' by default) to retrieve an overview of available commands. 
+Each command has a similar help overview which can be called with the option: -h or --help (e.g.: convert -h).
+
 ##### Docker #####
 When running the application from the `Dockerfile` make sure to add a new `BOT_TOKEN` environment variable with the bot token as value so it can be picked up 
 in the underlying `java -jar` entrypoint command.
