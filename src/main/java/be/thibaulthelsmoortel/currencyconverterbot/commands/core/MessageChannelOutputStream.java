@@ -20,6 +20,7 @@
 package be.thibaulthelsmoortel.currencyconverterbot.commands.core;
 
 import java.io.OutputStream;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -42,10 +43,13 @@ public class MessageChannelOutputStream extends OutputStream {
     }
 
     @Override
-    public void write(byte b[], int off, int len) {
+    public void write(byte[] b, int off, int len) {
         String content = b != null ? new String(b, off, len) : null;
         if (StringUtils.isNotBlank(content)) {
-            messageChannel.sendMessage(content).queue();
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+            StringBuilder descriptionBuilder = embedBuilder.getDescriptionBuilder();
+            descriptionBuilder.append(content);
+            messageChannel.sendMessage(embedBuilder.build()).queue();
         }
     }
 
