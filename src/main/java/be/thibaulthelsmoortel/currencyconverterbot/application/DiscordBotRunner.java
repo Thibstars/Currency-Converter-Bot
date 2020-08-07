@@ -22,7 +22,6 @@ package be.thibaulthelsmoortel.currencyconverterbot.application;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.CommandExecutor;
 import be.thibaulthelsmoortel.currencyconverterbot.config.DiscordBotEnvironment;
 import be.thibaulthelsmoortel.currencyconverterbot.exceptions.MissingTokenException;
-import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -33,6 +32,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.apache.commons.lang3.StringUtils;
 import org.discordbots.api.client.DiscordBotListAPI;
 import org.discordbots.api.client.DiscordBotListAPI.Builder;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +70,7 @@ public class DiscordBotRunner extends ListenerAdapter implements CommandLineRunn
     }
 
     @Override
-    public void onGuildJoin(GuildJoinEvent event) {
+    public void onGuildJoin(@NotNull GuildJoinEvent event) {
         super.onGuildJoin(event);
 
         LOGGER.info("Joined guild. Current amount of connected guilds: {}.", event.getJDA().getGuilds().size());
@@ -79,7 +79,7 @@ public class DiscordBotRunner extends ListenerAdapter implements CommandLineRunn
     }
 
     @Override
-    public void onGuildLeave(GuildLeaveEvent event) {
+    public void onGuildLeave(@NotNull GuildLeaveEvent event) {
         super.onGuildLeave(event);
 
         LOGGER.info("Left guild. Current amount of connected guilds: {}.", event.getJDA().getGuilds().size());
@@ -134,8 +134,7 @@ public class DiscordBotRunner extends ListenerAdapter implements CommandLineRunn
         }
 
         try {
-            JDA jda = new JDABuilder(AccountType.BOT)
-                .setToken(token)
+            JDA jda = JDABuilder.createDefault(token)
                 .addEventListeners(this)
                 .build()
                 .awaitReady();

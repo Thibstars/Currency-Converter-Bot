@@ -99,7 +99,7 @@ class CommandExecutorTest extends BaseTest {
 
         // Assuming the command sends a message back:
         verify(messageReceivedEvent).getChannel(); // Once for sending the message, once to pass to the output stream
-        verify(messageChannel).sendMessage(anyString());
+        verify(messageChannel).sendMessage(any(MessageEmbed.class));
         verifyNoMoreInteractions(messageChannel);
         verifyNoMoreInteractions(messageReceivedEvent);
 

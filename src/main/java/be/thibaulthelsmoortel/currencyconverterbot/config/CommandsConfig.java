@@ -48,9 +48,9 @@ public class CommandsConfig {
     public List<BotCommand> commands() {
         Map<String, Object> commands = listableBeanFactory.getBeansWithAnnotation(CommandLine.Command.class);
 
-        return commands.entrySet().stream()
-            .filter(entry -> entry.getValue() instanceof BotCommand)
-            .map(entry -> (BotCommand) entry.getValue())
+        return commands.values().stream()
+            .filter(command -> command instanceof BotCommand)
+            .map(command -> (BotCommand) command)
             .collect(Collectors.toList());
     }
 

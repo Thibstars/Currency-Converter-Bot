@@ -21,7 +21,7 @@ package be.thibaulthelsmoortel.currencyconverterbot.commands.core;
 
 import static org.junit.jupiter.params.ParameterizedTest.ARGUMENTS_PLACEHOLDER;
 import static org.junit.jupiter.params.ParameterizedTest.INDEX_PLACEHOLDER;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -29,7 +29,9 @@ import static org.mockito.Mockito.when;
 
 import be.thibaulthelsmoortel.currencyconverterbot.BaseTest;
 import java.util.stream.Stream;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -53,7 +55,7 @@ class MessageChannelOutputStreamTest extends BaseTest {
         messageChannelOutputStream = new MessageChannelOutputStream();
         messageChannelOutputStream.setMessageChannel(messageChannel);
 
-        when(messageChannel.sendMessage(anyString())).thenReturn(mock(MessageAction.class));
+        when(messageChannel.sendMessage(any(MessageEmbed.class))).thenReturn(mock(MessageAction.class));
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -61,9 +63,13 @@ class MessageChannelOutputStreamTest extends BaseTest {
     @Test
     void shouldWriteMessageToChannel() {
         String message = "Hello World!";
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        StringBuilder descriptionBuilder = embedBuilder.getDescriptionBuilder();
+        descriptionBuilder.append(message);
+
         messageChannelOutputStream.write(message.getBytes(), 0, message.length());
 
-        verify(messageChannel).sendMessage(message);
+        verify(messageChannel).sendMessage(embedBuilder.build());
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -74,7 +80,11 @@ class MessageChannelOutputStreamTest extends BaseTest {
         int charCode = message.toCharArray()[0];
         messageChannelOutputStream.write(charCode);
 
-        verify(messageChannel).sendMessage(message);
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        StringBuilder descriptionBuilder = embedBuilder.getDescriptionBuilder();
+        descriptionBuilder.append(message);
+
+        verify(messageChannel).sendMessage(embedBuilder.build());
     }
 
     @DisplayName("Should not write blank message to channel.")
