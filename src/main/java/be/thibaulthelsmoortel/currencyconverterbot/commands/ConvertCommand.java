@@ -69,7 +69,7 @@ public class ConvertCommand extends BotCommand {
 
                 MonetaryAmount monetarySourceAmount = Money.of(sourceAmount, sourceUnit);
 
-                message = monetarySourceAmount.with(conversion).toString();
+                message = sourceAmount + " " + sourceIsoCode.toUpperCase() + " = " + monetarySourceAmount.with(conversion).toString();
             } catch (NoSuchElementException e) {
                 message = "Input parameters not recognized.";
             }
