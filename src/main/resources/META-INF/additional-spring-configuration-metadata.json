@@ -40,6 +40,12 @@
       "name": "bot.donation.url",
       "type": "java.lang.String",
       "description": "Donation url."
+    },
+    {
+      "name": "bot.warmup",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Flag defining whether warmup should be performed or not."
     }
   ]
 }
