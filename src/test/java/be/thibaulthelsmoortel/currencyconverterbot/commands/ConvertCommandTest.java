@@ -56,7 +56,8 @@ class ConvertCommandTest extends CommandBaseTest {
         String message = (String) convertCommand.call();
 
         Assertions.assertTrue(StringUtils.isNotBlank(message), "Message should not be empty.");
-        Assertions.assertTrue(message.contains(eurIso), "Message should contain USD.");
+        Assertions.assertTrue(message.contains(eurIso), "Message should contain EUR.");
+        Assertions.assertTrue(message.contains(usdIso), "Message should contain USD.");
         verifyOneMessageSent(message);
     }
 
@@ -64,7 +65,6 @@ class ConvertCommandTest extends CommandBaseTest {
     @Test
     void shouldSendInputNotRecognizedMessage() {
         String usdIso = "USD";
-        String eurIso = "EUR";
 
         String unrecognizedIsoCode = "Karman";
 

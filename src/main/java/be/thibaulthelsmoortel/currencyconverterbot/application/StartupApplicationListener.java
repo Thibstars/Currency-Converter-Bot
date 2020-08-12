@@ -21,6 +21,7 @@ package be.thibaulthelsmoortel.currencyconverterbot.application;
 
 import be.thibaulthelsmoortel.currencyconverterbot.config.DiscordBotEnvironment;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,13 +41,16 @@ public class StartupApplicationListener implements ApplicationListener<Applicati
 
     private final DiscordBotEnvironment discordBotEnvironment;
 
+    private final Warmup warmup;
+
     @Autowired
-    public StartupApplicationListener(DiscordBotEnvironment discordBotEnvironment) {
+    public StartupApplicationListener(DiscordBotEnvironment discordBotEnvironment, Warmup warmup) {
         this.discordBotEnvironment = discordBotEnvironment;
+        this.warmup = warmup;
     }
 
     @Override
-    public void onApplicationEvent(ApplicationStartedEvent applicationStartedEvent) {
+    public void onApplicationEvent(@NotNull ApplicationStartedEvent applicationStartedEvent) {
         LOGGER.info("Application started.");
         if (StringUtils.isNotBlank(discordBotEnvironment.getAuthor())) {
             LOGGER.info("Author: {}", discordBotEnvironment.getAuthor());
@@ -59,5 +63,9 @@ public class StartupApplicationListener implements ApplicationListener<Applicati
         if (StringUtils.isNotBlank(discordBotEnvironment.getVersion())) {
             LOGGER.info("Version: {}", discordBotEnvironment.getVersion());
         }
+
+        warmup.perform();
     }
+
+
 }

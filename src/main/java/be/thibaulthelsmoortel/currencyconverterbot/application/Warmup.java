@@ -17,43 +17,46 @@
  * along with Currency Converter Bot.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package be.thibaulthelsmoortel.currencyconverterbot.commands;
+package be.thibaulthelsmoortel.currencyconverterbot.application;
 
-import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
 import java.util.Collection;
-import java.util.NoSuchElementException;
 import javax.money.CurrencyUnit;
 import javax.money.Monetary;
 import javax.money.MonetaryAmount;
 import javax.money.convert.CurrencyConversion;
 import javax.money.convert.MonetaryConversions;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.javamoney.moneta.Money;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import picocli.CommandLine.Command;
-import picocli.CommandLine.Parameters;
 
 /**
+ * Class warming up the application upon startup. This is useful since Moneta is fetching quite some data on the first performed conversion.
+ *
  * @author Thibault Helsmoortel
  */
-@Command(name = "convert", description = "Converts one currency value to another.")
 @Component
-public class ConvertCommand extends BotCommand {
+class Warmup {
 
-    @Parameters(description = "Value of the currency to convert.", arity = "1", index = "0")
-    private double sourceAmount;
-    @Parameters(description = "ISO code of the source currency.", arity = "1", index = "1")
-    private String sourceIsoCode;
-    @Parameters(description = "ISO code of the target currency.", arity = "1", index = "2")
-    private String targetIsoCode;
+    private static final Logger LOGGER = LoggerFactory.getLogger(Warmup.class);
 
-    @Override
-    public Object call() {
-        String message = null;
+    @Value("${bot.warmup}")
+    private boolean perform;
 
-        if (getEvent() instanceof MessageReceivedEvent) {
+    private boolean performed;
+
+    Warmup() {
+        this.performed = false;
+    }
+
+    public void perform() {
+        if (perform && !performed) {
             try {
+                LOGGER.info("Performing warmup...");
+
                 Collection<CurrencyUnit> currencies = Monetary.getCurrencies();
+                String sourceIsoCode = "eur";
                 CurrencyUnit sourceUnit = currencies.stream()
                     .filter(unit -> unit.getCurrencyCode().equalsIgnoreCase(sourceIsoCode))
                     .findFirst()
@@ -61,37 +64,28 @@ public class ConvertCommand extends BotCommand {
 
                 CurrencyUnit targetUnit =
                     currencies.stream()
-                        .filter(unit -> unit.getCurrencyCode().equalsIgnoreCase(targetIsoCode))
+                        .filter(unit -> {
+                            String targetIsoCode = "usd";
+                            return unit.getCurrencyCode().equalsIgnoreCase(targetIsoCode);
+                        })
                         .findFirst()
                         .orElseThrow();
 
                 CurrencyConversion conversion = MonetaryConversions.getConversion(targetUnit);
 
+                int sourceAmount = 1;
                 MonetaryAmount monetarySourceAmount = Money.of(sourceAmount, sourceUnit);
+                String conversionResult = sourceAmount + " " + sourceIsoCode.toUpperCase() + " = " + monetarySourceAmount.with(conversion).toString();
 
-                message = sourceAmount + " " + sourceIsoCode.toUpperCase() + " = " + monetarySourceAmount.with(conversion).toString();
-            } catch (NoSuchElementException e) {
-                message = "Input parameters not recognized.";
+                this.performed = true;
+                LOGGER.info("Performed warmup with example conversion: {}", conversionResult);
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage(), e);
             }
-
-            ((MessageReceivedEvent) getEvent()).getChannel().sendMessage(message).queue();
         }
-
-        return message;
     }
 
-    // Visible for testing
-    void setSourceAmount(double sourceAmount) {
-        this.sourceAmount = sourceAmount;
-    }
-
-    // Visible for testing
-    void setSourceIsoCode(String sourceIsoCode) {
-        this.sourceIsoCode = sourceIsoCode;
-    }
-
-    // Visible for testing
-    void setTargetIsoCode(String targetIsoCode) {
-        this.targetIsoCode = targetIsoCode;
+    public boolean isPerformed() {
+        return performed;
     }
 }
