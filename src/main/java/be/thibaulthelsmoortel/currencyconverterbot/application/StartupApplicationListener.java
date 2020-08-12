@@ -41,9 +41,12 @@ public class StartupApplicationListener implements ApplicationListener<Applicati
 
     private final DiscordBotEnvironment discordBotEnvironment;
 
+    private final Warmup warmup;
+
     @Autowired
-    public StartupApplicationListener(DiscordBotEnvironment discordBotEnvironment) {
+    public StartupApplicationListener(DiscordBotEnvironment discordBotEnvironment, Warmup warmup) {
         this.discordBotEnvironment = discordBotEnvironment;
+        this.warmup = warmup;
     }
 
     @Override
@@ -60,5 +63,9 @@ public class StartupApplicationListener implements ApplicationListener<Applicati
         if (StringUtils.isNotBlank(discordBotEnvironment.getVersion())) {
             LOGGER.info("Version: {}", discordBotEnvironment.getVersion());
         }
+
+        warmup.perform();
     }
+
+
 }
