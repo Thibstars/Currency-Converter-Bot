@@ -3,7 +3,7 @@ os:
 
 language: java
 jdk:
-  - openjdk15
+  - openjdk16
 
 before_install:
   - chmod +x mvnw
