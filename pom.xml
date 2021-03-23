@@ -28,7 +28,7 @@
 	</parent>
 	<groupId>be.thibaulthelsmoortel</groupId>
 	<artifactId>currency-converter-bot</artifactId>
-	<version>0.2.0</version>
+	<version>0.2.1-SNAPSHOT</version>
 	<name>Currency Converter Bot</name>
 	<description>Discord bot allowing currency conversions and rates listing.</description>
 
