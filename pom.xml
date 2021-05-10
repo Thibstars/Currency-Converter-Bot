@@ -55,7 +55,7 @@
 		<junit.version>5.5.2</junit.version>
 		<mockito.junit.version>3.8.0</mockito.junit.version>
 
-		<jacoco.version>0.8.6</jacoco.version>
+		<jacoco.version>0.8.7</jacoco.version>
 	</properties>
 
 	<dependencies>
