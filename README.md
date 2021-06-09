@@ -7,6 +7,8 @@ This bot is currently publicly hosted and available. It is listed on top.gg, so 
 
 [![Discord Bots](https://discordbots.org/api/widget/563655936263061544.svg)](https://discordbots.org/bot/563655936263061544)
 
+[![DigitalOcean Referral Badge](https://web-platforms.sfo2.cdn.digitaloceanspaces.com/WWW/Badge%201.svg)](https://www.digitalocean.com/?refcode=9d2be90e794d&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge)
+
 ### Private ###
 This bot can also be self-hosted.
 
