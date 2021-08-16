@@ -1,4 +1,4 @@
-# Currency Converter Bot [![Build Status](https://travis-ci.org/Thibstars/Currency-Converter-Bot.svg?branch=master)](https://travis-ci.org/Thibstars/Currency-Converter-Bot) [![codecov](https://codecov.io/gh/Thibstars/Currency-Converter-Bot/branch/master/graph/badge.svg)](https://codecov.io/gh/Thibstars/Currency-Converter-Bot) [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=Thibstars/Currency-Converter-Bot)](https://dependabot.com) [![Discord Bots](https://discordbots.org/api/widget/status/563655936263061544.svg)](https://discordbots.org/bot/563655936263061544) # 
+# Currency Converter Bot [![Build Status](https://travis-ci.com/Thibstars/Currency-Converter-Bot.svg?branch=master)](https://travis-ci.com/Thibstars/Currency-Converter-Bot) [![codecov](https://codecov.io/gh/Thibstars/Currency-Converter-Bot/branch/master/graph/badge.svg)](https://codecov.io/gh/Thibstars/Currency-Converter-Bot) [![Discord Bots](https://discordbots.org/api/widget/status/563655936263061544.svg)](https://discordbots.org/bot/563655936263061544) # 
 Discord bot allowing currency conversions and rates listing.
 
 ## Hosting ##
@@ -6,6 +6,8 @@ Discord bot allowing currency conversions and rates listing.
 This bot is currently publicly hosted and available. It is listed on top.gg, so you could simply invite the bot to your server from there.
 
 [![Discord Bots](https://discordbots.org/api/widget/563655936263061544.svg)](https://discordbots.org/bot/563655936263061544)
+
+[![DigitalOcean Referral Badge](https://web-platforms.sfo2.cdn.digitaloceanspaces.com/WWW/Badge%201.svg)](https://www.digitalocean.com/?refcode=9d2be90e794d&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge)
 
 ### Private ###
 This bot can also be self-hosted.
