@@ -66,7 +66,7 @@ class DonateCommandTest extends CommandBaseTest {
     void shouldReturnInviteUrlWithoutPermissions() {
         donateCommand.setEvent(messageReceivedEvent);
 
-        String message = (String) donateCommand.call();
+        String message = donateCommand.call();
 
         Assertions.assertNotNull(message, "Donation url must not be null.");
         Assertions.assertEquals(donationUrl, message, "Donation url must be correct.");

@@ -32,13 +32,13 @@ import picocli.CommandLine.Command;
  */
 @Command(name = "donate", description = "Provides a donation url.")
 @Component
-public class DonateCommand extends BotCommand {
+public class DonateCommand extends BotCommand<String> {
 
     @Value("${bot.donation.url}")
     private String donationUrl;
 
     @Override
-    public Object call() {
+    public String call() {
         String message = null;
         if (getEvent() instanceof MessageReceivedEvent) {
             message = donationUrl;

@@ -42,12 +42,12 @@ public class CommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandExecutor.class);
 
-    private final List<BotCommand> botCommands;
+    private final List<BotCommand<?>> botCommands;
     private final MessageChannelOutputStream messageChannelOutputStream;
     private final PrintStream printStream;
 
     @Autowired
-    public CommandExecutor(List<BotCommand> botCommands, MessageChannelOutputStream messageChannelOutputStream) {
+    public CommandExecutor(List<BotCommand<?>> botCommands, MessageChannelOutputStream messageChannelOutputStream) {
         this.botCommands = botCommands;
         this.messageChannelOutputStream = messageChannelOutputStream;
         printStream = new PrintStream(messageChannelOutputStream);
@@ -61,11 +61,11 @@ public class CommandExecutor {
      * @return true if the command was executed, false if otherwise
      */
     public boolean tryExecute(MessageReceivedEvent event, String commandMessage) {
-        AtomicBoolean commandRecognised = new AtomicBoolean(false);
+        var commandRecognised = new AtomicBoolean(false);
 
         if (StringUtils.isNotBlank(commandMessage)) {
             botCommands.forEach(command -> {
-                Command commandType = command.getClass().getAnnotation(Command.class);
+                var commandType = command.getClass().getAnnotation(Command.class);
                 String commandName = commandType.name();
 
                 if (commandMessage.split(" ")[0].equals(commandName)) {

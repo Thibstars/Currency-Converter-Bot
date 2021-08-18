@@ -71,7 +71,7 @@ class InviteCommandTest extends CommandBaseTest {
     void shouldReturnInviteUrlWithoutPermissions() {
         inviteCommand.setEvent(messageReceivedEvent);
 
-        String message = (String) inviteCommand.call();
+        String message = inviteCommand.call();
 
         Assertions.assertNotNull(message, "Invite url must not be null.");
         Assertions.assertTrue(message.contains(EXPECTED_SCOPE), "Scope must be correct.");
@@ -96,7 +96,7 @@ class InviteCommandTest extends CommandBaseTest {
         when(jda.getInviteUrl(permissions)).thenReturn(INVITE_URL_WITH_PERMISSIONS);
         inviteCommand.setEvent(messageReceivedEvent);
 
-        String message = (String) inviteCommand.call();
+        String message = inviteCommand.call();
         Assertions.assertNotNull(message, "Invite url must not be null.");
         Assertions.assertTrue(message.contains(EXPECTED_SCOPE), "Scope must be correct.");
         Assertions.assertTrue(message.contains(PERMISSIONS_PARAM), "Permissions should be provided.");
@@ -113,7 +113,7 @@ class InviteCommandTest extends CommandBaseTest {
         when(jda.getInviteUrl(any(Permission[].class))).thenReturn(INVITE_URL_WITH_PERMISSIONS);
         inviteCommand.setEvent(messageReceivedEvent);
 
-        String message = (String) inviteCommand.call();
+        String message = inviteCommand.call();
         Assertions.assertNotNull(message, "Invite url must not be null.");
         Assertions.assertTrue(message.contains(EXPECTED_SCOPE), "Scope must be correct.");
         Assertions.assertTrue(message.contains(PERMISSIONS_PARAM), "Permissions should be provided.");

@@ -70,7 +70,6 @@ class CommandExecutorTest extends BaseTest {
         when(messageChannel.sendMessage(any(MessageEmbed.class))).thenReturn(messageAction);
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     @DisplayName("Should execute command.")
     @Test
     void shouldExecuteCommand() {
@@ -88,7 +87,6 @@ class CommandExecutorTest extends BaseTest {
         Assertions.assertTrue(executed, "Command should be executed.");
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     @DisplayName("Should execute command with arguments.")
     @Test
     void shouldExecuteCommandWithArguments() {
@@ -106,7 +104,6 @@ class CommandExecutorTest extends BaseTest {
         Assertions.assertTrue(executed, "Command should be executed.");
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     @DisplayName("Should not execute command.")
     @Test
     void shouldNotExecuteCommand() {

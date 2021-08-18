@@ -56,7 +56,7 @@ class Warmup {
                 LOGGER.info("Performing warmup...");
 
                 Collection<CurrencyUnit> currencies = Monetary.getCurrencies();
-                String sourceIsoCode = "eur";
+                var sourceIsoCode = "eur";
                 CurrencyUnit sourceUnit = currencies.stream()
                     .filter(unit -> unit.getCurrencyCode().equalsIgnoreCase(sourceIsoCode))
                     .findFirst()
@@ -65,7 +65,7 @@ class Warmup {
                 CurrencyUnit targetUnit =
                     currencies.stream()
                         .filter(unit -> {
-                            String targetIsoCode = "usd";
+                            var targetIsoCode = "usd";
                             return unit.getCurrencyCode().equalsIgnoreCase(targetIsoCode);
                         })
                         .findFirst()
@@ -73,7 +73,7 @@ class Warmup {
 
                 CurrencyConversion conversion = MonetaryConversions.getConversion(targetUnit);
 
-                int sourceAmount = 1;
+                var sourceAmount = 1;
                 MonetaryAmount monetarySourceAmount = Money.of(sourceAmount, sourceUnit);
                 String conversionResult = sourceAmount + " " + sourceIsoCode.toUpperCase() + " = " + monetarySourceAmount.with(conversion).toString();
 

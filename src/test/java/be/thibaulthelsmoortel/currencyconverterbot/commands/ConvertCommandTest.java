@@ -53,7 +53,7 @@ class ConvertCommandTest extends CommandBaseTest {
         convertCommand.setSourceIsoCode(usdIso);
         convertCommand.setTargetIsoCode(eurIso);
 
-        String message = (String) convertCommand.call();
+        String message = convertCommand.call();
 
         Assertions.assertTrue(StringUtils.isNotBlank(message), "Message should not be empty.");
         Assertions.assertTrue(message.contains(eurIso), "Message should contain EUR.");
@@ -72,7 +72,7 @@ class ConvertCommandTest extends CommandBaseTest {
         convertCommand.setSourceIsoCode(usdIso);
         convertCommand.setTargetIsoCode(unrecognizedIsoCode);
 
-        String message = (String) convertCommand.call();
+        String message = convertCommand.call();
 
         Assertions.assertTrue(StringUtils.isNotBlank(message), "Message should not be empty.");
         Assertions.assertEquals("Input parameters not recognized.", message, "Message should match.");
