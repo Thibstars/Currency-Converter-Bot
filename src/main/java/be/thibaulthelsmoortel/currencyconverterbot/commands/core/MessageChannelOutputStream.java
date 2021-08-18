@@ -43,8 +43,13 @@ public class MessageChannelOutputStream extends OutputStream {
         write(new byte[] {(byte) b}, 0, 1);
     }
 
+    @SuppressWarnings("all") // hard null check
     @Override
     public void write(byte @NotNull [] b, int off, int len) {
+        if (b == null) {
+            throw new IllegalArgumentException();
+        }
+
         var content = new String(b, off, len);
         if (StringUtils.isNotBlank(content)) {
             var embedBuilder = new EmbedBuilder();
