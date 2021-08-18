@@ -21,6 +21,7 @@ package be.thibaulthelsmoortel.currencyconverterbot.application;
 
 import be.thibaulthelsmoortel.currencyconverterbot.BaseTest;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +37,7 @@ class WarmupTest extends BaseTest {
     @Value("${bot.warmup}")
     private boolean perform;
 
+    @DisplayName("Should be performed on application startup if so configured.")
     @Test
     void shouldBePerformedOnApplicationStartupIfSoConfigured() {
         Assertions.assertEquals(perform, warmup.isPerformed(), "Warmup must be completed if so configured.");
