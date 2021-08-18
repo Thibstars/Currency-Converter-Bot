@@ -19,7 +19,7 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.commands.core;
 
-import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -30,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
-import picocli.CommandLine.Help.Ansi;
 
 /**
  * Class responsible for command execution.
@@ -44,13 +43,13 @@ public class CommandExecutor {
 
     private final List<BotCommand<?>> botCommands;
     private final MessageChannelOutputStream messageChannelOutputStream;
-    private final PrintStream printStream;
+    private final PrintWriter printWriter;
 
     @Autowired
     public CommandExecutor(List<BotCommand<?>> botCommands, MessageChannelOutputStream messageChannelOutputStream) {
         this.botCommands = botCommands;
         this.messageChannelOutputStream = messageChannelOutputStream;
-        printStream = new PrintStream(messageChannelOutputStream);
+        printWriter = new PrintWriter(messageChannelOutputStream);
     }
 
     /**
@@ -74,10 +73,15 @@ public class CommandExecutor {
                     String args = commandMessage.substring(commandMessage.indexOf(commandType.name()) + commandType.name().length()).trim();
 
                     messageChannelOutputStream.setMessageChannel(event.getChannel());
+
+                    var commandLine = new CommandLine(command);
+                    commandLine.setOut(printWriter);
+                    commandLine.setErr(printWriter);
+
                     if (StringUtils.isNotBlank(args)) {
-                        CommandLine.call(command, printStream, printStream, Ansi.OFF, args.split(" "));
+                        commandLine.execute(args.split(" "));
                     } else {
-                        CommandLine.call(command, printStream, printStream, Ansi.OFF);
+                        commandLine.execute();
                     }
                 }
             });
