@@ -54,7 +54,7 @@ class RatesCommandTest extends CommandBaseTest {
     void shouldSendRatesMessage() {
         when(messageChannel.sendMessage(any(MessageEmbed.class))).thenReturn(mock(MessageAction.class));
 
-        MessageEmbed embed = (MessageEmbed) ratesCommand.call();
+        MessageEmbed embed = ratesCommand.call();
 
         Assertions.assertNotNull(embed, "Message should not be null.");
         Assertions.assertTrue(StringUtils.isNotBlank(embed.getTitle()), "Title should not be empty.");

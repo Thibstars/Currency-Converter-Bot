@@ -23,7 +23,6 @@ import be.thibaulthelsmoortel.currencyconverterbot.commands.candidates.ExchangeR
 import be.thibaulthelsmoortel.currencyconverterbot.commands.converters.LowerToUpperCaseConverter;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
 import javax.money.UnknownCurrencyException;
-import javax.money.convert.ExchangeRate;
 import javax.money.convert.ExchangeRateProvider;
 import javax.money.convert.MonetaryConversions;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -38,7 +37,7 @@ import picocli.CommandLine.Parameters;
  */
 @Command(name = "rate", description = "Provides current currency rate.")
 @Component
-public class RateCommand extends BotCommand {
+public class RateCommand extends BotCommand<String> {
 
     @Parameters(description = "ISO code of the currency to lookup.", arity = "1", index = "0", converter = LowerToUpperCaseConverter.class)
     private String isoCode;
@@ -53,7 +52,7 @@ public class RateCommand extends BotCommand {
     private String[] providers;
 
     @Override
-    public Object call() {
+    public String call() {
         String message = null;
         if (getEvent() instanceof MessageReceivedEvent) {
             ExchangeRateProvider rateProvider;
@@ -66,8 +65,8 @@ public class RateCommand extends BotCommand {
 
             try {
                 if (baseCurrencyIsoCode != null && rateProvider.isAvailable(baseCurrencyIsoCode, isoCode)) {
-                    ExchangeRate exchangeRate = rateProvider.getExchangeRate(baseCurrencyIsoCode, isoCode);
-                    Money result = Money.of(exchangeRate.getFactor(), exchangeRate.getCurrency());
+                    var exchangeRate = rateProvider.getExchangeRate(baseCurrencyIsoCode, isoCode);
+                    var result = Money.of(exchangeRate.getFactor(), exchangeRate.getCurrency());
                     message = result.toString();
                 } else {
                     message = "Couldn't find rate for specified ISO code.";
@@ -94,6 +93,7 @@ public class RateCommand extends BotCommand {
     }
 
     // Visible for testing
+    @SuppressWarnings("all")
     void setBaseCurrencyIsoCode(String baseCurrencyIsoCode) {
         this.baseCurrencyIsoCode = baseCurrencyIsoCode;
     }

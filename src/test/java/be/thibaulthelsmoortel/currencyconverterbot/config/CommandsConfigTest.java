@@ -20,6 +20,7 @@
 package be.thibaulthelsmoortel.currencyconverterbot.config;
 
 import be.thibaulthelsmoortel.currencyconverterbot.BaseTest;
+import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
 import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.Assertions;
@@ -32,10 +33,10 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 class CommandsConfigTest extends BaseTest {
 
-    private final List commands;
+    private final List<BotCommand<?>> commands;
 
     @Autowired
-    CommandsConfigTest(List commands) {
+    CommandsConfigTest(List<BotCommand<?>> commands) {
         this.commands = commands;
     }
 

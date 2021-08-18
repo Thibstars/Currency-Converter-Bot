@@ -62,7 +62,7 @@ public class DiscordBotRunner extends ListenerAdapter implements CommandLineRunn
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
-        Message message = event.getMessage();
+        var message = event.getMessage();
         if (processMessage(message)) {
             String msg = message.getContentDisplay();
             handleMessage(event, msg);
@@ -99,7 +99,7 @@ public class DiscordBotRunner extends ListenerAdapter implements CommandLineRunn
         if (msg.startsWith(discordBotEnvironment.getCommandPrefix())) {
             event.getChannel().sendTyping().queue();
 
-            String parsedMessage = msg.substring(discordBotEnvironment.getCommandPrefix().length());
+            var parsedMessage = msg.substring(discordBotEnvironment.getCommandPrefix().length());
 
             commandExecutor.tryExecute(event, parsedMessage);
         }
@@ -134,7 +134,7 @@ public class DiscordBotRunner extends ListenerAdapter implements CommandLineRunn
         }
 
         try {
-            JDA jda = JDABuilder.createDefault(token)
+            var jda = JDABuilder.createDefault(token)
                 .addEventListeners(this)
                 .build()
                 .awaitReady();
@@ -143,6 +143,9 @@ public class DiscordBotRunner extends ListenerAdapter implements CommandLineRunn
                 .token(dblToken)
                 .botId(jda.getSelfUser().getId())
                 .build();
+        } catch (InterruptedException e) {
+            // Restore interrupted state...
+            Thread.currentThread().interrupt();
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }

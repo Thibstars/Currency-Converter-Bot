@@ -44,7 +44,7 @@ import picocli.CommandLine.Option;
  */
 @Command(name = "rates", description = "Provides current currency rates.")
 @Component
-public class RatesCommand extends BotCommand {
+public class RatesCommand extends BotCommand<MessageEmbed> {
 
     private static final String HEADER = "Currency rates";
 
@@ -58,11 +58,11 @@ public class RatesCommand extends BotCommand {
     private String[] providers;
 
     @Override
-    public Object call() {
+    public MessageEmbed call() {
         MessageEmbed embed = null;
 
         if (getEvent() instanceof MessageReceivedEvent) {
-            EmbedBuilder embedBuilder = new EmbedBuilder();
+            var embedBuilder = new EmbedBuilder();
             embedBuilder.setTitle(HEADER);
 
             ExchangeRateProvider rateProvider;
@@ -101,6 +101,7 @@ public class RatesCommand extends BotCommand {
     }
 
     // Visible for testing
+    @SuppressWarnings("all")
     void setBaseCurrencyIsoCode(String baseCurrencyIsoCode) {
         this.baseCurrencyIsoCode = baseCurrencyIsoCode;
     }

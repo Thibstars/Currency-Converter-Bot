@@ -22,7 +22,6 @@ package be.thibaulthelsmoortel.currencyconverterbot.commands;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.candidates.PermissionCandidates;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.converters.PermissionConverter;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.springframework.stereotype.Component;
@@ -37,7 +36,7 @@ import picocli.CommandLine.Parameters;
  */
 @Command(name = "invite", description = "Provides an invitation url for the bot.")
 @Component
-public class InviteCommand extends BotCommand {
+public class InviteCommand extends BotCommand<String> {
 
     @Option(names = {"-p", "--permission"}, description = "Target bot permission.", arity = "0..1")
     private boolean[] permissionsRequested = new boolean[0];
@@ -47,10 +46,10 @@ public class InviteCommand extends BotCommand {
     private Permission[] permissions;
 
     @Override
-    public Object call() {
+    public String call() {
         String message = null;
         if (getEvent() instanceof MessageReceivedEvent) {
-            JDA jda = getEvent().getJDA();
+            var jda = getEvent().getJDA();
 
             if (permissionsRequested.length > 0 && permissions != null && permissions.length > 0) {
                 message = jda.getInviteUrl(permissions);

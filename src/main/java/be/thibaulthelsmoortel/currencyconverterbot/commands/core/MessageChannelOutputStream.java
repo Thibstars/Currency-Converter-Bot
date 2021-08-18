@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 /**
@@ -42,19 +43,20 @@ public class MessageChannelOutputStream extends OutputStream {
         write(new byte[] {(byte) b}, 0, 1);
     }
 
+    @SuppressWarnings("all") // hard null check
     @Override
-    public void write(byte[] b, int off, int len) {
-        String content = b != null ? new String(b, off, len) : null;
+    public void write(byte @NotNull [] b, int off, int len) {
+        if (b == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var content = new String(b, off, len);
         if (StringUtils.isNotBlank(content)) {
-            EmbedBuilder embedBuilder = new EmbedBuilder();
+            var embedBuilder = new EmbedBuilder();
             StringBuilder descriptionBuilder = embedBuilder.getDescriptionBuilder();
             descriptionBuilder.append(content);
             messageChannel.sendMessage(embedBuilder.build()).queue();
         }
-    }
-
-    public MessageChannel getMessageChannel() {
-        return messageChannel;
     }
 
     public void setMessageChannel(MessageChannel messageChannel) {

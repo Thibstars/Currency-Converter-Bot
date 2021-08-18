@@ -33,6 +33,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -58,7 +59,6 @@ class MessageChannelOutputStreamTest extends BaseTest {
         when(messageChannel.sendMessage(any(MessageEmbed.class))).thenReturn(mock(MessageAction.class));
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     @DisplayName("Should write message to channel.")
     @Test
     void shouldWriteMessageToChannel() {
@@ -72,7 +72,6 @@ class MessageChannelOutputStreamTest extends BaseTest {
         verify(messageChannel).sendMessage(embedBuilder.build());
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     @DisplayName("Should write char code to channel.")
     @Test
     void shouldWriteCharCodeToChannel() {
@@ -91,12 +90,20 @@ class MessageChannelOutputStreamTest extends BaseTest {
     @ParameterizedTest(name = INDEX_PLACEHOLDER + ": " + ARGUMENTS_PLACEHOLDER)
     @MethodSource("blankStrings")
     void shouldNotWriteBlankMessageToChannel(String message) {
-        messageChannelOutputStream.write(message != null ? message.getBytes() : null, 0, message != null ? message.length() : 0);
+        messageChannelOutputStream.write(message.getBytes(), 0, message.length());
+
+        verifyNoMoreInteractions(messageChannel);
+    }
+
+    @SuppressWarnings("all")
+    @Test
+    void shouldNotWriteNullMessageToChannel() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> messageChannelOutputStream.write(null, 0, 0), "Shouldn't be able to pass null.");
 
         verifyNoMoreInteractions(messageChannel);
     }
 
     static Stream<String> blankStrings() {
-        return Stream.of("", "   ", null);
+        return Stream.of("", "   ", "\t");
     }
 }

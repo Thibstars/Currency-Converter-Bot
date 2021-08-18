@@ -50,7 +50,7 @@ class AboutCommandTest extends CommandBaseTest {
 
         when(messageChannel.sendMessage(any(MessageEmbed.class))).thenReturn(mock(MessageAction.class));
 
-        MessageEmbed embed = (MessageEmbed) command.call();
+        MessageEmbed embed = command.call();
 
         Assertions.assertNotNull(embed, "Message should not be null.");
         Assertions.assertEquals("Mystery bot by mystery author.", embed.getTitle(), "Message should be correct.");
@@ -73,7 +73,7 @@ class AboutCommandTest extends CommandBaseTest {
 
         when(messageChannel.sendMessage(any(MessageEmbed.class))).thenReturn(mock(MessageAction.class));
 
-        MessageEmbed embed = (MessageEmbed) command.call();
+        MessageEmbed embed = command.call();
 
         Assertions.assertNotNull(embed, "Message should not be null.");
         Assertions.assertEquals(name + " created by " + author + "." + System.lineSeparator() + description, embed.getDescription(), "Message should be correct.");
@@ -95,7 +95,7 @@ class AboutCommandTest extends CommandBaseTest {
 
         when(messageChannel.sendMessage(any(MessageEmbed.class))).thenReturn(mock(MessageAction.class));
 
-        MessageEmbed embed = (MessageEmbed) command.call();
+        MessageEmbed embed = command.call();
 
         Assertions.assertNotNull(embed, "Message should not be null.");
         Assertions.assertEquals("Bot created by " + author + "." + System.lineSeparator() + description, embed.getDescription(), "Message should be correct.");
