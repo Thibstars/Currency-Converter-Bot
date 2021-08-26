@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
  */
 class PermissionCandidatesTest extends BaseTest {
 
+    @SuppressWarnings("all")
     @DisplayName("Should return all existing permissions.")
     @Test
     void shouldReturnAllExistingPermissions() {

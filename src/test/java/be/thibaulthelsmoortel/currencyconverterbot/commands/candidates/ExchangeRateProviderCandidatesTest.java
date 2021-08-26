@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Test;
  */
 class ExchangeRateProviderCandidatesTest extends BaseTest {
 
+    @SuppressWarnings("all")
     @DisplayName("Should return all existing exchange rates.")
     @Test
     void shouldReturnAllExistingExchangeRates() {

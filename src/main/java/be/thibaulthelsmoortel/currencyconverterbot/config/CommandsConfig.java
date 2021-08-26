@@ -45,12 +45,13 @@ public class CommandsConfig {
     }
 
     @Bean
+    @SuppressWarnings({"java:S3740", "rawtypes"})
     public List<BotCommand> commands() {
         Map<String, Object> commands = listableBeanFactory.getBeansWithAnnotation(CommandLine.Command.class);
 
         return commands.values().stream()
-            .filter(command -> command instanceof BotCommand)
-            .map(command -> (BotCommand) command)
+            .filter(BotCommand.class::isInstance)
+            .map(BotCommand.class::cast)
             .collect(Collectors.toList());
     }
 

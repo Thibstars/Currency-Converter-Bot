@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
  */
 class CurrencyConverterBotApplicationTests extends BaseTest {
 
+	@SuppressWarnings("java:S2699") // No assertion required
 	@DisplayName("Should load context.")
 	@Test
 	void shouldLoadContext() {

@@ -36,7 +36,9 @@ import picocli.CommandLine.Command;
  */
 @Command(name = "about", description = "Provides general information about the bot.")
 @Component
-public class AboutCommand extends BotCommand {
+public class AboutCommand extends BotCommand<MessageEmbed> {
+
+    private static final String FALLBACK = "Bot";
 
     private final DiscordBotEnvironment discordBotEnvironment;
 
@@ -46,15 +48,15 @@ public class AboutCommand extends BotCommand {
     }
 
     @Override
-    public Object call() {
+    public MessageEmbed call() {
         MessageEmbed embed = null;
 
         if (getEvent() instanceof MessageReceivedEvent) {
-            EmbedBuilder embedBuilder = new EmbedBuilder();
+            var embedBuilder = new EmbedBuilder();
             if (StringUtils.isAllBlank(discordBotEnvironment.getName(), discordBotEnvironment.getAuthor())) {
                 embedBuilder.setTitle("Mystery bot by mystery author.");
             } else {
-                embedBuilder.setDescription(whenNotBlankPrint(discordBotEnvironment.getName(), "Bot")
+                embedBuilder.setDescription(whenNotBlankPrint(discordBotEnvironment.getName())
                     + (StringUtils.isNotBlank(discordBotEnvironment.getAuthor()) ? " created by " + discordBotEnvironment.getAuthor() + "." : "")
                     + (StringUtils.isNotBlank(discordBotEnvironment.getVersion()) ? " Version: " + discordBotEnvironment.getVersion() : "")
                     + (StringUtils.isNotBlank(discordBotEnvironment.getDescription()) ? System.lineSeparator() + discordBotEnvironment.getDescription() : ""));
@@ -67,11 +69,11 @@ public class AboutCommand extends BotCommand {
         return embed;
     }
 
-    private String whenNotBlankPrint(String toPrint, String fallBack) {
+    private String whenNotBlankPrint(String toPrint) {
         if (StringUtils.isNotBlank(toPrint)) {
             return toPrint;
         } else {
-            return fallBack;
+            return FALLBACK;
         }
     }
 }

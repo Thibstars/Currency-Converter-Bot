@@ -50,7 +50,7 @@ class RateCommandTest extends CommandBaseTest {
     void shouldSendRateMessage() {
         String isoCode = "USD";
         rateCommand.setIsoCode(isoCode);
-        String message = (String) rateCommand.call();
+        String message = rateCommand.call();
 
         Assertions.assertTrue(StringUtils.isNotBlank(message), "Message should not be empty.");
         Assertions.assertTrue(message.contains(isoCode), "Message should contain USD.");
@@ -62,7 +62,7 @@ class RateCommandTest extends CommandBaseTest {
     void shouldSendAppropriateMessageWithUnavailableIsoCode() {
         String isoCode = "myIsoCode";
         rateCommand.setIsoCode(isoCode);
-        String message = (String) rateCommand.call();
+        String message = rateCommand.call();
 
         Assertions.assertTrue(StringUtils.isNotBlank(message), "Message should not be empty.");
         Assertions.assertEquals("Currency ISO code not found.", message, "Message should match.");

@@ -38,7 +38,7 @@ import picocli.CommandLine.Parameters;
  */
 @Command(name = "convert", description = "Converts one currency value to another.")
 @Component
-public class ConvertCommand extends BotCommand {
+public class ConvertCommand extends BotCommand<String> {
 
     @Parameters(description = "Value of the currency to convert.", arity = "1", index = "0")
     private double sourceAmount;
@@ -48,7 +48,7 @@ public class ConvertCommand extends BotCommand {
     private String targetIsoCode;
 
     @Override
-    public Object call() {
+    public String call() {
         String message = null;
 
         if (getEvent() instanceof MessageReceivedEvent) {

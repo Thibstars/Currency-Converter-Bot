@@ -35,21 +35,21 @@ import picocli.CommandLine.Command;
  */
 @Command(name = "help", description = "Provides command usage help.")
 @Component
-public class HelpCommand extends BotCommand {
+public class HelpCommand extends BotCommand<MessageEmbed> {
 
     private final DiscordBotEnvironment discordBotEnvironment;
-    private final List<BotCommand> botCommands;
+    private final List<BotCommand<?>> botCommands;
 
     @Autowired
     public HelpCommand(DiscordBotEnvironment discordBotEnvironment,
-        List<BotCommand> botCommands) {
+        List<BotCommand<?>> botCommands) {
         this.discordBotEnvironment = discordBotEnvironment;
         this.botCommands = botCommands;
     }
 
     @Override
-    public Object call() {
-        EmbedBuilder embedBuilder = new EmbedBuilder();
+    public MessageEmbed call() {
+        var embedBuilder = new EmbedBuilder();
         if (getEvent() instanceof MessageReceivedEvent) {
             StringBuilder descriptionBuilder = embedBuilder.getDescriptionBuilder();
             descriptionBuilder.append("Usage: ").append(discordBotEnvironment.getCommandPrefix()).append("COMMAND [OPTIONS]")
@@ -73,7 +73,7 @@ public class HelpCommand extends BotCommand {
     }
 
     private String parseDescription(Command annotation) {
-        String array = Arrays.toString(annotation.description());
+        var array = Arrays.toString(annotation.description());
         return array.substring(1, array.length() - 1);
     }
 }

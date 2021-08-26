@@ -76,6 +76,7 @@ class DiscordBotRunnerTest extends BaseTest {
         discordBotRunner.setDblApi(dblApi);
     }
 
+    @SuppressWarnings("unchecked")
     @DisplayName("Should handle message received.")
     @Test
     void shouldHandleMessageReceived() {
@@ -111,6 +112,7 @@ class DiscordBotRunnerTest extends BaseTest {
         verify(messageReceivedEvent).getMessage(); // 1 to check processing
     }
 
+    @SuppressWarnings("unchecked")
     @DisplayName("Should process bot messages.")
     @Test
     void shouldProcessBotMessages() {

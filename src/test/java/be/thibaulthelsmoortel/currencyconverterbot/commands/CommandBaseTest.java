@@ -52,6 +52,7 @@ abstract class CommandBaseTest extends BaseTest {
     @Mock
     MessageChannel messageChannel;
 
+    @SuppressWarnings("unchecked")
     @BeforeEach
     void setUp() {
         when(messageReceivedEvent.getChannel()).thenReturn(messageChannel);
@@ -60,7 +61,6 @@ abstract class CommandBaseTest extends BaseTest {
         when(messageChannel.sendMessage(anyString())).thenReturn(mock(MessageAction.class));
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     void verifyOneMessageSent(String message) {
         verify(messageReceivedEvent).getChannel();
         verify(messageChannel).sendMessage(message);
@@ -68,7 +68,6 @@ abstract class CommandBaseTest extends BaseTest {
         verifyNoMoreInteractions(messageReceivedEvent);
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     void verifyOneMessageSent(MessageEmbed embed) {
         verify(messageReceivedEvent).getChannel();
         verify(messageChannel).sendMessage(embed);
@@ -76,7 +75,7 @@ abstract class CommandBaseTest extends BaseTest {
         verifyNoMoreInteractions(messageReceivedEvent);
     }
 
-    void verifyDoNotProcessEvent(BotCommand botCommand, Event event) throws Exception {
+    void verifyDoNotProcessEvent(BotCommand<?> botCommand, Event event) throws Exception {
         botCommand.setEvent(event);
 
         String message = (String) botCommand.call();

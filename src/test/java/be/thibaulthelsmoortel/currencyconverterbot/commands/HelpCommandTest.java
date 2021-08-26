@@ -45,7 +45,7 @@ import picocli.CommandLine.Command;
  */
 class HelpCommandTest extends CommandBaseTest {
 
-    private List<BotCommand> botCommands;
+    private List<BotCommand<?>> botCommands;
 
     @DisplayName("Should send help message.")
     @Test
@@ -64,7 +64,7 @@ class HelpCommandTest extends CommandBaseTest {
         MessageAction messageAction = mock(MessageAction.class);
         when(messageChannel.sendMessage(any(MessageEmbed.class))).thenReturn(messageAction);
 
-        MessageEmbed embedded = (MessageEmbed) command.call();
+        MessageEmbed embedded = command.call();
         Assertions.assertNotNull(embedded, "Message must not be null.");
         Assertions.assertTrue(StringUtils.isNotBlank(embedded.getDescription()), "Description should not be empty.");
         Assertions.assertNotNull(embedded.getFields(), "Message fields must not be null.");

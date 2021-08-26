@@ -29,7 +29,7 @@ import picocli.CommandLine.Command;
  * @author Thibault Helsmoortel
  */
 @Command(mixinStandardHelpOptions = true, versionProvider = VersionProvider.class)
-public abstract class BotCommand implements Callable {
+public abstract class BotCommand<T> implements Callable<T> {
 
     private Event event;
 
