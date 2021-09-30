@@ -5,7 +5,7 @@ WORKDIR /tmp/
 
 RUN mvn clean -Dmaven.test.skip=true package -f pom.xml
 
-FROM adoptopenjdk/openjdk17
+FROM eclipse-temurin:17
 COPY --from=MAVEN_TOOL_CHAIN /tmp/target/*.jar app.jar
 # Make sure to provide an environment variable `BOT_TOKEN`
 ENTRYPOINT exec java -jar /app.jar $BOT_TOKEN $DBL_TOKEN
