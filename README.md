@@ -1,4 +1,4 @@
-# Currency Converter Bot [![Build Status](https://travis-ci.com/Thibstars/Currency-Converter-Bot.svg?branch=master)](https://travis-ci.com/Thibstars/Currency-Converter-Bot) [![codecov](https://codecov.io/gh/Thibstars/Currency-Converter-Bot/branch/master/graph/badge.svg)](https://codecov.io/gh/Thibstars/Currency-Converter-Bot) [![Discord Bots](https://discordbots.org/api/widget/status/563655936263061544.svg)](https://discordbots.org/bot/563655936263061544) # 
+# Currency Converter Bot [![Build Status](https://app.travis-ci.com/Thibstars/Currency-Converter-Bot.svg?branch=master)](https://app.travis-ci.com/Thibstars/Currency-Converter-Bot) [![codecov](https://codecov.io/gh/Thibstars/Currency-Converter-Bot/branch/master/graph/badge.svg)](https://codecov.io/gh/Thibstars/Currency-Converter-Bot) [![Discord Bots](https://discordbots.org/api/widget/status/563655936263061544.svg)](https://discordbots.org/bot/563655936263061544) # 
 Discord bot allowing currency conversions and rates listing.
 
 ## Hosting ##
