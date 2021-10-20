@@ -48,7 +48,7 @@ public class InviteCommand extends BotCommand<String> {
     @Override
     public String call() {
         String message = null;
-        if (getEvent() instanceof MessageReceivedEvent) {
+        if (getEvent() instanceof MessageReceivedEvent messageReceivedEvent) {
             var jda = getEvent().getJDA();
 
             if (permissionsRequested.length > 0 && permissions != null && permissions.length > 0) {
@@ -57,7 +57,7 @@ public class InviteCommand extends BotCommand<String> {
                 message = jda.getInviteUrl(Permission.EMPTY_PERMISSIONS);
             }
 
-            ((MessageReceivedEvent) getEvent()).getChannel().sendMessage(message).queue();
+            messageReceivedEvent.getChannel().sendMessage(message).queue();
         }
 
         reset();
