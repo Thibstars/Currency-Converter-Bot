@@ -51,7 +51,7 @@ public class AboutCommand extends BotCommand<MessageEmbed> {
     public MessageEmbed call() {
         MessageEmbed embed = null;
 
-        if (getEvent() instanceof MessageReceivedEvent) {
+        if (getEvent() instanceof MessageReceivedEvent messageReceivedEvent) {
             var embedBuilder = new EmbedBuilder();
             if (StringUtils.isAllBlank(discordBotEnvironment.getName(), discordBotEnvironment.getAuthor())) {
                 embedBuilder.setTitle("Mystery bot by mystery author.");
@@ -63,7 +63,7 @@ public class AboutCommand extends BotCommand<MessageEmbed> {
             }
 
             embed = embedBuilder.build();
-            ((MessageReceivedEvent) getEvent()).getChannel().sendMessage(embed).queue();
+            messageReceivedEvent.getChannel().sendMessage(embed).queue();
         }
 
         return embed;

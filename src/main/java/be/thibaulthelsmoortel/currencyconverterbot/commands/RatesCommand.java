@@ -61,7 +61,7 @@ public class RatesCommand extends BotCommand<MessageEmbed> {
     public MessageEmbed call() {
         MessageEmbed embed = null;
 
-        if (getEvent() instanceof MessageReceivedEvent) {
+        if (getEvent() instanceof MessageReceivedEvent messageReceivedEvent) {
             var embedBuilder = new EmbedBuilder();
             embedBuilder.setTitle(HEADER);
 
@@ -92,7 +92,7 @@ public class RatesCommand extends BotCommand<MessageEmbed> {
                 exchangeRate -> embedBuilder.addField(exchangeRate.getCurrency().getCurrencyCode(), exchangeRate.getFactor().toString(), true));
 
             embed = embedBuilder.build();
-            ((MessageReceivedEvent) getEvent()).getChannel().sendMessage(embed).queue();
+            messageReceivedEvent.getChannel().sendMessage(embed).queue();
         }
 
         reset();

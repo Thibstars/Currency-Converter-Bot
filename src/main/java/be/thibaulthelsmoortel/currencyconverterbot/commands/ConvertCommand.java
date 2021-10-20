@@ -51,7 +51,7 @@ public class ConvertCommand extends BotCommand<String> {
     public String call() {
         String message = null;
 
-        if (getEvent() instanceof MessageReceivedEvent) {
+        if (getEvent() instanceof MessageReceivedEvent messageReceivedEvent) {
             try {
                 Collection<CurrencyUnit> currencies = Monetary.getCurrencies();
                 CurrencyUnit sourceUnit = currencies.stream()
@@ -74,7 +74,7 @@ public class ConvertCommand extends BotCommand<String> {
                 message = "Input parameters not recognized.";
             }
 
-            ((MessageReceivedEvent) getEvent()).getChannel().sendMessage(message).queue();
+            messageReceivedEvent.getChannel().sendMessage(message).queue();
         }
 
         return message;

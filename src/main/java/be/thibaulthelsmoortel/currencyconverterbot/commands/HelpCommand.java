@@ -50,7 +50,7 @@ public class HelpCommand extends BotCommand<MessageEmbed> {
     @Override
     public MessageEmbed call() {
         var embedBuilder = new EmbedBuilder();
-        if (getEvent() instanceof MessageReceivedEvent) {
+        if (getEvent() instanceof MessageReceivedEvent messageReceivedEvent) {
             StringBuilder descriptionBuilder = embedBuilder.getDescriptionBuilder();
             descriptionBuilder.append("Usage: ").append(discordBotEnvironment.getCommandPrefix()).append("COMMAND [OPTIONS]")
                 .append(String.format("%n%n%s%n%n", discordBotEnvironment.getDescription()))
@@ -64,7 +64,7 @@ public class HelpCommand extends BotCommand<MessageEmbed> {
             });
 
             MessageEmbed embed = embedBuilder.build();
-            ((MessageReceivedEvent) getEvent()).getChannel().sendMessage(embed).queue();
+            messageReceivedEvent.getChannel().sendMessage(embed).queue();
 
             return embed;
         }
