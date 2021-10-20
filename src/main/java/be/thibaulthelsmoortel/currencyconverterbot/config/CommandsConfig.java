@@ -22,7 +22,6 @@ package be.thibaulthelsmoortel.currencyconverterbot.config;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -52,7 +51,7 @@ public class CommandsConfig {
         return commands.values().stream()
             .filter(BotCommand.class::isInstance)
             .map(BotCommand.class::cast)
-            .collect(Collectors.toList());
+            .toList();
     }
 
 }

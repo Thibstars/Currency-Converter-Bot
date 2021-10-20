@@ -20,7 +20,6 @@
 package be.thibaulthelsmoortel.currencyconverterbot.commands.candidates;
 
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.dv8tion.jda.api.Permission;
 
@@ -32,6 +31,6 @@ import net.dv8tion.jda.api.Permission;
 public class PermissionCandidates extends ArrayList<String> {
 
     PermissionCandidates() {
-        super(Stream.of(Permission.values()).map(Enum::toString).collect(Collectors.toList()));
+        super(Stream.of(Permission.values()).map(Enum::toString).toList());
     }
 }
