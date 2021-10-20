@@ -54,7 +54,7 @@ public class RateCommand extends BotCommand<String> {
     @Override
     public String call() {
         String message = null;
-        if (getEvent() instanceof MessageReceivedEvent) {
+        if (getEvent() instanceof MessageReceivedEvent messageReceivedEvent) {
             ExchangeRateProvider rateProvider;
 
             if (providers != null && providers.length > 0) {
@@ -75,7 +75,7 @@ public class RateCommand extends BotCommand<String> {
                 message = "Currency ISO code not found.";
             }
 
-            ((MessageReceivedEvent) getEvent()).getChannel().sendMessage(message).queue();
+            messageReceivedEvent.getChannel().sendMessage(message).queue();
         }
 
         reset();

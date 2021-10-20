@@ -40,10 +40,10 @@ public class DonateCommand extends BotCommand<String> {
     @Override
     public String call() {
         String message = null;
-        if (getEvent() instanceof MessageReceivedEvent) {
+        if (getEvent() instanceof MessageReceivedEvent messageReceivedEvent) {
             message = donationUrl;
 
-            ((MessageReceivedEvent) getEvent()).getChannel().sendMessage(message).queue();
+            messageReceivedEvent.getChannel().sendMessage(message).queue();
         }
 
         return message;
