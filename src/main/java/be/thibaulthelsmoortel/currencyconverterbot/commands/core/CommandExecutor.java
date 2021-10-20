@@ -30,6 +30,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Help;
+import picocli.CommandLine.Help.Ansi;
+import picocli.CommandLine.Help.ColorScheme;
 
 /**
  * Class responsible for command execution.
@@ -75,6 +78,7 @@ public class CommandExecutor {
                     messageChannelOutputStream.setMessageChannel(event.getChannel());
 
                     var commandLine = new CommandLine(command);
+                    commandLine.setColorScheme(Help.defaultColorScheme(Ansi.OFF));
                     commandLine.setOut(printWriter);
                     commandLine.setErr(printWriter);
 
