@@ -94,7 +94,7 @@ public class CommandExecutor {
                 LOGGER.debug("Executed command: {}.", commandMessage);
             } else {
                 LOGGER.debug("Command not recognized: {}.", commandMessage);
-                event.getChannel().sendMessage("Command not recognized...").queue();
+                event.getChannel().sendMessage("Command not recognized... Issue the 'help' command to get an overview of available commands.").queue();
             }
         }
 
