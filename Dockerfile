@@ -3,6 +3,8 @@ COPY pom.xml /tmp/
 COPY src /tmp/src/
 WORKDIR /tmp/
 
+RUN PROJECT_VERSION="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" && echo 'Building version:' $PROJECT_VERSION
+
 RUN mvn clean -Dmaven.test.skip=true package -f pom.xml
 
 FROM eclipse-temurin:17
