@@ -24,13 +24,13 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.5.5</version>
+		<version>2.6.1</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
 	<groupId>be.thibaulthelsmoortel</groupId>
 	<artifactId>currency-converter-bot</artifactId>
-	<version>0.2.4</version>
+	<version>0.2.5</version>
 
 	<name>Currency Converter Bot</name>
 	<description>Discord bot allowing currency conversions and rates listing.</description>
@@ -49,14 +49,14 @@
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 
-		<jda.version>4.3.0_277</jda.version>
+		<jda.version>4.4.0_350</jda.version>
 		<apache.commons.version>3.12.0</apache.commons.version>
-		<picocli.version>4.6.1</picocli.version>
+		<picocli.version>4.6.2</picocli.version>
 		<dbl.version>2.0.1</dbl.version>
 		<moneta.version>1.4.2</moneta.version>
 
 		<junit.version>5.7.2</junit.version>
-		<mockito.junit.version>4.0.0</mockito.junit.version>
+		<mockito.junit.version>4.1.0</mockito.junit.version>
 
 		<jacoco.version>0.8.7</jacoco.version>
 	</properties>
