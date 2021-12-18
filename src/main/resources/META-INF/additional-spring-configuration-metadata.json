@@ -46,6 +46,11 @@
       "type": "java.lang.Boolean",
       "defaultValue": true,
       "description": "Flag defining whether warmup should be performed or not."
+    },
+    {
+      "name": "bot.issues.url",
+      "type": "java.lang.String",
+      "description": "Url for reporting issues."
     }
   ]
 }
