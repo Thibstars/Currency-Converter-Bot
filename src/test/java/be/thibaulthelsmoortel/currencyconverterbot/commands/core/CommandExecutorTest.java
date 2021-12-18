@@ -113,7 +113,7 @@ class CommandExecutorTest extends BaseTest {
 
         // The executor should send back a message:
         verify(messageReceivedEvent).getChannel();
-        verify(messageChannel).sendMessage("Command not recognized...");
+        verify(messageChannel).sendMessage("Command not recognized... Issue the 'help' command to get an overview of available commands.");
         verifyNoMoreInteractions(messageChannel);
         verifyNoMoreInteractions(messageReceivedEvent);
 
