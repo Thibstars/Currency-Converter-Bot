@@ -39,19 +39,19 @@ import org.springframework.beans.factory.annotation.Value;
 /**
  * @author Thibault Helsmoortel
  */
-class DonateCommandTest extends CommandBaseTest {
+class IssuesCommandTest extends CommandBaseTest  {
 
-    private final DonateCommand donateCommand;
+    private final IssuesCommand issuesCommand;
 
-    @Value("${bot.donation.url}")
-    private String donationUrl;
+    @Value("${bot.issues.url}")
+    private String issuesUrl;
 
     @Mock
     private JDA jda;
 
     @Autowired
-    DonateCommandTest(DonateCommand donateCommand) {
-        this.donateCommand = donateCommand;
+    IssuesCommandTest(IssuesCommand issuesCommand) {
+        this.issuesCommand = issuesCommand;
     }
 
     @BeforeEach
@@ -61,15 +61,15 @@ class DonateCommandTest extends CommandBaseTest {
         when(messageChannel.sendMessage(anyString())).thenReturn(mock(MessageAction.class));
     }
 
-    @DisplayName("Should return donation url.")
+    @DisplayName("Should return issues url.")
     @Test
     void shouldReturnInviteUrlWithoutPermissions() {
-        donateCommand.setEvent(messageReceivedEvent);
+        issuesCommand.setEvent(messageReceivedEvent);
 
-        String message = donateCommand.call();
+        String message = issuesCommand.call();
 
-        Assertions.assertNotNull(message, "Donation url must not be null.");
-        Assertions.assertEquals(donationUrl, message, "Donation url must be correct.");
+        Assertions.assertNotNull(message, "Issues url must not be null.");
+        Assertions.assertEquals(issuesUrl, message, "Issues url must be correct.");
 
         verifyOneMessageSent();
     }
@@ -83,6 +83,6 @@ class DonateCommandTest extends CommandBaseTest {
     @DisplayName("Should not process event.")
     @Test
     void shouldNotProcessEvent() throws Exception {
-        verifyDoNotProcessEvent(donateCommand, mock(Event.class));
+        verifyDoNotProcessEvent(issuesCommand, mock(Event.class));
     }
 }

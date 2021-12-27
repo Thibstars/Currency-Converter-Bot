@@ -26,27 +26,26 @@ import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
 
 /**
- * Command providing a donation url.
+ * Basic command providing an url where issues can be reported.
  *
  * @author Thibault Helsmoortel
  */
-@Command(name = "donate", description = "Provides a donation url.")
+@Command(name = "issue", description = "Provides an url where issues can be reported.")
 @Component
-public class DonateCommand extends BotCommand<String> {
+public class IssuesCommand extends BotCommand<String> {
 
-    @Value("${bot.donation.url}")
-    private String donationUrl;
+    @Value("${bot.issues.url}")
+    private String issuesUrl;
 
     @Override
     public String call() {
         String message = null;
         if (getEvent() instanceof MessageReceivedEvent messageReceivedEvent) {
-            message = donationUrl;
+            message = issuesUrl;
 
             messageReceivedEvent.getChannel().sendMessage(message).queue();
         }
 
         return message;
     }
-
 }

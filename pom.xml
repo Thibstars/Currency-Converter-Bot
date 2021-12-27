@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2019 Thibault Helsmoortel.
+  ~ Copyright (c) 2021 Thibault Helsmoortel.
   ~
-  ~ This file is part of Currency Converter Bot.
+  ~  This file is part of Currency Converter Bot.
   ~
-  ~ Currency Converter Bot is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU General Public License as published by
-  ~ the Free Software Foundation, either version 3 of the License, or
-  ~ (at your option) any later version.
+  ~  Currency Converter Bot is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
   ~
-  ~ Currency Converter Bot is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
+  ~  Currency Converter Bot is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
   ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with Currency Converter Bot.  If not, see <https://www.gnu.org/licenses />.
+  ~  You should have received a copy of the GNU General Public License
+  ~  along with Currency Converter Bot.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -24,13 +24,13 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.6.1</version>
+		<version>2.6.2</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
 	<groupId>be.thibaulthelsmoortel</groupId>
 	<artifactId>currency-converter-bot</artifactId>
-	<version>0.2.5</version>
+	<version>0.2.6</version>
 
 	<name>Currency Converter Bot</name>
 	<description>Discord bot allowing currency conversions and rates listing.</description>
@@ -56,7 +56,7 @@
 		<moneta.version>1.4.2</moneta.version>
 
 		<junit.version>5.7.2</junit.version>
-		<mockito.junit.version>4.1.0</mockito.junit.version>
+		<mockito.junit.version>4.2.0</mockito.junit.version>
 
 		<jacoco.version>0.8.7</jacoco.version>
 	</properties>
