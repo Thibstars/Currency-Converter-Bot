@@ -90,8 +90,8 @@
 			<version>${picocli.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.discordbots</groupId>
-			<artifactId>DBL-Java-Library</artifactId>
+			<groupId>com.github.top-gg</groupId>
+			<artifactId>java-sdk</artifactId>
 			<version>${dbl.version}</version>
 		</dependency>
 		<dependency>
@@ -229,11 +229,6 @@
 	</profiles>
 
 	<repositories>
-		<repository>
-			<id>jcenter</id>
-			<name>jcenter-bintray</name>
-			<url>https://jcenter.bintray.com</url>
-		</repository>
 		<repository>
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
