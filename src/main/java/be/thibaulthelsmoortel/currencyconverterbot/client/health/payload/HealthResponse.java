@@ -17,7 +17,7 @@
  *  along with Currency Converter Bot.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package be.thibaulthelsmoortel.currencyconverterbot.client.health;
+package be.thibaulthelsmoortel.currencyconverterbot.client.health.payload;
 
 import lombok.Data;
 import lombok.ToString;
@@ -27,7 +27,7 @@ import lombok.ToString;
  */
 @Data
 @ToString
-public class Health {
+public class HealthResponse {
 
     private String status;
 }

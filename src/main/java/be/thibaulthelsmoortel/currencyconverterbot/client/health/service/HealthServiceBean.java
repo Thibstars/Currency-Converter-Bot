@@ -19,7 +19,7 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.client.health.service;
 
-import be.thibaulthelsmoortel.currencyconverterbot.client.health.Health;
+import be.thibaulthelsmoortel.currencyconverterbot.client.health.payload.HealthResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -38,17 +38,17 @@ public class HealthServiceBean implements HealthService {
     private final WebClient apiClient;
 
     @Override
-    public Health getHealth() {
+    public HealthResponse getHealth() {
         log.info("Fetching health.");
 
-        Mono<Health> ratesMono = apiClient
+        Mono<HealthResponse> ratesMono = apiClient
                 .get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/actuator/health")
                         .build())
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .bodyToMono(Health.class);
+                .bodyToMono(HealthResponse.class);
 
         return ratesMono.block();
     }

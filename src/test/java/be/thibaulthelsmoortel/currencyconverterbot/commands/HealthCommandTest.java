@@ -25,7 +25,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import be.thibaulthelsmoortel.currencyconverterbot.client.health.Health;
+import be.thibaulthelsmoortel.currencyconverterbot.client.health.payload.HealthResponse;
 import be.thibaulthelsmoortel.currencyconverterbot.client.health.service.HealthServiceBean;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.Event;
@@ -37,7 +37,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author Thibault Helsmoortel
@@ -58,14 +57,14 @@ class HealthCommandTest extends CommandBaseTest {
     void shouldReturnHealth() {
         healthCommand.setEvent(messageReceivedEvent);
 
-        Health health = new Health();
-        health.setStatus("UP");
-        Mockito.when(healthServiceBean.getHealth()).thenReturn(health);
+        HealthResponse healthResponse = new HealthResponse();
+        healthResponse.setStatus("UP");
+        Mockito.when(healthServiceBean.getHealth()).thenReturn(healthResponse);
 
         String message = healthCommand.call();
 
         Assertions.assertNotNull(message, "Health must not be null.");
-        Assertions.assertEquals(health.toString(), message, "Health must be correct.");
+        Assertions.assertEquals("Status: " + healthServiceBean.getHealth().getStatus(), message, "Health must be correct.");
 
         verifyOneMessageSent();
     }

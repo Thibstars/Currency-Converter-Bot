@@ -42,7 +42,7 @@ public class HealthCommand extends BotCommand<String> {
     public String call() {
         String message = null;
         if (getEvent() instanceof MessageReceivedEvent messageReceivedEvent) {
-            message = healthServiceBean.getHealth().toString();
+            message = "Status: " + healthServiceBean.getHealth().getStatus();
 
             messageReceivedEvent.getChannel().sendMessage(message).queue();
         }

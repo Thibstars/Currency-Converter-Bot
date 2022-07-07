@@ -19,12 +19,12 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.client.health.service;
 
-import be.thibaulthelsmoortel.currencyconverterbot.client.health.Health;
+import be.thibaulthelsmoortel.currencyconverterbot.client.health.payload.HealthResponse;
 
 /**
  * @author Thibault Helsmoortel
  */
 public interface HealthService {
 
-    Health getHealth();
+    HealthResponse getHealth();
 }
