@@ -55,6 +55,7 @@
 		<dbl.version>2.0.1</dbl.version>
 		<moneta.version>1.4.2</moneta.version>
 		<lombok.version>1.18.24</lombok.version>
+		<javax.servlet-api.version>4.0.1</javax.servlet-api.version>
 
 		<junit.version>5.8.2</junit.version>
 		<mockito.junit.version>4.6.1</mockito.junit.version>
@@ -71,6 +72,10 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -115,6 +120,13 @@
 			<version>${lombok.version}</version>
 			<optional>true</optional>
 		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>${javax.servlet-api.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
