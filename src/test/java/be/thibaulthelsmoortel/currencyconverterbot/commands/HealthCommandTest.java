@@ -27,7 +27,6 @@ import static org.mockito.Mockito.when;
 
 import be.thibaulthelsmoortel.currencyconverterbot.client.health.payload.HealthResponse;
 import be.thibaulthelsmoortel.currencyconverterbot.client.health.service.HealthServiceBean;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.junit.jupiter.api.Assertions;
@@ -45,9 +44,6 @@ class HealthCommandTest extends CommandBaseTest {
 
     @InjectMocks
     private HealthCommand healthCommand;
-
-    @Mock
-    private JDA jda;
 
     @Mock
     private HealthServiceBean healthServiceBean;
@@ -71,7 +67,6 @@ class HealthCommandTest extends CommandBaseTest {
 
     @BeforeEach
     void setUp() {
-        when(messageReceivedEvent.getJDA()).thenReturn(jda);
         when(messageReceivedEvent.getChannel()).thenReturn(messageChannel);
         when(messageChannel.sendMessage(anyString())).thenReturn(mock(MessageAction.class));
     }
