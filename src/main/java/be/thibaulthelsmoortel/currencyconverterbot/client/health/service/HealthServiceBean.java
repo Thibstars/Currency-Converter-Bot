@@ -41,7 +41,7 @@ public class HealthServiceBean implements HealthService {
     public HealthResponse getHealth() {
         log.info("Fetching health.");
 
-        Mono<HealthResponse> ratesMono = apiClient
+        Mono<HealthResponse> healthMono = apiClient
                 .get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/actuator/health")
@@ -50,6 +50,6 @@ public class HealthServiceBean implements HealthService {
                 .retrieve()
                 .bodyToMono(HealthResponse.class);
 
-        return ratesMono.block();
+        return healthMono.block();
     }
 }
