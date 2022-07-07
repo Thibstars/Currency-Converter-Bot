@@ -54,6 +54,7 @@
 		<picocli.version>4.6.3</picocli.version>
 		<dbl.version>2.0.1</dbl.version>
 		<moneta.version>1.4.2</moneta.version>
+		<lombok.version>1.18.24</lombok.version>
 
 		<junit.version>5.8.2</junit.version>
 		<mockito.junit.version>4.6.1</mockito.junit.version>
@@ -70,6 +71,14 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/net.dv8tion/JDA -->
 		<dependency>
@@ -100,7 +109,12 @@
 			<version>${moneta.version}</version>
 			<type>pom</type>
 		</dependency>
-
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>${lombok.version}</version>
+			<optional>true</optional>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
