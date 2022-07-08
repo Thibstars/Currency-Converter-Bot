@@ -19,13 +19,11 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.security.service;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-
 import be.thibaulthelsmoortel.currencyconverterbot.security.service.payload.ApiAuthentication;
 import be.thibaulthelsmoortel.currencyconverterbot.security.service.payload.SigninBody;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -59,10 +57,10 @@ class AuthorizationServiceTest {
     void testFirstTimeAuthorize() {
         RequestBodyUriSpec requestBodyUriSpec = Mockito.mock(RequestBodyUriSpec.class);
         Mockito.when(unauthenticatedApiClient.post()).thenReturn(requestBodyUriSpec);
-        Mockito.when(requestBodyUriSpec.uri(anyString())).thenReturn(requestBodyUriSpec);
+        Mockito.when(requestBodyUriSpec.uri("/auth/signin")).thenReturn(requestBodyUriSpec);
         Mockito.when(requestBodyUriSpec.headers(apiHeaders)).thenReturn(requestBodyUriSpec);
         RequestHeadersSpec requestHeadersSpec = Mockito.mock(RequestHeadersSpec.class);
-        Mockito.when(requestBodyUriSpec.bodyValue(any(SigninBody.class))).thenReturn(requestHeadersSpec);
+        Mockito.when(requestBodyUriSpec.bodyValue(ArgumentMatchers.any(SigninBody.class))).thenReturn(requestHeadersSpec);
         ResponseSpec responseSpec = Mockito.mock(ResponseSpec.class);
         Mockito.when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
         Mono<ApiAuthentication> apiAuthenticationMono = Mockito.mock(Mono.class);
