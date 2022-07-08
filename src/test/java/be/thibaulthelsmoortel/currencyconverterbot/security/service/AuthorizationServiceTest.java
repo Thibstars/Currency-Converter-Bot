@@ -22,6 +22,7 @@ package be.thibaulthelsmoortel.currencyconverterbot.security.service;
 import be.thibaulthelsmoortel.currencyconverterbot.security.service.payload.ApiAuthentication;
 import be.thibaulthelsmoortel.currencyconverterbot.security.service.payload.SigninBody;
 import java.util.function.Consumer;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -63,11 +64,13 @@ class AuthorizationServiceTest {
         Mockito.when(requestBodyUriSpec.bodyValue(ArgumentMatchers.any(SigninBody.class))).thenReturn(requestHeadersSpec);
         ResponseSpec responseSpec = Mockito.mock(ResponseSpec.class);
         Mockito.when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
-        Mono<ApiAuthentication> apiAuthenticationMono = Mockito.mock(Mono.class);
-        Mockito.when(responseSpec.bodyToMono(ApiAuthentication.class)).thenReturn(apiAuthenticationMono);
+        ApiAuthentication apiAuthentication = new ApiAuthentication();
+        apiAuthentication.setAccessToken("access");
+        Mockito.when(responseSpec.bodyToMono(ApiAuthentication.class)).thenReturn(Mono.just(apiAuthentication));
 
-        authorizationService.authorize();
+        String result = authorizationService.authorize();
 
-        Mockito.verify(apiAuthenticationMono).block();
+        Assertions.assertNotNull(result, "Result must not be null.");
+        Assertions.assertEquals(apiAuthentication.getAccessToken(), result, "Response must be correct.");
     }
 }
