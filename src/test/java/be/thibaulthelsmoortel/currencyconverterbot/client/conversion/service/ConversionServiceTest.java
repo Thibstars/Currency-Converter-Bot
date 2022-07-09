@@ -19,47 +19,26 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.client.conversion.service;
 
-import be.thibaulthelsmoortel.currencyconverterbot.BaseTest;
+import be.thibaulthelsmoortel.currencyconverterbot.client.ClientBaseTest;
 import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.payload.ConversionRequest;
 import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.payload.ConversionResponse;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpHeaders;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClient.RequestHeadersUriSpec;
 import org.springframework.web.reactive.function.client.WebClient.ResponseSpec;
 import org.springframework.web.util.DefaultUriBuilderFactory;
-import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
 
 /**
  * @author Thibault Helsmoortel
  */
-class ConversionServiceTest extends BaseTest {
+class ConversionServiceTest extends ClientBaseTest {
 
     @Autowired
     private ConversionService conversionService;
-
-    @Qualifier("apiClient")
-    @MockBean
-    private WebClient apiClient;
-
-    @MockBean
-    private Consumer<HttpHeaders> apiHeaders;
-
-    @Captor
-    private ArgumentCaptor<Function<UriBuilder, URI>> argumentCaptor;
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
@@ -75,9 +54,9 @@ class ConversionServiceTest extends BaseTest {
         conversionResponse.setResult(result);
 
         RequestHeadersUriSpec requestHeadersUriSpec = Mockito.mock(RequestHeadersUriSpec.class);
-        Mockito.when(apiClient.get()).thenReturn(requestHeadersUriSpec);
-        Mockito.when(requestHeadersUriSpec.uri(argumentCaptor.capture())).thenReturn(requestHeadersUriSpec);
-        Mockito.when(requestHeadersUriSpec.headers(apiHeaders)).thenReturn(requestHeadersUriSpec);
+        Mockito.when(getApiClient().get()).thenReturn(requestHeadersUriSpec);
+        Mockito.when(requestHeadersUriSpec.uri(getUriFunctionCaptor().capture())).thenReturn(requestHeadersUriSpec);
+        Mockito.when(requestHeadersUriSpec.headers(getApiHeaders())).thenReturn(requestHeadersUriSpec);
         ResponseSpec responseSpec = Mockito.mock(ResponseSpec.class);
         Mockito.when(requestHeadersUriSpec.retrieve()).thenReturn(responseSpec);
 
@@ -91,11 +70,8 @@ class ConversionServiceTest extends BaseTest {
 
         ConversionResponse response = conversionService.getConversion(conversionRequest);
 
-        URI uri = argumentCaptor.getValue().apply(new DefaultUriBuilderFactory().builder());
-        Assertions.assertEquals(
-                "/v1/convert",
-                uri.getPath(),
-                "Called path must be correct.");
+        URI uri = getUri();
+        assertPathEquals(uri, "/v1/convert");
 
         assertParamValueEquals(uri, "sourceAmount", String.valueOf(conversionRequest.getSourceAmount()));
         assertParamValueEquals(uri, "sourceIsoCode", conversionRequest.getSourceIsoCode());
@@ -104,12 +80,5 @@ class ConversionServiceTest extends BaseTest {
         Assertions.assertNotNull(response, "Result must not be null.");
         Assertions.assertEquals(conversionResponse, response, "Response must be correct.");
         Assertions.assertEquals(result, response.getResult(), "Result amount must be correct.");
-    }
-
-    private void assertParamValueEquals(URI uri, String paramName, String paramValue) {
-        Assertions.assertTrue(URLEncodedUtils.parse(uri, StandardCharsets.UTF_8).stream()
-                        .filter(param -> param.getName().equals(paramName))
-                        .anyMatch(param -> param.getValue().equals(paramValue)),
-                "Could not find matching value for parameter: " + paramName);
     }
 }

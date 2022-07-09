@@ -20,6 +20,7 @@
 package be.thibaulthelsmoortel.currencyconverterbot.client.health.service;
 
 import be.thibaulthelsmoortel.currencyconverterbot.BaseTest;
+import be.thibaulthelsmoortel.currencyconverterbot.client.ClientBaseTest;
 import be.thibaulthelsmoortel.currencyconverterbot.client.health.payload.HealthResponse;
 import java.net.URI;
 import java.util.function.Consumer;
@@ -45,20 +46,10 @@ import reactor.core.publisher.Mono;
 /**
  * @author Thibault Helsmoortel
  */
-class HealthServiceTest extends BaseTest {
+class HealthServiceTest extends ClientBaseTest {
 
     @Autowired
     private HealthServiceBean healthService;
-
-    @Qualifier("apiClient")
-    @MockBean
-    private WebClient apiClient;
-
-    @MockBean
-    private Consumer<HttpHeaders> apiHeaders;
-
-    @Captor
-    private ArgumentCaptor<Function<UriBuilder, URI>> argumentCaptor;
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
@@ -67,9 +58,9 @@ class HealthServiceTest extends BaseTest {
         healthResponse.setStatus("UP");
 
         RequestHeadersUriSpec requestHeadersUriSpec = Mockito.mock(RequestHeadersUriSpec.class);
-        Mockito.when(apiClient.get()).thenReturn(requestHeadersUriSpec);
-        Mockito.when(requestHeadersUriSpec.uri(argumentCaptor.capture())).thenReturn(requestHeadersUriSpec);
-        Mockito.when(requestHeadersUriSpec.headers(apiHeaders)).thenReturn(requestHeadersUriSpec);
+        Mockito.when(getApiClient().get()).thenReturn(requestHeadersUriSpec);
+        Mockito.when(requestHeadersUriSpec.uri(getUriFunctionCaptor().capture())).thenReturn(requestHeadersUriSpec);
+        Mockito.when(requestHeadersUriSpec.headers(getApiHeaders())).thenReturn(requestHeadersUriSpec);
         RequestHeadersSpec requestHeadersSpec = Mockito.mock(RequestHeadersSpec.class);
         Mockito.when(requestHeadersUriSpec.accept(MediaType.APPLICATION_JSON)).thenReturn(requestHeadersSpec);
         ResponseSpec responseSpec = Mockito.mock(ResponseSpec.class);
@@ -80,10 +71,7 @@ class HealthServiceTest extends BaseTest {
 
         HealthResponse result = healthService.getHealth();
 
-        Assertions.assertEquals(
-                "/actuator/health",
-                argumentCaptor.getValue().apply(new DefaultUriBuilderFactory().builder()).getPath(),
-                "Called path must be correct.");
+        assertPathEquals(getUri(), "/actuator/health");
 
         Assertions.assertNotNull(result, "Result must not be null.");
         Assertions.assertEquals(healthResponse, result, "Response must be correct.");
