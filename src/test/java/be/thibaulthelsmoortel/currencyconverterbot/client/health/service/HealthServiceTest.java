@@ -21,7 +21,6 @@ package be.thibaulthelsmoortel.currencyconverterbot.client.health.service;
 
 import be.thibaulthelsmoortel.currencyconverterbot.BaseTest;
 import be.thibaulthelsmoortel.currencyconverterbot.client.health.payload.HealthResponse;
-import be.thibaulthelsmoortel.currencyconverterbot.security.service.payload.ApiAuthentication;
 import java.net.URI;
 import java.util.function.Consumer;
 import java.util.function.Function;
