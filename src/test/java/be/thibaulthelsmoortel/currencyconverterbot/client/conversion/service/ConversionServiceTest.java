@@ -70,12 +70,11 @@ class ConversionServiceTest extends ClientBaseTest {
 
         ConversionResponse response = conversionService.getConversion(conversionRequest);
 
-        URI uri = getUri();
-        assertPathEquals(uri, "/v1/convert");
+        assertPathEquals("/v1/convert");
 
-        assertParamValueEquals(uri, "sourceAmount", String.valueOf(conversionRequest.getSourceAmount()));
-        assertParamValueEquals(uri, "sourceIsoCode", conversionRequest.getSourceIsoCode());
-        assertParamValueEquals(uri, "targetIsoCode", conversionRequest.getTargetIsoCode());
+        assertParamValueEquals("sourceAmount", String.valueOf(conversionRequest.getSourceAmount()));
+        assertParamValueEquals("sourceIsoCode", conversionRequest.getSourceIsoCode());
+        assertParamValueEquals("targetIsoCode", conversionRequest.getTargetIsoCode());
 
         Assertions.assertNotNull(response, "Result must not be null.");
         Assertions.assertEquals(conversionResponse, response, "Response must be correct.");

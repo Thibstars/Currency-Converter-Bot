@@ -56,16 +56,16 @@ public abstract class ClientBaseTest extends BaseTest {
         return getUriFunctionCaptor().getValue().apply(new DefaultUriBuilderFactory().builder());
     }
 
-    public void assertPathEquals(URI uri, String path) {
+    public void assertPathEquals(String path) {
         Assertions.assertEquals(
                 path,
-                uri.getPath(),
+                getUri().getPath(),
                 "Called path must be correct."
         );
     }
 
-    public void assertParamValueEquals(URI uri, String paramName, String paramValue) {
-        Assertions.assertTrue(URLEncodedUtils.parse(uri, StandardCharsets.UTF_8).stream()
+    public void assertParamValueEquals(String paramName, String paramValue) {
+        Assertions.assertTrue(URLEncodedUtils.parse(getUri(), StandardCharsets.UTF_8).stream()
                         .filter(param -> param.getName().equals(paramName))
                         .anyMatch(param -> param.getValue().equals(paramValue)),
                 "Could not find matching value for parameter: " + paramName);

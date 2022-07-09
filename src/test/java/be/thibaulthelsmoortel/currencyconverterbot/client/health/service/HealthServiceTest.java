@@ -19,28 +19,16 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.client.health.service;
 
-import be.thibaulthelsmoortel.currencyconverterbot.BaseTest;
 import be.thibaulthelsmoortel.currencyconverterbot.client.ClientBaseTest;
 import be.thibaulthelsmoortel.currencyconverterbot.client.health.payload.HealthResponse;
-import java.net.URI;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClient.RequestHeadersSpec;
 import org.springframework.web.reactive.function.client.WebClient.RequestHeadersUriSpec;
 import org.springframework.web.reactive.function.client.WebClient.ResponseSpec;
-import org.springframework.web.util.DefaultUriBuilderFactory;
-import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
 
 /**
@@ -71,7 +59,7 @@ class HealthServiceTest extends ClientBaseTest {
 
         HealthResponse result = healthService.getHealth();
 
-        assertPathEquals(getUri(), "/actuator/health");
+        assertPathEquals("/actuator/health");
 
         Assertions.assertNotNull(result, "Result must not be null.");
         Assertions.assertEquals(healthResponse, result, "Response must be correct.");
