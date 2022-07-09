@@ -21,25 +21,34 @@ package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
 import static org.mockito.Mockito.mock;
 
+import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.service.ConversionService;
+import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.service.ConversionServiceBean;
 import net.dv8tion.jda.api.events.Event;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 
 /**
  * @author Thibault Helsmoortel
  */
 class ConvertCommandTest extends CommandBaseTest {
 
+    @InjectMocks
     private ConvertCommand convertCommand;
+
+    @Mock
+    private ConversionServiceBean conversionServiceBean;
 
     @Override
     @BeforeEach
     void setUp() {
         super.setUp();
-        this.convertCommand = new ConvertCommand();
+        this.convertCommand = new ConvertCommand(Mockito.mock(ConversionService.class));
         convertCommand.setEvent(messageReceivedEvent);
     }
 

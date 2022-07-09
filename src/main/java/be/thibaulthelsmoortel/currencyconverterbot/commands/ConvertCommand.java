@@ -19,16 +19,14 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
+import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.payload.ConversionRequest;
+import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.payload.ConversionResponse;
+import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.service.ConversionService;
+import be.thibaulthelsmoortel.currencyconverterbot.commands.converters.LowerToUpperCaseConverter;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
-import java.util.Collection;
 import java.util.NoSuchElementException;
-import javax.money.CurrencyUnit;
-import javax.money.Monetary;
-import javax.money.MonetaryAmount;
-import javax.money.convert.CurrencyConversion;
-import javax.money.convert.MonetaryConversions;
+import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import org.javamoney.moneta.Money;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
@@ -36,16 +34,19 @@ import picocli.CommandLine.Parameters;
 /**
  * @author Thibault Helsmoortel
  */
+@RequiredArgsConstructor
 @Command(name = "convert", description = "Converts one currency value to another.")
 @Component
 public class ConvertCommand extends BotCommand<String> {
 
     @Parameters(description = "Value of the currency to convert.", arity = "1", index = "0")
     private double sourceAmount;
-    @Parameters(description = "ISO code of the source currency.", arity = "1", index = "1")
+    @Parameters(description = "ISO code of the source currency.", arity = "1", index = "1", converter = LowerToUpperCaseConverter.class)
     private String sourceIsoCode;
-    @Parameters(description = "ISO code of the target currency.", arity = "1", index = "2")
+    @Parameters(description = "ISO code of the target currency.", arity = "1", index = "2", converter = LowerToUpperCaseConverter.class)
     private String targetIsoCode;
+
+    private final ConversionService conversionService;
 
     @Override
     public String call() {
@@ -53,23 +54,14 @@ public class ConvertCommand extends BotCommand<String> {
 
         if (getEvent() instanceof MessageReceivedEvent messageReceivedEvent) {
             try {
-                Collection<CurrencyUnit> currencies = Monetary.getCurrencies();
-                CurrencyUnit sourceUnit = currencies.stream()
-                    .filter(unit -> unit.getCurrencyCode().equalsIgnoreCase(sourceIsoCode))
-                    .findFirst()
-                    .orElseThrow();
+                ConversionRequest conversionRequest = new ConversionRequest();
+                conversionRequest.setSourceAmount(sourceAmount);
+                conversionRequest.setSourceIsoCode(sourceIsoCode);
+                conversionRequest.setTargetIsoCode(targetIsoCode);
 
-                CurrencyUnit targetUnit =
-                    currencies.stream()
-                        .filter(unit -> unit.getCurrencyCode().equalsIgnoreCase(targetIsoCode))
-                        .findFirst()
-                        .orElseThrow();
+                ConversionResponse conversion = conversionService.getConversion(conversionRequest);
 
-                CurrencyConversion conversion = MonetaryConversions.getConversion(targetUnit);
-
-                MonetaryAmount monetarySourceAmount = Money.of(sourceAmount, sourceUnit);
-
-                message = sourceAmount + " " + sourceIsoCode.toUpperCase() + " = " + monetarySourceAmount.with(conversion).toString();
+                message = sourceAmount + " " + sourceIsoCode.toUpperCase() + " = " + conversion.getResult();
             } catch (NoSuchElementException e) {
                 message = "Input parameters not recognized.";
             }
