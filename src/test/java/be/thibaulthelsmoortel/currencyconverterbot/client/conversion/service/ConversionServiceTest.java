@@ -22,14 +22,13 @@ package be.thibaulthelsmoortel.currencyconverterbot.client.conversion.service;
 import be.thibaulthelsmoortel.currencyconverterbot.client.ClientBaseTest;
 import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.payload.ConversionRequest;
 import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.payload.ConversionResponse;
-import java.net.URI;
+import java.math.BigDecimal;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.reactive.function.client.WebClient.RequestHeadersUriSpec;
 import org.springframework.web.reactive.function.client.WebClient.ResponseSpec;
-import org.springframework.web.util.DefaultUriBuilderFactory;
 import reactor.core.publisher.Mono;
 
 /**
@@ -43,10 +42,10 @@ class ConversionServiceTest extends ClientBaseTest {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void shouldGetConversion() {
-        int sourceAmount = 1;
+        BigDecimal sourceAmount = BigDecimal.ONE;
         String sourceIsoCode = "EUR";
         String targetIsoCode = "USD";
-        int result = 5;
+        BigDecimal result = BigDecimal.valueOf(5);
         ConversionResponse conversionResponse = new ConversionResponse();
         conversionResponse.setSourceAmount(sourceAmount);
         conversionResponse.setSourceIsoCode(sourceIsoCode);

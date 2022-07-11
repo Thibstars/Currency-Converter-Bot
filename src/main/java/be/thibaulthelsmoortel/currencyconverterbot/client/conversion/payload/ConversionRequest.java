@@ -19,7 +19,9 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.client.conversion.payload;
 
+import java.math.BigDecimal;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 /**
@@ -27,9 +29,10 @@ import lombok.ToString;
  */
 @Data
 @ToString
+@EqualsAndHashCode()
 public class ConversionRequest {
 
-    private double sourceAmount;
+    private BigDecimal sourceAmount;
 
     private String sourceIsoCode;
 

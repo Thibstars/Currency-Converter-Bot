@@ -24,7 +24,7 @@ import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.payload.Con
 import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.service.ConversionService;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.converters.LowerToUpperCaseConverter;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
-import java.util.NoSuchElementException;
+import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.springframework.stereotype.Component;
@@ -40,7 +40,7 @@ import picocli.CommandLine.Parameters;
 public class ConvertCommand extends BotCommand<String> {
 
     @Parameters(description = "Value of the currency to convert.", arity = "1", index = "0")
-    private double sourceAmount;
+    private BigDecimal sourceAmount;
     @Parameters(description = "ISO code of the source currency.", arity = "1", index = "1", converter = LowerToUpperCaseConverter.class)
     private String sourceIsoCode;
     @Parameters(description = "ISO code of the target currency.", arity = "1", index = "2", converter = LowerToUpperCaseConverter.class)
@@ -53,17 +53,17 @@ public class ConvertCommand extends BotCommand<String> {
         String message = null;
 
         if (getEvent() instanceof MessageReceivedEvent messageReceivedEvent) {
-            try {
-                ConversionRequest conversionRequest = new ConversionRequest();
-                conversionRequest.setSourceAmount(sourceAmount);
-                conversionRequest.setSourceIsoCode(sourceIsoCode);
-                conversionRequest.setTargetIsoCode(targetIsoCode);
+            ConversionRequest conversionRequest = new ConversionRequest();
+            conversionRequest.setSourceAmount(sourceAmount);
+            conversionRequest.setSourceIsoCode(sourceIsoCode);
+            conversionRequest.setTargetIsoCode(targetIsoCode);
 
-                ConversionResponse conversion = conversionService.getConversion(conversionRequest);
+            ConversionResponse conversion = conversionService.getConversion(conversionRequest);
 
-                message = sourceAmount + " " + sourceIsoCode.toUpperCase() + " = " + conversion.getResult();
-            } catch (NoSuchElementException e) {
-                message = "Input parameters not recognized.";
+            if (conversion != null && conversion.getResult() != null) {
+                message = sourceAmount + " " + sourceIsoCode.toUpperCase() + " = " + conversion.getResult() + " " + targetIsoCode.toUpperCase();
+            } else {
+                message = "Unable to perform the conversion request. Please verify the input parameters and try again. If the issue persists, please make sure to report the issue via the '/issue' command.";
             }
 
             messageReceivedEvent.getChannel().sendMessage(message).queue();
@@ -73,7 +73,7 @@ public class ConvertCommand extends BotCommand<String> {
     }
 
     // Visible for testing
-    void setSourceAmount(double sourceAmount) {
+    void setSourceAmount(BigDecimal sourceAmount) {
         this.sourceAmount = sourceAmount;
     }
 

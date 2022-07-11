@@ -21,8 +21,10 @@ package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
 import static org.mockito.Mockito.mock;
 
-import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.service.ConversionService;
+import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.payload.ConversionRequest;
+import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.payload.ConversionResponse;
 import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.service.ConversionServiceBean;
+import java.math.BigDecimal;
 import net.dv8tion.jda.api.events.Event;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
@@ -48,43 +50,64 @@ class ConvertCommandTest extends CommandBaseTest {
     @BeforeEach
     void setUp() {
         super.setUp();
-        this.convertCommand = new ConvertCommand(Mockito.mock(ConversionService.class));
+        this.convertCommand = new ConvertCommand(conversionServiceBean);
         convertCommand.setEvent(messageReceivedEvent);
     }
 
     @DisplayName("Should send convert message.")
     @Test
     void shouldSendConvertMessage() {
+        BigDecimal sourceAmount = BigDecimal.ONE;
         String usdIso = "USD";
         String eurIso = "EUR";
 
-        convertCommand.setSourceAmount(1);
+        convertCommand.setSourceAmount(sourceAmount);
         convertCommand.setSourceIsoCode(usdIso);
         convertCommand.setTargetIsoCode(eurIso);
+
+        ConversionRequest conversionRequest = new ConversionRequest();
+        conversionRequest.setSourceAmount(sourceAmount);
+        conversionRequest.setSourceIsoCode(usdIso);
+        conversionRequest.setTargetIsoCode(eurIso);
+
+        ConversionResponse conversionResponse = new ConversionResponse();
+        conversionResponse.setResult(BigDecimal.valueOf(3.33));
+        Mockito.when(conversionServiceBean.getConversion(conversionRequest)).thenReturn(conversionResponse);
 
         String message = convertCommand.call();
 
         Assertions.assertTrue(StringUtils.isNotBlank(message), "Message should not be empty.");
         Assertions.assertTrue(message.contains(eurIso), "Message should contain EUR.");
         Assertions.assertTrue(message.contains(usdIso), "Message should contain USD.");
+        Assertions.assertTrue(message.contains(String.valueOf(conversionResponse.getResult())),
+                "Message should contain result.");
         verifyOneMessageSent(message);
     }
 
-    @DisplayName("Should send input not recognized message.")
+    @DisplayName("Should send error message.")
     @Test
-    void shouldSendInputNotRecognizedMessage() {
+    void shouldSendErrorMessage() {
+        BigDecimal sourceAmount = BigDecimal.valueOf(6);
         String usdIso = "USD";
-
         String unrecognizedIsoCode = "Karman";
 
-        convertCommand.setSourceAmount(6);
+        convertCommand.setSourceAmount(sourceAmount);
         convertCommand.setSourceIsoCode(usdIso);
         convertCommand.setTargetIsoCode(unrecognizedIsoCode);
+
+        ConversionRequest conversionRequest = new ConversionRequest();
+        conversionRequest.setSourceAmount(sourceAmount);
+        conversionRequest.setSourceIsoCode(usdIso);
+        conversionRequest.setTargetIsoCode(unrecognizedIsoCode);
+
+        Mockito.when(conversionServiceBean.getConversion(conversionRequest)).thenReturn(null);
 
         String message = convertCommand.call();
 
         Assertions.assertTrue(StringUtils.isNotBlank(message), "Message should not be empty.");
-        Assertions.assertEquals("Input parameters not recognized.", message, "Message should match.");
+        Assertions.assertEquals(
+                "Unable to perform the conversion request. Please verify the input parameters and try again. If the issue persists, please make sure to report the issue via the '/issue' command.",
+                message, "Message should match.");
         verifyOneMessageSent(message);
     }
 
