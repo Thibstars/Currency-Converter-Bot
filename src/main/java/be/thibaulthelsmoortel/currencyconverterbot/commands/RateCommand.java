@@ -62,7 +62,7 @@ public class RateCommand extends BotCommand<String> {
             if (rate != null && rate.getResult() != null) {
                 message = "1" + baseCurrencyIsoCode.toUpperCase() + " = " + rate.getResult() + " " + isoCode.toUpperCase();
             } else {
-                message = "Unable to perform the rate request. Please verify the input parameters and try again. If the issue persists, please make sure to report the issue via the '/issue' command.";
+                message = "Unable to perform the rate request. Please verify the input parameters and try again. If the issue persists, please make sure to report the issue via the 'issue' command.";
             }
 
             messageReceivedEvent.getChannel().sendMessage(message).queue();

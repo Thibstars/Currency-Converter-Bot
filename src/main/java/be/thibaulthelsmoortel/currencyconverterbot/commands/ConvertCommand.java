@@ -63,7 +63,7 @@ public class ConvertCommand extends BotCommand<String> {
             if (conversion != null && conversion.getResult() != null) {
                 message = sourceAmount + " " + sourceIsoCode.toUpperCase() + " = " + conversion.getResult() + " " + targetIsoCode.toUpperCase();
             } else {
-                message = "Unable to perform the conversion request. Please verify the input parameters and try again. If the issue persists, please make sure to report the issue via the '/issue' command.";
+                message = "Unable to perform the conversion request. Please verify the input parameters and try again. If the issue persists, please make sure to report the issue via the 'issue' command.";
             }
 
             messageReceivedEvent.getChannel().sendMessage(message).queue();

@@ -104,7 +104,7 @@ class ConvertCommandTest extends CommandBaseTest {
 
         Assertions.assertTrue(StringUtils.isNotBlank(message), "Message should not be empty.");
         Assertions.assertEquals(
-                "Unable to perform the conversion request. Please verify the input parameters and try again. If the issue persists, please make sure to report the issue via the '/issue' command.",
+                "Unable to perform the conversion request. Please verify the input parameters and try again. If the issue persists, please make sure to report the issue via the 'issue' command.",
                 message, "Message should match.");
         verifyOneMessageSent(message);
     }
