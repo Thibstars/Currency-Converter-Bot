@@ -63,7 +63,7 @@ public class AboutCommand extends BotCommand<MessageEmbed> {
             }
 
             embed = embedBuilder.build();
-            messageReceivedEvent.getChannel().sendMessage(embed).queue();
+            messageReceivedEvent.getChannel().sendMessageEmbeds(embed).queue();
         }
 
         return embed;

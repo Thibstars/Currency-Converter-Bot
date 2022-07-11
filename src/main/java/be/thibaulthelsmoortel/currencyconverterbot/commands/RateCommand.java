@@ -19,14 +19,13 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
-import be.thibaulthelsmoortel.currencyconverterbot.commands.candidates.ExchangeRateProviderCandidates;
+import be.thibaulthelsmoortel.currencyconverterbot.client.rate.payload.RateRequest;
+import be.thibaulthelsmoortel.currencyconverterbot.client.rate.payload.RateResponse;
+import be.thibaulthelsmoortel.currencyconverterbot.client.rate.service.RateService;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.converters.LowerToUpperCaseConverter;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
-import javax.money.UnknownCurrencyException;
-import javax.money.convert.ExchangeRateProvider;
-import javax.money.convert.MonetaryConversions;
+import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import org.javamoney.moneta.Money;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -35,6 +34,7 @@ import picocli.CommandLine.Parameters;
 /**
  * @author Thibault Helsmoortel
  */
+@RequiredArgsConstructor
 @Command(name = "rate", description = "Provides current currency rate.")
 @Component
 public class RateCommand extends BotCommand<String> {
@@ -47,38 +47,26 @@ public class RateCommand extends BotCommand<String> {
     converter = LowerToUpperCaseConverter.class)
     private String baseCurrencyIsoCode;
 
-    @Option(names = {"-p", "--providers"}, paramLabel = "PROVIDERS", description = "Exchange rate providers. Candidates: ${COMPLETION-CANDIDATES}", arity = "0..*",
-        completionCandidates = ExchangeRateProviderCandidates.class, converter = LowerToUpperCaseConverter.class)
-    private String[] providers;
+    private final RateService rateService;
 
     @Override
     public String call() {
         String message = null;
         if (getEvent() instanceof MessageReceivedEvent messageReceivedEvent) {
-            ExchangeRateProvider rateProvider;
+            RateRequest rateRequest = new RateRequest();
+            rateRequest.setBaseIsoCode(baseCurrencyIsoCode);
+            rateRequest.setTargetIsoCode(isoCode);
 
-            if (providers != null && providers.length > 0) {
-                rateProvider = MonetaryConversions.getExchangeRateProvider(providers);
+            RateResponse rate = rateService.getRate(rateRequest);
+
+            if (rate != null && rate.getResult() != null) {
+                message = "1" + baseCurrencyIsoCode.toUpperCase() + " = " + rate.getResult() + " " + isoCode.toUpperCase();
             } else {
-                rateProvider = MonetaryConversions.getExchangeRateProvider();
-            }
-
-            try {
-                if (baseCurrencyIsoCode != null && rateProvider.isAvailable(baseCurrencyIsoCode, isoCode)) {
-                    var exchangeRate = rateProvider.getExchangeRate(baseCurrencyIsoCode, isoCode);
-                    var result = Money.of(exchangeRate.getFactor(), exchangeRate.getCurrency());
-                    message = result.toString();
-                } else {
-                    message = "Couldn't find rate for specified ISO code.";
-                }
-            } catch (UnknownCurrencyException e) {
-                message = "Currency ISO code not found.";
+                message = "Unable to perform the rate request. Please verify the input parameters and try again. If the issue persists, please make sure to report the issue via the '/issue' command.";
             }
 
             messageReceivedEvent.getChannel().sendMessage(message).queue();
         }
-
-        reset();
 
         return message;
     }
@@ -86,10 +74,6 @@ public class RateCommand extends BotCommand<String> {
     // Visible for testing
     void setIsoCode(String isoCode) {
         this.isoCode = isoCode;
-    }
-
-    private void reset() {
-        providers = null;
     }
 
     // Visible for testing

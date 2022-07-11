@@ -67,7 +67,7 @@ class CommandExecutorTest extends BaseTest {
         when(messageReceivedEvent.getChannel()).thenReturn(messageChannel);
         MessageAction messageAction = mock(MessageAction.class);
         when(messageChannel.sendMessage(anyString())).thenReturn(messageAction);
-        when(messageChannel.sendMessage(any(MessageEmbed.class))).thenReturn(messageAction);
+        when(messageChannel.sendMessageEmbeds(any(MessageEmbed.class))).thenReturn(messageAction);
     }
 
     @DisplayName("Should execute command.")
@@ -80,7 +80,7 @@ class CommandExecutorTest extends BaseTest {
 
         // Assuming the command sends a message back:
         verify(messageReceivedEvent, times(2)).getChannel(); // Once for sending the message, once to pass to the output stream
-        verify(messageChannel).sendMessage(any(MessageEmbed.class));
+        verify(messageChannel).sendMessageEmbeds(any(MessageEmbed.class));
         verifyNoMoreInteractions(messageChannel);
         verifyNoMoreInteractions(messageReceivedEvent);
 
@@ -97,7 +97,7 @@ class CommandExecutorTest extends BaseTest {
 
         // Assuming the command sends a message back:
         verify(messageReceivedEvent).getChannel(); // Once for sending the message, once to pass to the output stream
-        verify(messageChannel).sendMessage(any(MessageEmbed.class));
+        verify(messageChannel).sendMessageEmbeds(any(MessageEmbed.class));
         verifyNoMoreInteractions(messageChannel);
         verifyNoMoreInteractions(messageReceivedEvent);
 

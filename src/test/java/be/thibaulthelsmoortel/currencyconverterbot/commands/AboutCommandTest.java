@@ -48,7 +48,7 @@ class AboutCommandTest extends CommandBaseTest {
         AboutCommand command = new AboutCommand(discordBotEnvironment);
         command.setEvent(messageReceivedEvent);
 
-        when(messageChannel.sendMessage(any(MessageEmbed.class))).thenReturn(mock(MessageAction.class));
+        when(messageChannel.sendMessageEmbeds(any(MessageEmbed.class))).thenReturn(mock(MessageAction.class));
 
         MessageEmbed embed = command.call();
 
@@ -71,7 +71,7 @@ class AboutCommandTest extends CommandBaseTest {
         AboutCommand command = new AboutCommand(discordBotEnvironment);
         command.setEvent(messageReceivedEvent);
 
-        when(messageChannel.sendMessage(any(MessageEmbed.class))).thenReturn(mock(MessageAction.class));
+        when(messageChannel.sendMessageEmbeds(any(MessageEmbed.class))).thenReturn(mock(MessageAction.class));
 
         MessageEmbed embed = command.call();
 
@@ -93,7 +93,7 @@ class AboutCommandTest extends CommandBaseTest {
         AboutCommand command = new AboutCommand(discordBotEnvironment);
         command.setEvent(messageReceivedEvent);
 
-        when(messageChannel.sendMessage(any(MessageEmbed.class))).thenReturn(mock(MessageAction.class));
+        when(messageChannel.sendMessageEmbeds(any(MessageEmbed.class))).thenReturn(mock(MessageAction.class));
 
         MessageEmbed embed = command.call();
 

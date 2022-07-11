@@ -70,7 +70,7 @@ abstract class CommandBaseTest extends BaseTest {
 
     void verifyOneMessageSent(MessageEmbed embed) {
         verify(messageReceivedEvent).getChannel();
-        verify(messageChannel).sendMessage(embed);
+        verify(messageChannel).sendMessageEmbeds(embed);
         verifyNoMoreInteractions(messageChannel);
         verifyNoMoreInteractions(messageReceivedEvent);
     }

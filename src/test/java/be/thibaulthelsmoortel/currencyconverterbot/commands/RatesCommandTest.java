@@ -21,9 +21,14 @@ package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
+import be.thibaulthelsmoortel.currencyconverterbot.client.rate.payload.RateResponse;
+import be.thibaulthelsmoortel.currencyconverterbot.client.rates.payload.RatesRequest;
+import be.thibaulthelsmoortel.currencyconverterbot.client.rates.payload.RatesResponse;
+import be.thibaulthelsmoortel.currencyconverterbot.client.rates.service.RatesService;
+import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.Set;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -32,6 +37,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 
 /**
  * @author Thibault Helsmoortel
@@ -40,11 +47,14 @@ class RatesCommandTest extends CommandBaseTest {
 
     private RatesCommand ratesCommand;
 
+    @Mock
+    private RatesService ratesService;
+
     @Override
     @BeforeEach
     void setUp() {
         super.setUp();
-        this.ratesCommand = new RatesCommand();
+        this.ratesCommand = new RatesCommand(ratesService);
         ratesCommand.setEvent(messageReceivedEvent);
         ratesCommand.setBaseCurrencyIsoCode("EUR");
     }
@@ -52,21 +62,40 @@ class RatesCommandTest extends CommandBaseTest {
     @DisplayName("Should send rates message.")
     @Test
     void shouldSendRatesMessage() {
-        when(messageChannel.sendMessage(any(MessageEmbed.class))).thenReturn(mock(MessageAction.class));
+        RatesRequest ratesRequest = new RatesRequest();
+        ratesRequest.setBaseIsoCode("EUR");
+
+        RateResponse usdRate = new RateResponse();
+        usdRate.setTargetIsoCode("USD");
+        usdRate.setResult(BigDecimal.TEN);
+
+        RateResponse cadRate = new RateResponse();
+        cadRate.setTargetIsoCode("CAD");
+        cadRate.setResult(BigDecimal.valueOf(25));
+
+        RatesResponse ratesResponse = new RatesResponse();
+        ratesResponse.setBaseIsoCode(ratesRequest.getBaseIsoCode());
+        ratesResponse.setRates(Set.of(usdRate, cadRate));
+
+        Mockito.when(ratesService.getRates(ratesRequest)).thenReturn(ratesResponse);
+
+        Mockito.when(messageChannel.sendMessageEmbeds(any(MessageEmbed.class))).thenReturn(mock(MessageAction.class));
 
         MessageEmbed embed = ratesCommand.call();
 
         Assertions.assertNotNull(embed, "Message should not be null.");
         Assertions.assertTrue(StringUtils.isNotBlank(embed.getTitle()), "Title should not be empty.");
-        Assertions.assertTrue(embed.getFields().stream().anyMatch(field -> Objects.equals(field.getName(), "USD")), "Message should contain USD.");
-        Assertions.assertTrue(embed.getFields().stream().anyMatch(field -> Objects.equals(field.getName(), "CAD")), "Message should contain CAD.");
+        Assertions.assertTrue(embed.getFields().stream().anyMatch(field -> Objects.equals(field.getName(), "USD")),
+                "Message should contain USD.");
+        Assertions.assertTrue(embed.getFields().stream().anyMatch(field -> Objects.equals(field.getName(), "CAD")),
+                "Message should contain CAD.");
         verifyOneMessageSent(embed);
     }
 
     @DisplayName("Should not process event.")
     @Test
     void shouldNotProcessEvent() throws Exception {
-        RatesCommand ratesCommand = new RatesCommand();
+        RatesCommand ratesCommand = new RatesCommand(ratesService);
 
         verifyDoNotProcessEvent(ratesCommand, mock(Event.class));
     }

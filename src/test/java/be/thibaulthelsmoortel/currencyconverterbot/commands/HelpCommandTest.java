@@ -62,7 +62,7 @@ class HelpCommandTest extends CommandBaseTest {
         when(messageChannel.getType()).thenReturn(ChannelType.UNKNOWN);
         when(messageChannel.getId()).thenReturn("id");
         MessageAction messageAction = mock(MessageAction.class);
-        when(messageChannel.sendMessage(any(MessageEmbed.class))).thenReturn(messageAction);
+        when(messageChannel.sendMessageEmbeds(any(MessageEmbed.class))).thenReturn(messageAction);
 
         MessageEmbed embedded = command.call();
         Assertions.assertNotNull(embedded, "Message must not be null.");

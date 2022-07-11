@@ -56,7 +56,7 @@ class MessageChannelOutputStreamTest extends BaseTest {
         messageChannelOutputStream = new MessageChannelOutputStream();
         messageChannelOutputStream.setMessageChannel(messageChannel);
 
-        when(messageChannel.sendMessage(any(MessageEmbed.class))).thenReturn(mock(MessageAction.class));
+        when(messageChannel.sendMessageEmbeds(any(MessageEmbed.class))).thenReturn(mock(MessageAction.class));
     }
 
     @DisplayName("Should write message to channel.")
@@ -69,7 +69,7 @@ class MessageChannelOutputStreamTest extends BaseTest {
 
         messageChannelOutputStream.write(message.getBytes(), 0, message.length());
 
-        verify(messageChannel).sendMessage(embedBuilder.build());
+        verify(messageChannel).sendMessageEmbeds(embedBuilder.build());
     }
 
     @DisplayName("Should write char code to channel.")
@@ -83,7 +83,7 @@ class MessageChannelOutputStreamTest extends BaseTest {
         StringBuilder descriptionBuilder = embedBuilder.getDescriptionBuilder();
         descriptionBuilder.append(message);
 
-        verify(messageChannel).sendMessage(embedBuilder.build());
+        verify(messageChannel).sendMessageEmbeds(embedBuilder.build());
     }
 
     @DisplayName("Should not write blank message to channel.")
