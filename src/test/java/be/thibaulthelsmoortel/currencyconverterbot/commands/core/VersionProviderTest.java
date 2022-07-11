@@ -19,9 +19,6 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.commands.core;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import be.thibaulthelsmoortel.currencyconverterbot.BaseTest;
 import java.util.Arrays;
 import org.junit.jupiter.api.Assertions;
@@ -29,6 +26,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.StringUtils;
+import org.mockito.Mockito;
 
 /**
  * @author Thibault Helsmoortel
@@ -53,9 +51,9 @@ class VersionProviderTest extends BaseTest {
     @DisplayName("Should return actual implementation version.")
     @Test
     void shouldReturnActualImplementationVersion() {
-        Package pack = mock(Package.class);
+        Package pack = Mockito.mock(Package.class);
         String version = "anActualVersion";
-        when(pack.getImplementationVersion()).thenReturn(version);
+        Mockito.when(pack.getImplementationVersion()).thenReturn(version);
         versionProvider.setPack(pack);
 
         String returnedVersion = Arrays.toString(versionProvider.getVersion());

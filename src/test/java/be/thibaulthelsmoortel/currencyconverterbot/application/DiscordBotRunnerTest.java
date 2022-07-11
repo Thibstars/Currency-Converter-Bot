@@ -19,11 +19,6 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.application;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-
 import be.thibaulthelsmoortel.currencyconverterbot.BaseTest;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.CommandExecutor;
 import be.thibaulthelsmoortel.currencyconverterbot.config.DiscordBotEnvironment;
@@ -44,6 +39,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 
 /**
  * @author Thibault Helsmoortel
@@ -80,36 +76,36 @@ class DiscordBotRunnerTest extends BaseTest {
     @DisplayName("Should handle message received.")
     @Test
     void shouldHandleMessageReceived() {
-        when(messageReceivedEvent.getChannel()).thenReturn(messageChannel);
-        when(messageChannel.sendTyping()).thenReturn(mock(RestAction.class));
-        ReceivedMessage receivedMessage = mock(ReceivedMessage.class);
-        when(messageReceivedEvent.getMessage()).thenReturn(receivedMessage);
-        when(receivedMessage.getAuthor()).thenReturn(user);
-        when(user.isBot()).thenReturn(false);
+        Mockito.when(messageReceivedEvent.getChannel()).thenReturn(messageChannel);
+        Mockito.when(messageChannel.sendTyping()).thenReturn(Mockito.mock(RestAction.class));
+        ReceivedMessage receivedMessage = Mockito.mock(ReceivedMessage.class);
+        Mockito.when(messageReceivedEvent.getMessage()).thenReturn(receivedMessage);
+        Mockito.when(receivedMessage.getAuthor()).thenReturn(user);
+        Mockito.when(user.isBot()).thenReturn(false);
 
         String prefix = "/";
         String message = "myNewMessage";
-        when(receivedMessage.getContentDisplay()).thenReturn(prefix + message);
-        when(discordBotEnvironment.getCommandPrefix()).thenReturn(prefix);
+        Mockito.when(receivedMessage.getContentDisplay()).thenReturn(prefix + message);
+        Mockito.when(discordBotEnvironment.getCommandPrefix()).thenReturn(prefix);
 
         discordBotRunner.onMessageReceived(messageReceivedEvent);
 
-        verify(messageChannel).sendTyping();
-        verifyNoMoreInteractions(messageChannel);
-        verify(commandExecutor).tryExecute(messageReceivedEvent, message);
-        verifyNoMoreInteractions(commandExecutor);
+        Mockito.verify(messageChannel).sendTyping();
+        Mockito.verifyNoMoreInteractions(messageChannel);
+        Mockito.verify(commandExecutor).tryExecute(messageReceivedEvent, message);
+        Mockito.verifyNoMoreInteractions(commandExecutor);
     }
 
     @DisplayName("Should not process bot messages.")
     @Test
     void shouldNotProcessBotMessages() {
         configureAsBot();
-        when(discordBotEnvironment.isProcessBotMessages()).thenReturn(false);
+        Mockito.when(discordBotEnvironment.isProcessBotMessages()).thenReturn(false);
 
         discordBotRunner.onMessageReceived(messageReceivedEvent);
 
-        verifyNoMoreInteractions(messageChannel);
-        verify(messageReceivedEvent).getMessage(); // 1 to check processing
+        Mockito.verifyNoMoreInteractions(messageChannel);
+        Mockito.verify(messageReceivedEvent).getMessage(); // 1 to check processing
     }
 
     @SuppressWarnings("unchecked")
@@ -117,56 +113,56 @@ class DiscordBotRunnerTest extends BaseTest {
     @Test
     void shouldProcessBotMessages() {
         Message messageMock = configureAsBot();
-        when(discordBotEnvironment.isProcessBotMessages()).thenReturn(true);
+        Mockito.when(discordBotEnvironment.isProcessBotMessages()).thenReturn(true);
 
         String prefix = "/";
         String message = "myNewMessage";
-        when(messageMock.getContentDisplay()).thenReturn(prefix + message);
-        when(discordBotEnvironment.getCommandPrefix()).thenReturn(prefix);
-        when(messageReceivedEvent.getChannel()).thenReturn(messageChannel);
-        when(messageChannel.sendTyping()).thenReturn(mock(RestAction.class));
+        Mockito.when(messageMock.getContentDisplay()).thenReturn(prefix + message);
+        Mockito.when(discordBotEnvironment.getCommandPrefix()).thenReturn(prefix);
+        Mockito.when(messageReceivedEvent.getChannel()).thenReturn(messageChannel);
+        Mockito.when(messageChannel.sendTyping()).thenReturn(Mockito.mock(RestAction.class));
 
         discordBotRunner.onMessageReceived(messageReceivedEvent);
 
-        verify(messageChannel).sendTyping();
-        verifyNoMoreInteractions(messageChannel);
-        verify(commandExecutor).tryExecute(messageReceivedEvent, message);
-        verifyNoMoreInteractions(commandExecutor);
+        Mockito.verify(messageChannel).sendTyping();
+        Mockito.verifyNoMoreInteractions(messageChannel);
+        Mockito.verify(commandExecutor).tryExecute(messageReceivedEvent, message);
+        Mockito.verifyNoMoreInteractions(commandExecutor);
     }
 
     @DisplayName("Should update server count on guild join.")
     @Test
     void shouldUpdateServerCountOnGuildJoin() {
-        GuildJoinEvent event = mock(GuildJoinEvent.class);
-        JDA jda = mock(JDA.class);
-        when(event.getJDA()).thenReturn(jda);
-        List<Guild> guilds = Collections.singletonList(mock(Guild.class));
-        when(jda.getGuilds()).thenReturn(guilds);
+        GuildJoinEvent event = Mockito.mock(GuildJoinEvent.class);
+        JDA jda = Mockito.mock(JDA.class);
+        Mockito.when(event.getJDA()).thenReturn(jda);
+        List<Guild> guilds = Collections.singletonList(Mockito.mock(Guild.class));
+        Mockito.when(jda.getGuilds()).thenReturn(guilds);
 
         discordBotRunner.onGuildJoin(event);
 
-        verify(dblApi).setStats(guilds.size());
+        Mockito.verify(dblApi).setStats(guilds.size());
     }
 
     @DisplayName("Should update server count on guild leave.")
     @Test
     void shouldUpdateServerCountOnGuildLeave() {
-        GuildLeaveEvent event = mock(GuildLeaveEvent.class);
-        JDA jda = mock(JDA.class);
-        when(event.getJDA()).thenReturn(jda);
-        List<Guild> guilds = Collections.singletonList(mock(Guild.class));
-        when(jda.getGuilds()).thenReturn(guilds);
+        GuildLeaveEvent event = Mockito.mock(GuildLeaveEvent.class);
+        JDA jda = Mockito.mock(JDA.class);
+        Mockito.when(event.getJDA()).thenReturn(jda);
+        List<Guild> guilds = Collections.singletonList(Mockito.mock(Guild.class));
+        Mockito.when(jda.getGuilds()).thenReturn(guilds);
 
         discordBotRunner.onGuildLeave(event);
 
-        verify(dblApi).setStats(guilds.size());
+        Mockito.verify(dblApi).setStats(guilds.size());
     }
 
     private Message configureAsBot() {
-        Message messageMock = mock(Message.class);
-        when(messageReceivedEvent.getMessage()).thenReturn(messageMock);
-        when(messageMock.getAuthor()).thenReturn(user);
-        when(user.isBot()).thenReturn(true);
+        Message messageMock = Mockito.mock(Message.class);
+        Mockito.when(messageReceivedEvent.getMessage()).thenReturn(messageMock);
+        Mockito.when(messageMock.getAuthor()).thenReturn(user);
+        Mockito.when(user.isBot()).thenReturn(true);
 
         return messageMock;
     }

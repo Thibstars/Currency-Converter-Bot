@@ -19,8 +19,6 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
-import static org.mockito.Mockito.mock;
-
 import be.thibaulthelsmoortel.currencyconverterbot.client.rate.payload.RateRequest;
 import be.thibaulthelsmoortel.currencyconverterbot.client.rate.payload.RateResponse;
 import be.thibaulthelsmoortel.currencyconverterbot.client.rate.service.RateService;
@@ -95,7 +93,7 @@ class RateCommandTest extends CommandBaseTest {
     @DisplayName("Should not process event.")
     @Test
     void shouldNotProcessEvent() throws Exception {
-        verifyDoNotProcessEvent(rateCommand, mock(Event.class));
+        verifyDoNotProcessEvent(rateCommand, Mockito.mock(Event.class));
     }
 
     @AfterEach

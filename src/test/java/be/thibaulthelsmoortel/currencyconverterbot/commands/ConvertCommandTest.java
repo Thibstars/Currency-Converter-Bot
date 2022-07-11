@@ -19,8 +19,6 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
-import static org.mockito.Mockito.mock;
-
 import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.payload.ConversionRequest;
 import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.payload.ConversionResponse;
 import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.service.ConversionServiceBean;
@@ -114,7 +112,7 @@ class ConvertCommandTest extends CommandBaseTest {
     @DisplayName("Should not process event.")
     @Test
     void shouldNotProcessEvent() throws Exception {
-        verifyDoNotProcessEvent(convertCommand, mock(Event.class));
+        verifyDoNotProcessEvent(convertCommand, Mockito.mock(Event.class));
     }
 
 }

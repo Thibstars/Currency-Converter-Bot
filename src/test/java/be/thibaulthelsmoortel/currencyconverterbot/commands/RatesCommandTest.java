@@ -19,9 +19,6 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-
 import be.thibaulthelsmoortel.currencyconverterbot.client.rate.payload.RateResponse;
 import be.thibaulthelsmoortel.currencyconverterbot.client.rates.payload.RatesRequest;
 import be.thibaulthelsmoortel.currencyconverterbot.client.rates.payload.RatesResponse;
@@ -37,6 +34,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
@@ -79,7 +77,7 @@ class RatesCommandTest extends CommandBaseTest {
 
         Mockito.when(ratesService.getRates(ratesRequest)).thenReturn(ratesResponse);
 
-        Mockito.when(messageChannel.sendMessageEmbeds(any(MessageEmbed.class))).thenReturn(mock(MessageAction.class));
+        Mockito.when(messageChannel.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class))).thenReturn(Mockito.mock(MessageAction.class));
 
         MessageEmbed embed = ratesCommand.call();
 
@@ -97,6 +95,6 @@ class RatesCommandTest extends CommandBaseTest {
     void shouldNotProcessEvent() throws Exception {
         RatesCommand ratesCommand = new RatesCommand(ratesService);
 
-        verifyDoNotProcessEvent(ratesCommand, mock(Event.class));
+        verifyDoNotProcessEvent(ratesCommand, Mockito.mock(Event.class));
     }
 }

@@ -19,12 +19,6 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-
 import be.thibaulthelsmoortel.currencyconverterbot.client.health.payload.HealthResponse;
 import be.thibaulthelsmoortel.currencyconverterbot.client.health.service.HealthServiceBean;
 import net.dv8tion.jda.api.events.Event;
@@ -33,6 +27,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -67,19 +62,19 @@ class HealthCommandTest extends CommandBaseTest {
 
     @BeforeEach
     void setUp() {
-        when(messageReceivedEvent.getChannel()).thenReturn(messageChannel);
-        when(messageChannel.sendMessage(anyString())).thenReturn(mock(MessageAction.class));
+        Mockito.when(messageReceivedEvent.getChannel()).thenReturn(messageChannel);
+        Mockito.when(messageChannel.sendMessage(ArgumentMatchers.anyString())).thenReturn(Mockito.mock(MessageAction.class));
     }
 
     private void verifyOneMessageSent() {
-        verify(messageReceivedEvent).getChannel();
-        verify(messageChannel).sendMessage(anyString());
-        verifyNoMoreInteractions(messageChannel);
+        Mockito.verify(messageReceivedEvent).getChannel();
+        Mockito.verify(messageChannel).sendMessage(ArgumentMatchers.anyString());
+        Mockito.verifyNoMoreInteractions(messageChannel);
     }
 
     @DisplayName("Should not process event.")
     @Test
     void shouldNotProcessEvent() throws Exception {
-        verifyDoNotProcessEvent(healthCommand, mock(Event.class));
+        verifyDoNotProcessEvent(healthCommand, Mockito.mock(Event.class));
     }
 }

@@ -19,12 +19,6 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-
 import be.thibaulthelsmoortel.currencyconverterbot.BaseTest;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
 import net.dv8tion.jda.api.entities.Message;
@@ -36,7 +30,9 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 
 /**
  * @author Thibault Helsmoortel
@@ -55,24 +51,24 @@ abstract class CommandBaseTest extends BaseTest {
     @SuppressWarnings("unchecked")
     @BeforeEach
     void setUp() {
-        when(messageReceivedEvent.getChannel()).thenReturn(messageChannel);
-        when(messageReceivedEvent.getMessage()).thenReturn(message);
-        when(message.addReaction(anyString())).thenReturn(mock(RestAction.class));
-        when(messageChannel.sendMessage(anyString())).thenReturn(mock(MessageAction.class));
+        Mockito.when(messageReceivedEvent.getChannel()).thenReturn(messageChannel);
+        Mockito.when(messageReceivedEvent.getMessage()).thenReturn(message);
+        Mockito.when(message.addReaction(ArgumentMatchers.anyString())).thenReturn(Mockito.mock(RestAction.class));
+        Mockito.when(messageChannel.sendMessage(ArgumentMatchers.anyString())).thenReturn(Mockito.mock(MessageAction.class));
     }
 
     void verifyOneMessageSent(String message) {
-        verify(messageReceivedEvent).getChannel();
-        verify(messageChannel).sendMessage(message);
-        verifyNoMoreInteractions(messageChannel);
-        verifyNoMoreInteractions(messageReceivedEvent);
+        Mockito.verify(messageReceivedEvent).getChannel();
+        Mockito.verify(messageChannel).sendMessage(message);
+        Mockito.verifyNoMoreInteractions(messageChannel);
+        Mockito.verifyNoMoreInteractions(messageReceivedEvent);
     }
 
     void verifyOneMessageSent(MessageEmbed embed) {
-        verify(messageReceivedEvent).getChannel();
-        verify(messageChannel).sendMessageEmbeds(embed);
-        verifyNoMoreInteractions(messageChannel);
-        verifyNoMoreInteractions(messageReceivedEvent);
+        Mockito.verify(messageReceivedEvent).getChannel();
+        Mockito.verify(messageChannel).sendMessageEmbeds(embed);
+        Mockito.verifyNoMoreInteractions(messageChannel);
+        Mockito.verifyNoMoreInteractions(messageReceivedEvent);
     }
 
     void verifyDoNotProcessEvent(BotCommand<?> botCommand, Event event) throws Exception {
@@ -85,8 +81,8 @@ abstract class CommandBaseTest extends BaseTest {
     }
 
     void verifyNoMoreJDAInteractions() {
-        verifyNoMoreInteractions(messageChannel);
-        verifyNoMoreInteractions(messageReceivedEvent);
+        Mockito.verifyNoMoreInteractions(messageChannel);
+        Mockito.verifyNoMoreInteractions(messageReceivedEvent);
     }
 
 }
