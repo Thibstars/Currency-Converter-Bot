@@ -92,6 +92,7 @@ class MessageChannelOutputStreamTest extends BaseTest {
         Mockito.verifyNoMoreInteractions(messageChannel);
     }
 
+    @DisplayName("Should not write null message to channel.")
     @SuppressWarnings("all")
     @Test
     void shouldNotWriteNullMessageToChannel() {

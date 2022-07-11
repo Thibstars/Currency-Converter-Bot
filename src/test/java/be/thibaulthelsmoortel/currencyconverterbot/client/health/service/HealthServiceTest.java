@@ -22,6 +22,7 @@ package be.thibaulthelsmoortel.currencyconverterbot.client.health.service;
 import be.thibaulthelsmoortel.currencyconverterbot.client.ClientBaseTest;
 import be.thibaulthelsmoortel.currencyconverterbot.client.health.payload.HealthResponse;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,7 @@ class HealthServiceTest extends ClientBaseTest {
     @Autowired
     private HealthServiceBean healthService;
 
+    @DisplayName("Should get health.")
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void shouldGetHealth() {

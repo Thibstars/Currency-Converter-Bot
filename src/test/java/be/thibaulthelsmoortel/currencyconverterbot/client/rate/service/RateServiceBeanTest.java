@@ -24,6 +24,7 @@ import be.thibaulthelsmoortel.currencyconverterbot.client.rate.payload.RateReque
 import be.thibaulthelsmoortel.currencyconverterbot.client.rate.payload.RateResponse;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,7 @@ class RateServiceBeanTest extends ClientBaseTest {
     @Autowired
     private RateService rateService;
 
+    @DisplayName("Should get rate.")
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void shouldGetRate() {

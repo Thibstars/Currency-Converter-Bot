@@ -25,6 +25,7 @@ import be.thibaulthelsmoortel.currencyconverterbot.security.service.payload.Sign
 import java.util.function.Consumer;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -56,6 +57,7 @@ class AuthorizationServiceTest {
     @MockBean
     private Consumer<HttpHeaders> apiHeaders;
 
+    @DisplayName("Tist first time authorize.")
     @Test
     void testFirstTimeAuthorize() {
         ApiAuthentication apiAuthentication = mockFirstTimeAuthentication();
@@ -84,6 +86,7 @@ class AuthorizationServiceTest {
         return apiAuthentication;
     }
 
+    @DisplayName("Should remain signed in.")
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void testStillSignedIn() {
@@ -103,6 +106,7 @@ class AuthorizationServiceTest {
         Assertions.assertEquals(firstToken, secondToken, "Token must not have changed.");
     }
 
+    @DisplayName("Should refresh token.")
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void testRefreshToken() {
@@ -133,6 +137,7 @@ class AuthorizationServiceTest {
         Assertions.assertNotEquals(firstToken, secondToken, "Token must have been refreshed.");
     }
 
+    @DisplayName("Should sign back in.")
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void testSignBackIn() {

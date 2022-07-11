@@ -24,6 +24,7 @@ import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.payload.Con
 import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.payload.ConversionResponse;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,7 @@ class ConversionServiceTest extends ClientBaseTest {
     @Autowired
     private ConversionService conversionService;
 
+    @DisplayName("Should get conversion.")
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void shouldGetConversion() {
