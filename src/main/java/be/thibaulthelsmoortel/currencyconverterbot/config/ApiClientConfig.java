@@ -29,7 +29,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -38,7 +38,7 @@ import reactor.core.publisher.Mono;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-public class ApiClientConfig extends WebSecurityConfigurerAdapter {
+public class ApiClientConfig {
 
     @Value("${api.base.url}")
     private String apiBaseUrl;
@@ -62,9 +62,11 @@ public class ApiClientConfig extends WebSecurityConfigurerAdapter {
         return httpHeaders -> httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
     }
 
-    @Override
-    protected void configure(HttpSecurity security) throws Exception {
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity security) throws Exception {
         security.csrf().disable().authorizeRequests().anyRequest().permitAll();
+
+        return security.build();
     }
 
 }
