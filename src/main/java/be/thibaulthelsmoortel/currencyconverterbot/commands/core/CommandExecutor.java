@@ -32,7 +32,6 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Help;
 import picocli.CommandLine.Help.Ansi;
-import picocli.CommandLine.Help.ColorScheme;
 
 /**
  * Class responsible for command execution.
