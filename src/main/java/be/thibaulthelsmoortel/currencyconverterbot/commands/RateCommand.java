@@ -43,7 +43,7 @@ public class RateCommand extends BotCommand<String> {
     private String isoCode;
 
     @SuppressWarnings("unused") // Used through option
-    @Option(names = {"-c", "--currency"}, paramLabel = "CURRENCY", description = "The base currency iso code.", defaultValue = "EUR", arity = "0..1",
+    @Option(names = {"-c", "--currency"}, paramLabel = "CURRENCY", description = "The base currency iso code.  Default: ${DEFAULT-VALUE}", defaultValue = "EUR", arity = "0..1",
     converter = LowerToUpperCaseConverter.class)
     private String baseCurrencyIsoCode;
 

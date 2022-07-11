@@ -47,7 +47,7 @@ public class RatesCommand extends BotCommand<MessageEmbed> {
     private static final String HEADER = "Currency rates";
 
     @SuppressWarnings("unused") // Used through option
-    @Option(names = {"-c", "--currency"}, paramLabel = "CURRENCY", description = "The base currency iso code.",
+    @Option(names = {"-c", "--currency"}, paramLabel = "CURRENCY", description = "The base currency iso code. Default: ${DEFAULT-VALUE}",
             defaultValue = "EUR", arity = "0..1", converter = LowerToUpperCaseConverter.class)
     private String baseCurrencyIsoCode;
 
