@@ -22,10 +22,9 @@ package be.thibaulthelsmoortel.currencyconverterbot.commands.core;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.lang3.StringUtils;;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
@@ -39,9 +38,8 @@ import picocli.CommandLine.Help.Ansi;
  * @author Thibault Helsmoortel
  */
 @Component
+@Slf4j
 public class CommandExecutor {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(CommandExecutor.class);
 
     private final List<BotCommand<?>> botCommands;
     private final MessageChannelOutputStream messageChannelOutputStream;
@@ -90,9 +88,9 @@ public class CommandExecutor {
             });
 
             if (commandRecognised.get()) {
-                LOGGER.debug("Executed command: {}.", commandMessage);
+                log.debug("Executed command: {}.", commandMessage);
             } else {
-                LOGGER.debug("Command not recognized: {}.", commandMessage);
+                log.debug("Command not recognized: {}.", commandMessage);
                 event.getChannel().sendMessage("Command not recognized... Issue the 'help' command to get an overview of available commands.").queue();
             }
         }
