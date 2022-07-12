@@ -28,11 +28,14 @@ import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -44,11 +47,14 @@ import picocli.CommandLine.Option;
 @Component
 public class RatesCommand extends BotCommand<MessageEmbed> {
 
+    private static final String ERROR_MESSAGE = "Unable to perform the rates request. Please verify the input parameters and try again. If the issue persists, please make sure to report the issue via the 'issue' command.";
+
     private static final String HEADER = "Currency rates";
 
     @SuppressWarnings("unused") // Used through option
-    @Option(names = {"-c", "--currency"}, paramLabel = "CURRENCY", description = "The base currency iso code. Default: ${DEFAULT-VALUE}",
-            defaultValue = "EUR", arity = "0..1", converter = LowerToUpperCaseConverter.class)
+    @Option(names = {"-c", "--currency"}, paramLabel = "CURRENCY", description = "The base currency iso code. Default: ${DEFAULT-VALUE}", defaultValue = "EUR", arity = "0..1", converter = LowerToUpperCaseConverter.class)
+    @NotBlank
+    @Size(min = 3, max = 3)
     private String baseCurrencyIsoCode;
 
     private final RatesService ratesService;
@@ -56,6 +62,7 @@ public class RatesCommand extends BotCommand<MessageEmbed> {
     @Override
     public MessageEmbed call() {
         MessageEmbed embed = null;
+        validate();
 
         if (getEvent() instanceof MessageReceivedEvent messageReceivedEvent) {
             var embedBuilder = new EmbedBuilder();
@@ -64,17 +71,23 @@ public class RatesCommand extends BotCommand<MessageEmbed> {
             RatesRequest ratesRequest = new RatesRequest();
             ratesRequest.setBaseIsoCode(baseCurrencyIsoCode);
 
-            RatesResponse response = ratesService.getRates(ratesRequest);
-            List<RateResponse> rates = response.getRates()
-                    .stream()
-                    .filter(Objects::nonNull)
-                    .sorted(Comparator.comparing(RateResponse::getResult))
-                    .toList();
+            try {
+                RatesResponse response = ratesService.getRates(ratesRequest);
+                List<RateResponse> rates = response.getRates()
+                        .stream()
+                        .filter(Objects::nonNull)
+                        .sorted(Comparator.comparing(RateResponse::getResult))
+                        .toList();
 
-            rates.forEach(rate -> embedBuilder.addField(rate.getTargetIsoCode(), rate.getResult().toPlainString(), true));
+                rates.forEach(rate -> embedBuilder.addField(rate.getTargetIsoCode(), rate.getResult().toPlainString(), true));
 
-            embed = embedBuilder.build();
-            messageReceivedEvent.getChannel().sendMessageEmbeds(embed).queue();
+                embed = embedBuilder.build();
+                messageReceivedEvent.getChannel().sendMessageEmbeds(embed).queue();
+            } catch (WebClientResponseException e) {
+                embedBuilder.setDescription(ERROR_MESSAGE);
+                embed = embedBuilder.build();
+                messageReceivedEvent.getChannel().sendMessageEmbeds(embed).queue();
+            }
         }
 
         return embed;

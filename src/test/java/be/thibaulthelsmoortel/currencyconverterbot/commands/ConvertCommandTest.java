@@ -87,7 +87,7 @@ class ConvertCommandTest extends CommandBaseTest {
     void shouldSendErrorMessage() {
         BigDecimal sourceAmount = BigDecimal.valueOf(6);
         String usdIso = "USD";
-        String unrecognizedIsoCode = "Karman";
+        String unrecognizedIsoCode = "KAR";
 
         convertCommand.setSourceAmount(sourceAmount);
         convertCommand.setSourceIsoCode(usdIso);
@@ -112,6 +112,10 @@ class ConvertCommandTest extends CommandBaseTest {
     @DisplayName("Should not process event.")
     @Test
     void shouldNotProcessEvent() throws Exception {
+        convertCommand.setSourceAmount(BigDecimal.ONE);
+        convertCommand.setSourceIsoCode("EUR");
+        convertCommand.setTargetIsoCode("CAD");
+
         verifyDoNotProcessEvent(convertCommand, Mockito.mock(Event.class));
     }
 

@@ -93,8 +93,6 @@ class RatesCommandTest extends CommandBaseTest {
     @DisplayName("Should not process event.")
     @Test
     void shouldNotProcessEvent() throws Exception {
-        RatesCommand ratesCommand = new RatesCommand(ratesService);
-
         verifyDoNotProcessEvent(ratesCommand, Mockito.mock(Event.class));
     }
 }

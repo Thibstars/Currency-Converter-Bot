@@ -24,9 +24,13 @@ import be.thibaulthelsmoortel.currencyconverterbot.client.rate.payload.RateRespo
 import be.thibaulthelsmoortel.currencyconverterbot.client.rate.service.RateService;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.converters.LowerToUpperCaseConverter;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
@@ -39,12 +43,18 @@ import picocli.CommandLine.Parameters;
 @Component
 public class RateCommand extends BotCommand<String> {
 
+    private static final String ERROR_MESSAGE = "Unable to perform the rate request. Please verify the input parameters and try again. If the issue persists, please make sure to report the issue via the 'issue' command.";
+
     @Parameters(description = "ISO code of the currency to lookup.", arity = "1", index = "0", converter = LowerToUpperCaseConverter.class)
+    @NotNull
+    @NotBlank
+    @Size(min = 3, max = 3)
     private String isoCode;
 
     @SuppressWarnings("unused") // Used through option
-    @Option(names = {"-c", "--currency"}, paramLabel = "CURRENCY", description = "The base currency iso code.  Default: ${DEFAULT-VALUE}", defaultValue = "EUR", arity = "0..1",
-    converter = LowerToUpperCaseConverter.class)
+    @Option(names = {"-c", "--currency"}, paramLabel = "CURRENCY", description = "The base currency iso code.  Default: ${DEFAULT-VALUE}", defaultValue = "EUR", arity = "0..1", converter = LowerToUpperCaseConverter.class)
+    @NotBlank
+    @Size(min = 3, max = 3)
     private String baseCurrencyIsoCode;
 
     private final RateService rateService;
@@ -52,20 +62,27 @@ public class RateCommand extends BotCommand<String> {
     @Override
     public String call() {
         String message = null;
+        validate();
+
         if (getEvent() instanceof MessageReceivedEvent messageReceivedEvent) {
             RateRequest rateRequest = new RateRequest();
             rateRequest.setBaseIsoCode(baseCurrencyIsoCode);
             rateRequest.setTargetIsoCode(isoCode);
 
-            RateResponse rate = rateService.getRate(rateRequest);
+            try {
+                RateResponse rate = rateService.getRate(rateRequest);
 
-            if (rate != null && rate.getResult() != null) {
-                message = "1" + baseCurrencyIsoCode.toUpperCase() + " = " + rate.getResult() + " " + isoCode.toUpperCase();
-            } else {
-                message = "Unable to perform the rate request. Please verify the input parameters and try again. If the issue persists, please make sure to report the issue via the 'issue' command.";
+                if (rate != null && rate.getResult() != null) {
+                    message = "1" + baseCurrencyIsoCode.toUpperCase() + " = " + rate.getResult() + " " + isoCode.toUpperCase();
+                } else {
+                    message = ERROR_MESSAGE;
+                }
+
+                messageReceivedEvent.getChannel().sendMessage(message).queue();
+            } catch (WebClientResponseException e) {
+                message = ERROR_MESSAGE;
+                messageReceivedEvent.getChannel().sendMessage(message).queue();
             }
-
-            messageReceivedEvent.getChannel().sendMessage(message).queue();
         }
 
         return message;

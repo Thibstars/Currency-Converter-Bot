@@ -79,7 +79,7 @@ class RateCommandTest extends CommandBaseTest {
     @DisplayName("Should send error message.")
     @Test
     void shouldSendErrorMessage() {
-        String isoCode = "myIsoCode";
+        String isoCode = "KAR";
         rateCommand.setIsoCode(isoCode);
         String message = rateCommand.call();
 
@@ -93,6 +93,8 @@ class RateCommandTest extends CommandBaseTest {
     @DisplayName("Should not process event.")
     @Test
     void shouldNotProcessEvent() throws Exception {
+        rateCommand.setIsoCode("CAD");
+
         verifyDoNotProcessEvent(rateCommand, Mockito.mock(Event.class));
     }
 
