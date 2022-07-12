@@ -22,6 +22,7 @@ package be.thibaulthelsmoortel.currencyconverterbot.application;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.CommandExecutor;
 import be.thibaulthelsmoortel.currencyconverterbot.config.DiscordBotEnvironment;
 import be.thibaulthelsmoortel.currencyconverterbot.exceptions.MissingTokenException;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -33,8 +34,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.discordbots.api.client.DiscordBotListAPI;
 import org.discordbots.api.client.DiscordBotListAPI.Builder;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -45,9 +44,8 @@ import org.springframework.stereotype.Component;
  * @author Thibault Helsmoortel
  */
 @Component
+@Slf4j
 public class DiscordBotRunner extends ListenerAdapter implements CommandLineRunner {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(DiscordBotRunner.class);
 
     private final DiscordBotEnvironment discordBotEnvironment;
     private final CommandExecutor commandExecutor;
@@ -73,7 +71,7 @@ public class DiscordBotRunner extends ListenerAdapter implements CommandLineRunn
     public void onGuildJoin(@NotNull GuildJoinEvent event) {
         super.onGuildJoin(event);
 
-        LOGGER.info("Joined guild. Current amount of connected guilds: {}.", event.getJDA().getGuilds().size());
+        log.info("Joined guild. Current amount of connected guilds: {}.", event.getJDA().getGuilds().size());
 
         updateServerCount(event.getJDA());
     }
@@ -82,7 +80,7 @@ public class DiscordBotRunner extends ListenerAdapter implements CommandLineRunn
     public void onGuildLeave(@NotNull GuildLeaveEvent event) {
         super.onGuildLeave(event);
 
-        LOGGER.info("Left guild. Current amount of connected guilds: {}.", event.getJDA().getGuilds().size());
+        log.info("Left guild. Current amount of connected guilds: {}.", event.getJDA().getGuilds().size());
 
         updateServerCount(event.getJDA());
     }
@@ -147,7 +145,7 @@ public class DiscordBotRunner extends ListenerAdapter implements CommandLineRunn
             // Restore interrupted state...
             Thread.currentThread().interrupt();
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
     }
 

@@ -19,9 +19,17 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.commands.core;
 
+import java.util.Set;
 import java.util.concurrent.Callable;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import net.dv8tion.jda.api.events.Event;
+import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.ParameterException;
+import picocli.CommandLine.Spec;
 
 /**
  * Command definition providing execution context.
@@ -31,6 +39,10 @@ import picocli.CommandLine.Command;
 @Command(mixinStandardHelpOptions = true, versionProvider = VersionProvider.class)
 public abstract class BotCommand<T> implements Callable<T> {
 
+    @SuppressWarnings("Unused") // Injected by Picocli
+    @Spec
+    private CommandLine.Model.CommandSpec spec;
+
     private Event event;
 
     protected Event getEvent() {
@@ -39,5 +51,21 @@ public abstract class BotCommand<T> implements Callable<T> {
 
     public void setEvent(Event event) {
         this.event = event;
+    }
+
+    public void validate() {
+        Validator validator;
+        try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+            validator = factory.getValidator();
+            Set<ConstraintViolation<BotCommand<T>>> violations = validator.validate(this);
+
+            if (!violations.isEmpty()) {
+                StringBuilder errorMsg = new StringBuilder();
+                for (ConstraintViolation<BotCommand<T>> violation : violations) {
+                    errorMsg.append("Error: ").append(violation.getMessage()).append("\n");
+                }
+                throw new ParameterException(spec.commandLine(), errorMsg.toString());
+            }
+        }
     }
 }

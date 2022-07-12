@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Thibault Helsmoortel.
+ * Copyright (c) 2022 Thibault Helsmoortel.
  *
  *  This file is part of Currency Converter Bot.
  *
@@ -17,19 +17,16 @@
  *  along with Currency Converter Bot.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package be.thibaulthelsmoortel.currencyconverterbot.commands.candidates;
+package be.thibaulthelsmoortel.currencyconverterbot.client.rates.service;
 
-import java.util.ArrayList;
-import javax.money.convert.MonetaryConversions;
+import be.thibaulthelsmoortel.currencyconverterbot.client.rates.payload.RatesRequest;
+import be.thibaulthelsmoortel.currencyconverterbot.client.rates.payload.RatesResponse;
 
 /**
- * List of all existing exchange rate providers.
- *
  * @author Thibault Helsmoortel
  */
-public class ExchangeRateProviderCandidates extends ArrayList<String> {
+public interface RatesService {
 
-    public ExchangeRateProviderCandidates() {
-        super(MonetaryConversions.getDefaultConversionProviderChain());
-    }
+    RatesResponse getRates(RatesRequest ratesRequest);
+
 }

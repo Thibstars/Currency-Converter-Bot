@@ -1,5 +1,6 @@
 # Currency Converter Bot [![Build Status](https://app.travis-ci.com/Thibstars/Currency-Converter-Bot.svg?branch=master)](https://app.travis-ci.com/Thibstars/Currency-Converter-Bot) [![codecov](https://codecov.io/gh/Thibstars/Currency-Converter-Bot/branch/master/graph/badge.svg)](https://codecov.io/gh/Thibstars/Currency-Converter-Bot) [![Discord Bots](https://discordbots.org/api/widget/status/563655936263061544.svg)](https://discordbots.org/bot/563655936263061544) # 
 Discord bot allowing currency conversions and rates listing.
+This bot uses the same API as https://currencyconversion.be.
 
 ## Hosting ##
 ### Public ###
@@ -9,8 +10,8 @@ This bot is currently publicly hosted and available. It is listed on top.gg, so 
 
 [![DigitalOcean Referral Badge](https://web-platforms.sfo2.cdn.digitaloceanspaces.com/WWW/Badge%201.svg)](https://www.digitalocean.com/?refcode=9d2be90e794d&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge)
 
-### Private ###
-This bot can also be self-hosted.
+### Private (0.2.7 and before) ###
+This bot can also be self-hosted up until version 0.2.7. The newer version calls an API maintained separately.
 
 #### Usage ####
 

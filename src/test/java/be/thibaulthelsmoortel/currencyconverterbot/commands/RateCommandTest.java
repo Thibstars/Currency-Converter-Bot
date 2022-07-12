@@ -19,8 +19,10 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
-import static org.mockito.Mockito.mock;
-
+import be.thibaulthelsmoortel.currencyconverterbot.client.rate.payload.RateRequest;
+import be.thibaulthelsmoortel.currencyconverterbot.client.rate.payload.RateResponse;
+import be.thibaulthelsmoortel.currencyconverterbot.client.rate.service.RateService;
+import java.math.BigDecimal;
 import net.dv8tion.jda.api.events.Event;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -28,6 +30,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 
 /**
  * @author Thibault Helsmoortel
@@ -36,11 +40,14 @@ class RateCommandTest extends CommandBaseTest {
 
     private RateCommand rateCommand;
 
+    @Mock
+    private RateService rateService;
+
     @Override
     @BeforeEach
     void setUp() {
         super.setUp();
-        this.rateCommand = new RateCommand();
+        this.rateCommand = new RateCommand(rateService);
         rateCommand.setEvent(messageReceivedEvent);
         rateCommand.setBaseCurrencyIsoCode("EUR");
     }
@@ -50,29 +57,45 @@ class RateCommandTest extends CommandBaseTest {
     void shouldSendRateMessage() {
         String isoCode = "USD";
         rateCommand.setIsoCode(isoCode);
+
+        RateRequest rateRequest = new RateRequest();
+        rateRequest.setBaseIsoCode("EUR");
+        rateRequest.setTargetIsoCode(isoCode);
+
+        RateResponse response = new RateResponse();
+        response.setTargetIsoCode(isoCode);
+        response.setResult(BigDecimal.TEN);
+        Mockito.when(rateService.getRate(rateRequest)).thenReturn(response);
+
         String message = rateCommand.call();
 
         Assertions.assertTrue(StringUtils.isNotBlank(message), "Message should not be empty.");
         Assertions.assertTrue(message.contains(isoCode), "Message should contain USD.");
+        Assertions.assertTrue(message.contains(rateRequest.getBaseIsoCode()), "Message should contain base iso code.");
+        Assertions.assertTrue(message.contains(response.getResult().toString()), "Message should contain result.");
         verifyOneMessageSent(message);
     }
 
-    @DisplayName("Should send appropriate message with unavailable ISO code.")
+    @DisplayName("Should send error message.")
     @Test
-    void shouldSendAppropriateMessageWithUnavailableIsoCode() {
-        String isoCode = "myIsoCode";
+    void shouldSendErrorMessage() {
+        String isoCode = "KAR";
         rateCommand.setIsoCode(isoCode);
         String message = rateCommand.call();
 
         Assertions.assertTrue(StringUtils.isNotBlank(message), "Message should not be empty.");
-        Assertions.assertEquals("Currency ISO code not found.", message, "Message should match.");
+        Assertions.assertEquals(
+                "Unable to perform the rate request. Please verify the input parameters and try again. If the issue persists, please make sure to report the issue via the 'issue' command.",
+                message, "Message should match.");
         verifyOneMessageSent(message);
     }
 
     @DisplayName("Should not process event.")
     @Test
     void shouldNotProcessEvent() throws Exception {
-        verifyDoNotProcessEvent(rateCommand, mock(Event.class));
+        rateCommand.setIsoCode("CAD");
+
+        verifyDoNotProcessEvent(rateCommand, Mockito.mock(Event.class));
     }
 
     @AfterEach

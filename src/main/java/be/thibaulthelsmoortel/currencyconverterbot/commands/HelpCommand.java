@@ -64,7 +64,7 @@ public class HelpCommand extends BotCommand<MessageEmbed> {
             });
 
             MessageEmbed embed = embedBuilder.build();
-            messageReceivedEvent.getChannel().sendMessage(embed).queue();
+            messageReceivedEvent.getChannel().sendMessageEmbeds(embed).queue();
 
             return embed;
         }

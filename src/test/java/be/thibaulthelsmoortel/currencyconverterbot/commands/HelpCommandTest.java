@@ -19,11 +19,6 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
 import be.thibaulthelsmoortel.currencyconverterbot.config.DiscordBotEnvironment;
 import java.util.ArrayList;
@@ -38,6 +33,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 import picocli.CommandLine.Command;
 
 /**
@@ -52,17 +49,18 @@ class HelpCommandTest extends CommandBaseTest {
     void shouldSendHelpMessage() {
         botCommands = new ArrayList<>();
         botCommands.add(new InviteCommand());
-        botCommands.add(mock(HelpCommand.class));
+        botCommands.add(Mockito.mock(HelpCommand.class));
 
-        DiscordBotEnvironment environment = mock(DiscordBotEnvironment.class);
-        when(environment.getCommandPrefix()).thenReturn("/");
+        DiscordBotEnvironment environment = Mockito.mock(DiscordBotEnvironment.class);
+        Mockito.when(environment.getCommandPrefix()).thenReturn("/");
         HelpCommand command = new HelpCommand(environment, botCommands);
         command.setEvent(messageReceivedEvent);
 
-        when(messageChannel.getType()).thenReturn(ChannelType.UNKNOWN);
-        when(messageChannel.getId()).thenReturn("id");
-        MessageAction messageAction = mock(MessageAction.class);
-        when(messageChannel.sendMessage(any(MessageEmbed.class))).thenReturn(messageAction);
+        Mockito.when(messageChannel.getType()).thenReturn(ChannelType.UNKNOWN);
+        Mockito.when(messageChannel.getId()).thenReturn("id");
+        MessageAction messageAction = Mockito.mock(MessageAction.class);
+        Mockito.when(messageChannel.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class)))
+                .thenReturn(messageAction);
 
         MessageEmbed embedded = command.call();
         Assertions.assertNotNull(embedded, "Message must not be null.");
@@ -72,10 +70,12 @@ class HelpCommandTest extends CommandBaseTest {
         botCommands.forEach(botCommand -> {
             if (!(botCommand instanceof HelpCommand)) {
                 Command annotation = botCommand.getClass().getAnnotation(Command.class);
-                Assertions.assertTrue(embedded.getFields().stream().anyMatch(field -> Objects.equals(field.getName(), annotation.name())),
-                    "Message should contain command name.");
-                Assertions.assertTrue(embedded.getFields().stream().anyMatch(field -> Objects.equals(field.getValue(), parseDescription(annotation))),
-                    "Message should contain command description.");
+                Assertions.assertTrue(embedded.getFields().stream()
+                                .anyMatch(field -> Objects.equals(field.getName(), annotation.name())),
+                        "Message should contain command name.");
+                Assertions.assertTrue(embedded.getFields().stream()
+                                .anyMatch(field -> Objects.equals(field.getValue(), parseDescription(annotation))),
+                        "Message should contain command description.");
             }
         });
 
@@ -83,7 +83,7 @@ class HelpCommandTest extends CommandBaseTest {
     }
 
     void verifyOneMessageSent(MessageAction messageAction) {
-        verify(messageAction).queue();
+        Mockito.verify(messageAction).queue();
     }
 
     private String parseDescription(Command annotation) {
@@ -94,9 +94,9 @@ class HelpCommandTest extends CommandBaseTest {
     @DisplayName("Should not process event.")
     @Test
     void shouldNotProcessEvent() throws Exception {
-        HelpCommand command = new HelpCommand(mock(DiscordBotEnvironment.class), botCommands);
+        HelpCommand command = new HelpCommand(Mockito.mock(DiscordBotEnvironment.class), botCommands);
 
-        verifyDoNotProcessEvent(command, mock(Event.class));
+        verifyDoNotProcessEvent(command, Mockito.mock(Event.class));
     }
 
 }
