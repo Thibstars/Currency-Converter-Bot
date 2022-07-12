@@ -19,82 +19,76 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
-import be.thibaulthelsmoortel.currencyconverterbot.commands.candidates.ExchangeRateProviderCandidates;
+import be.thibaulthelsmoortel.currencyconverterbot.client.rate.payload.RateResponse;
+import be.thibaulthelsmoortel.currencyconverterbot.client.rates.payload.RatesRequest;
+import be.thibaulthelsmoortel.currencyconverterbot.client.rates.payload.RatesResponse;
+import be.thibaulthelsmoortel.currencyconverterbot.client.rates.service.RatesService;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.converters.LowerToUpperCaseConverter;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import javax.money.CurrencyUnit;
-import javax.money.Monetary;
-import javax.money.convert.ExchangeRate;
-import javax.money.convert.ExchangeRateProvider;
-import javax.money.convert.MonetaryConversions;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
 /**
  * @author Thibault Helsmoortel
  */
+@RequiredArgsConstructor
 @Command(name = "rates", description = "Provides current currency rates.")
 @Component
 public class RatesCommand extends BotCommand<MessageEmbed> {
 
+    private static final String ERROR_MESSAGE = "Unable to perform the rates request. Please verify the input parameters and try again. If the issue persists, please make sure to report the issue via the 'issue' command.";
+
     private static final String HEADER = "Currency rates";
 
     @SuppressWarnings("unused") // Used through option
-    @Option(names = {"-c", "--currency"}, paramLabel = "CURRENCY", description = "The base currency iso code.", defaultValue = "EUR", arity = "0..1",
-        converter = LowerToUpperCaseConverter.class)
+    @Option(names = {"-c", "--currency"}, paramLabel = "CURRENCY", description = "The base currency iso code. Default: ${DEFAULT-VALUE}", defaultValue = "EUR", arity = "0..1", converter = LowerToUpperCaseConverter.class)
+    @NotBlank
+    @Size(min = 3, max = 3)
     private String baseCurrencyIsoCode;
 
-    @Option(names = {"-p", "--providers"}, paramLabel = "PROVIDERS", description = "Exchange rate providers. Candidates: ${COMPLETION-CANDIDATES}", arity = "0..*",
-        completionCandidates = ExchangeRateProviderCandidates.class, converter = LowerToUpperCaseConverter.class)
-    private String[] providers;
+    private final RatesService ratesService;
 
     @Override
     public MessageEmbed call() {
         MessageEmbed embed = null;
+        validate();
 
         if (getEvent() instanceof MessageReceivedEvent messageReceivedEvent) {
             var embedBuilder = new EmbedBuilder();
             embedBuilder.setTitle(HEADER);
 
-            ExchangeRateProvider rateProvider;
+            RatesRequest ratesRequest = new RatesRequest();
+            ratesRequest.setBaseIsoCode(baseCurrencyIsoCode);
 
-            if (providers != null && providers.length > 0) {
-                rateProvider = MonetaryConversions.getExchangeRateProvider(providers);
-            } else {
-                rateProvider = MonetaryConversions.getExchangeRateProvider();
+            try {
+                RatesResponse response = ratesService.getRates(ratesRequest);
+                List<RateResponse> rates = response.getRates()
+                        .stream()
+                        .filter(Objects::nonNull)
+                        .sorted(Comparator.comparing(RateResponse::getResult))
+                        .toList();
+
+                rates.forEach(rate -> embedBuilder.addField(rate.getTargetIsoCode(), rate.getResult().toPlainString(), true));
+
+                embed = embedBuilder.build();
+                messageReceivedEvent.getChannel().sendMessageEmbeds(embed).queue();
+            } catch (WebClientResponseException e) {
+                embedBuilder.setDescription(ERROR_MESSAGE);
+                embed = embedBuilder.build();
+                messageReceivedEvent.getChannel().sendMessageEmbeds(embed).queue();
             }
-
-            Collection<CurrencyUnit> currencies = Monetary.getCurrencies();
-
-            List<ExchangeRate> exchangeRates = currencies.stream()
-                .filter(currency -> baseCurrencyIsoCode != null && rateProvider.isAvailable(baseCurrencyIsoCode, currency.getCurrencyCode()))
-                .map(currency -> {
-                    try {
-                        return rateProvider.getExchangeRate(baseCurrencyIsoCode, currency.getCurrencyCode());
-                    } catch (Exception e) {
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
-                .sorted(Comparator.comparing(ExchangeRate::getFactor))
-                .toList();
-
-            exchangeRates.forEach(
-                exchangeRate -> embedBuilder.addField(exchangeRate.getCurrency().getCurrencyCode(), exchangeRate.getFactor().toString(), true));
-
-            embed = embedBuilder.build();
-            messageReceivedEvent.getChannel().sendMessage(embed).queue();
         }
-
-        reset();
 
         return embed;
     }
@@ -103,9 +97,5 @@ public class RatesCommand extends BotCommand<MessageEmbed> {
     @SuppressWarnings("all")
     void setBaseCurrencyIsoCode(String baseCurrencyIsoCode) {
         this.baseCurrencyIsoCode = baseCurrencyIsoCode;
-    }
-
-    private void reset() {
-        providers = null;
     }
 }

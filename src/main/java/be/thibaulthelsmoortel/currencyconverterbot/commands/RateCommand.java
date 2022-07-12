@@ -19,15 +19,18 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
-import be.thibaulthelsmoortel.currencyconverterbot.commands.candidates.ExchangeRateProviderCandidates;
+import be.thibaulthelsmoortel.currencyconverterbot.client.rate.payload.RateRequest;
+import be.thibaulthelsmoortel.currencyconverterbot.client.rate.payload.RateResponse;
+import be.thibaulthelsmoortel.currencyconverterbot.client.rate.service.RateService;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.converters.LowerToUpperCaseConverter;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
-import javax.money.UnknownCurrencyException;
-import javax.money.convert.ExchangeRateProvider;
-import javax.money.convert.MonetaryConversions;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import org.javamoney.moneta.Money;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
@@ -35,50 +38,52 @@ import picocli.CommandLine.Parameters;
 /**
  * @author Thibault Helsmoortel
  */
+@RequiredArgsConstructor
 @Command(name = "rate", description = "Provides current currency rate.")
 @Component
 public class RateCommand extends BotCommand<String> {
 
+    private static final String ERROR_MESSAGE = "Unable to perform the rate request. Please verify the input parameters and try again. If the issue persists, please make sure to report the issue via the 'issue' command.";
+
     @Parameters(description = "ISO code of the currency to lookup.", arity = "1", index = "0", converter = LowerToUpperCaseConverter.class)
+    @NotNull
+    @NotBlank
+    @Size(min = 3, max = 3)
     private String isoCode;
 
     @SuppressWarnings("unused") // Used through option
-    @Option(names = {"-c", "--currency"}, paramLabel = "CURRENCY", description = "The base currency iso code.", defaultValue = "EUR", arity = "0..1",
-    converter = LowerToUpperCaseConverter.class)
+    @Option(names = {"-c", "--currency"}, paramLabel = "CURRENCY", description = "The base currency iso code.  Default: ${DEFAULT-VALUE}", defaultValue = "EUR", arity = "0..1", converter = LowerToUpperCaseConverter.class)
+    @NotBlank
+    @Size(min = 3, max = 3)
     private String baseCurrencyIsoCode;
 
-    @Option(names = {"-p", "--providers"}, paramLabel = "PROVIDERS", description = "Exchange rate providers. Candidates: ${COMPLETION-CANDIDATES}", arity = "0..*",
-        completionCandidates = ExchangeRateProviderCandidates.class, converter = LowerToUpperCaseConverter.class)
-    private String[] providers;
+    private final RateService rateService;
 
     @Override
     public String call() {
         String message = null;
-        if (getEvent() instanceof MessageReceivedEvent messageReceivedEvent) {
-            ExchangeRateProvider rateProvider;
+        validate();
 
-            if (providers != null && providers.length > 0) {
-                rateProvider = MonetaryConversions.getExchangeRateProvider(providers);
-            } else {
-                rateProvider = MonetaryConversions.getExchangeRateProvider();
-            }
+        if (getEvent() instanceof MessageReceivedEvent messageReceivedEvent) {
+            RateRequest rateRequest = new RateRequest();
+            rateRequest.setBaseIsoCode(baseCurrencyIsoCode);
+            rateRequest.setTargetIsoCode(isoCode);
 
             try {
-                if (baseCurrencyIsoCode != null && rateProvider.isAvailable(baseCurrencyIsoCode, isoCode)) {
-                    var exchangeRate = rateProvider.getExchangeRate(baseCurrencyIsoCode, isoCode);
-                    var result = Money.of(exchangeRate.getFactor(), exchangeRate.getCurrency());
-                    message = result.toString();
+                RateResponse rate = rateService.getRate(rateRequest);
+
+                if (rate != null && rate.getResult() != null) {
+                    message = "1" + baseCurrencyIsoCode.toUpperCase() + " = " + rate.getResult() + " " + isoCode.toUpperCase();
                 } else {
-                    message = "Couldn't find rate for specified ISO code.";
+                    message = ERROR_MESSAGE;
                 }
-            } catch (UnknownCurrencyException e) {
-                message = "Currency ISO code not found.";
+
+                messageReceivedEvent.getChannel().sendMessage(message).queue();
+            } catch (WebClientResponseException e) {
+                message = ERROR_MESSAGE;
+                messageReceivedEvent.getChannel().sendMessage(message).queue();
             }
-
-            messageReceivedEvent.getChannel().sendMessage(message).queue();
         }
-
-        reset();
 
         return message;
     }
@@ -86,10 +91,6 @@ public class RateCommand extends BotCommand<String> {
     // Visible for testing
     void setIsoCode(String isoCode) {
         this.isoCode = isoCode;
-    }
-
-    private void reset() {
-        providers = null;
     }
 
     // Visible for testing

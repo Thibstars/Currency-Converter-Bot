@@ -19,13 +19,6 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.Event;
@@ -34,7 +27,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -60,10 +55,10 @@ class InviteCommandTest extends CommandBaseTest {
 
     @BeforeEach
     void setUp() {
-        when(messageReceivedEvent.getJDA()).thenReturn(jda);
-        when(jda.getInviteUrl(Permission.EMPTY_PERMISSIONS)).thenReturn(INVITE_URL_NO_PERMISSIONS);
-        when(messageReceivedEvent.getChannel()).thenReturn(messageChannel);
-        when(messageChannel.sendMessage(anyString())).thenReturn(mock(MessageAction.class));
+        Mockito.when(messageReceivedEvent.getJDA()).thenReturn(jda);
+        Mockito.when(jda.getInviteUrl(Permission.EMPTY_PERMISSIONS)).thenReturn(INVITE_URL_NO_PERMISSIONS);
+        Mockito.when(messageReceivedEvent.getChannel()).thenReturn(messageChannel);
+        Mockito.when(messageChannel.sendMessage(ArgumentMatchers.anyString())).thenReturn(Mockito.mock(MessageAction.class));
     }
 
     @DisplayName("Should return invite url without permissions.")
@@ -81,9 +76,9 @@ class InviteCommandTest extends CommandBaseTest {
     }
 
     private void verifyOneMessageSent() {
-        verify(messageReceivedEvent).getChannel();
-        verify(messageChannel).sendMessage(anyString());
-        verifyNoMoreInteractions(messageChannel);
+        Mockito.verify(messageReceivedEvent).getChannel();
+        Mockito.verify(messageChannel).sendMessage(ArgumentMatchers.anyString());
+        Mockito.verifyNoMoreInteractions(messageChannel);
     }
 
     @DisplayName("Should return invite url with permissions.")
@@ -93,7 +88,7 @@ class InviteCommandTest extends CommandBaseTest {
         inviteCommand.setPermissionsRequested(new boolean[]{true});
         inviteCommand.setPermissions(permissions);
 
-        when(jda.getInviteUrl(permissions)).thenReturn(INVITE_URL_WITH_PERMISSIONS);
+        Mockito.when(jda.getInviteUrl(permissions)).thenReturn(INVITE_URL_WITH_PERMISSIONS);
         inviteCommand.setEvent(messageReceivedEvent);
 
         String message = inviteCommand.call();
@@ -110,7 +105,7 @@ class InviteCommandTest extends CommandBaseTest {
         inviteCommand.setPermissionsRequested(new boolean[]{true});
         inviteCommand.setPermissions(null);
 
-        when(jda.getInviteUrl(any(Permission[].class))).thenReturn(INVITE_URL_WITH_PERMISSIONS);
+        Mockito.when(jda.getInviteUrl(ArgumentMatchers.any(Permission[].class))).thenReturn(INVITE_URL_WITH_PERMISSIONS);
         inviteCommand.setEvent(messageReceivedEvent);
 
         String message = inviteCommand.call();
@@ -124,6 +119,6 @@ class InviteCommandTest extends CommandBaseTest {
     @DisplayName("Should not process event.")
     @Test
     void shouldNotProcessEvent() throws Exception {
-        verifyDoNotProcessEvent(inviteCommand, mock(Event.class));
+        verifyDoNotProcessEvent(inviteCommand, Mockito.mock(Event.class));
     }
 }

@@ -21,8 +21,6 @@ package be.thibaulthelsmoortel.currencyconverterbot.application;
 
 import static org.junit.jupiter.params.ParameterizedTest.ARGUMENTS_PLACEHOLDER;
 import static org.junit.jupiter.params.ParameterizedTest.INDEX_PLACEHOLDER;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.CommandExecutor;
 import be.thibaulthelsmoortel.currencyconverterbot.config.DiscordBotEnvironment;
@@ -34,6 +32,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mockito;
 
 /**
  * @author Thibault Helsmoortel
@@ -46,15 +45,15 @@ class DiscordBotRunnerContextUnawareTest {
 
     @BeforeEach
     void setUp() {
-        this.discordBotEnvironment = mock(DiscordBotEnvironment.class);
-        this.discordBotRunner = new DiscordBotRunner(discordBotEnvironment, mock(CommandExecutor.class));
+        this.discordBotEnvironment = Mockito.mock(DiscordBotEnvironment.class);
+        this.discordBotRunner = new DiscordBotRunner(discordBotEnvironment, Mockito.mock(CommandExecutor.class));
     }
 
     @DisplayName("Should throw MissingTokenException.")
     @ParameterizedTest(name = INDEX_PLACEHOLDER + ": " + ARGUMENTS_PLACEHOLDER)
     @MethodSource("blankStrings")
     void shouldThrowMissingTokenException(String token) {
-        when(discordBotEnvironment.getToken()).thenReturn(token);
+        Mockito.when(discordBotEnvironment.getToken()).thenReturn(token);
 
         Assertions.assertThrows(MissingTokenException.class, () -> discordBotRunner.run(), "Exception should be thrown when no token was provided.");
         Assertions.assertThrows(MissingTokenException.class, () -> discordBotRunner.run(token), "Exception should be thrown when no token was provided.");
@@ -63,7 +62,7 @@ class DiscordBotRunnerContextUnawareTest {
     @DisplayName("Should not throw MissingTokenException.")
     @Test
     void shouldNotThrowMissingTokenException() {
-        when(discordBotEnvironment.getToken()).thenReturn("testToken");
+        Mockito.when(discordBotEnvironment.getToken()).thenReturn("testToken");
         Assertions.assertDoesNotThrow(() -> discordBotRunner.run());
     }
 

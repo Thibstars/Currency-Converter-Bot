@@ -42,15 +42,24 @@
       "description": "Donation url."
     },
     {
-      "name": "bot.warmup",
-      "type": "java.lang.Boolean",
-      "defaultValue": true,
-      "description": "Flag defining whether warmup should be performed or not."
-    },
-    {
       "name": "bot.issues.url",
       "type": "java.lang.String",
       "description": "Url for reporting issues."
+    },
+    {
+      "name": "api.base.url",
+      "type": "java.lang.String",
+      "description": "Base url of the REST API."
+    },
+    {
+      "name": "api.auth.username",
+      "type": "java.lang.String",
+      "description": "Username to use for authenticated REST API calls."
+    },
+    {
+      "name": "api.auth.password",
+      "type": "java.lang.String",
+      "description": "Password to use for authenticated REST API calls."
     }
   ]
 }

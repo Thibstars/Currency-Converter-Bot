@@ -19,69 +19,78 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
+import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.payload.ConversionRequest;
+import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.payload.ConversionResponse;
+import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.service.ConversionService;
+import be.thibaulthelsmoortel.currencyconverterbot.commands.converters.LowerToUpperCaseConverter;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
-import java.util.Collection;
-import java.util.NoSuchElementException;
-import javax.money.CurrencyUnit;
-import javax.money.Monetary;
-import javax.money.MonetaryAmount;
-import javax.money.convert.CurrencyConversion;
-import javax.money.convert.MonetaryConversions;
+import java.math.BigDecimal;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import org.javamoney.moneta.Money;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
 /**
  * @author Thibault Helsmoortel
  */
+@RequiredArgsConstructor
 @Command(name = "convert", description = "Converts one currency value to another.")
 @Component
 public class ConvertCommand extends BotCommand<String> {
 
+    private static final String ERROR_MESSAGE = "Unable to perform the conversion request. Please verify the input parameters and try again. If the issue persists, please make sure to report the issue via the 'issue' command.";
+
     @Parameters(description = "Value of the currency to convert.", arity = "1", index = "0")
-    private double sourceAmount;
-    @Parameters(description = "ISO code of the source currency.", arity = "1", index = "1")
+    @NotNull
+    private BigDecimal sourceAmount;
+    @Parameters(description = "ISO code of the source currency.", arity = "1", index = "1", converter = LowerToUpperCaseConverter.class)
+    @NotBlank
+    @Size(min = 3, max = 3)
     private String sourceIsoCode;
-    @Parameters(description = "ISO code of the target currency.", arity = "1", index = "2")
+    @Parameters(description = "ISO code of the target currency.", arity = "1", index = "2", converter = LowerToUpperCaseConverter.class)
+    @NotBlank
+    @Size(min = 3, max = 3)
     private String targetIsoCode;
+
+    private final ConversionService conversionService;
 
     @Override
     public String call() {
         String message = null;
+        validate();
 
         if (getEvent() instanceof MessageReceivedEvent messageReceivedEvent) {
+            ConversionRequest conversionRequest = new ConversionRequest();
+            conversionRequest.setSourceAmount(sourceAmount);
+            conversionRequest.setSourceIsoCode(sourceIsoCode);
+            conversionRequest.setTargetIsoCode(targetIsoCode);
+
             try {
-                Collection<CurrencyUnit> currencies = Monetary.getCurrencies();
-                CurrencyUnit sourceUnit = currencies.stream()
-                    .filter(unit -> unit.getCurrencyCode().equalsIgnoreCase(sourceIsoCode))
-                    .findFirst()
-                    .orElseThrow();
+                ConversionResponse conversion = conversionService.getConversion(conversionRequest);
 
-                CurrencyUnit targetUnit =
-                    currencies.stream()
-                        .filter(unit -> unit.getCurrencyCode().equalsIgnoreCase(targetIsoCode))
-                        .findFirst()
-                        .orElseThrow();
+                if (conversion != null && conversion.getResult() != null) {
+                    message = sourceAmount + " " + sourceIsoCode.toUpperCase() + " = " + conversion.getResult() + " " + targetIsoCode.toUpperCase();
+                } else {
+                    message = ERROR_MESSAGE;
+                }
 
-                CurrencyConversion conversion = MonetaryConversions.getConversion(targetUnit);
-
-                MonetaryAmount monetarySourceAmount = Money.of(sourceAmount, sourceUnit);
-
-                message = sourceAmount + " " + sourceIsoCode.toUpperCase() + " = " + monetarySourceAmount.with(conversion).toString();
-            } catch (NoSuchElementException e) {
-                message = "Input parameters not recognized.";
+                messageReceivedEvent.getChannel().sendMessage(message).queue();
+            } catch (WebClientResponseException e) {
+                message = ERROR_MESSAGE;
+                messageReceivedEvent.getChannel().sendMessage(message).queue();
             }
-
-            messageReceivedEvent.getChannel().sendMessage(message).queue();
         }
 
         return message;
     }
 
     // Visible for testing
-    void setSourceAmount(double sourceAmount) {
+    void setSourceAmount(BigDecimal sourceAmount) {
         this.sourceAmount = sourceAmount;
     }
 

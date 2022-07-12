@@ -55,7 +55,7 @@ public class MessageChannelOutputStream extends OutputStream {
             var embedBuilder = new EmbedBuilder();
             StringBuilder descriptionBuilder = embedBuilder.getDescriptionBuilder();
             descriptionBuilder.append(content);
-            messageChannel.sendMessage(embedBuilder.build()).queue();
+            messageChannel.sendMessageEmbeds(embedBuilder.build()).queue();
         }
     }
 

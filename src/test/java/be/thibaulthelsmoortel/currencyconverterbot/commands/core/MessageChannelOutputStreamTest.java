@@ -21,11 +21,6 @@ package be.thibaulthelsmoortel.currencyconverterbot.commands.core;
 
 import static org.junit.jupiter.params.ParameterizedTest.ARGUMENTS_PLACEHOLDER;
 import static org.junit.jupiter.params.ParameterizedTest.INDEX_PLACEHOLDER;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 
 import be.thibaulthelsmoortel.currencyconverterbot.BaseTest;
 import java.util.stream.Stream;
@@ -39,7 +34,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 
 /**
  * @author Thibault Helsmoortel
@@ -56,7 +53,7 @@ class MessageChannelOutputStreamTest extends BaseTest {
         messageChannelOutputStream = new MessageChannelOutputStream();
         messageChannelOutputStream.setMessageChannel(messageChannel);
 
-        when(messageChannel.sendMessage(any(MessageEmbed.class))).thenReturn(mock(MessageAction.class));
+        Mockito.when(messageChannel.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class))).thenReturn(Mockito.mock(MessageAction.class));
     }
 
     @DisplayName("Should write message to channel.")
@@ -69,7 +66,7 @@ class MessageChannelOutputStreamTest extends BaseTest {
 
         messageChannelOutputStream.write(message.getBytes(), 0, message.length());
 
-        verify(messageChannel).sendMessage(embedBuilder.build());
+        Mockito.verify(messageChannel).sendMessageEmbeds(embedBuilder.build());
     }
 
     @DisplayName("Should write char code to channel.")
@@ -83,7 +80,7 @@ class MessageChannelOutputStreamTest extends BaseTest {
         StringBuilder descriptionBuilder = embedBuilder.getDescriptionBuilder();
         descriptionBuilder.append(message);
 
-        verify(messageChannel).sendMessage(embedBuilder.build());
+        Mockito.verify(messageChannel).sendMessageEmbeds(embedBuilder.build());
     }
 
     @DisplayName("Should not write blank message to channel.")
@@ -92,15 +89,16 @@ class MessageChannelOutputStreamTest extends BaseTest {
     void shouldNotWriteBlankMessageToChannel(String message) {
         messageChannelOutputStream.write(message.getBytes(), 0, message.length());
 
-        verifyNoMoreInteractions(messageChannel);
+        Mockito.verifyNoMoreInteractions(messageChannel);
     }
 
+    @DisplayName("Should not write null message to channel.")
     @SuppressWarnings("all")
     @Test
     void shouldNotWriteNullMessageToChannel() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> messageChannelOutputStream.write(null, 0, 0), "Shouldn't be able to pass null.");
 
-        verifyNoMoreInteractions(messageChannel);
+        Mockito.verifyNoMoreInteractions(messageChannel);
     }
 
     static Stream<String> blankStrings() {
