@@ -35,6 +35,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -44,6 +45,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
  */
 class RatesCommandTest extends CommandBaseTest {
 
+    @InjectMocks
     private RatesCommand ratesCommand;
 
     @Mock
@@ -53,7 +55,6 @@ class RatesCommandTest extends CommandBaseTest {
     @BeforeEach
     protected void setUp() {
         super.setUp();
-        this.ratesCommand = new RatesCommand(ratesService);
         ratesCommand.setEvent(messageReceivedEvent);
         ratesCommand.setBaseCurrencyIsoCode("EUR");
     }

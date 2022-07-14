@@ -52,7 +52,6 @@ class ConvertCommandTest extends CommandBaseTest {
     @BeforeEach
     protected void setUp() {
         super.setUp();
-        this.convertCommand = new ConvertCommand(conversionService);
         convertCommand.setEvent(messageReceivedEvent);
     }
 
