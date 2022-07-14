@@ -101,6 +101,7 @@ class RateCommandTest extends CommandBaseTest {
         rateCommand.setIsoCode("EUR");
 
         RateRequest rateRequest = new RateRequest();
+        rateRequest.setTargetIsoCode("EUR");
         rateRequest.setBaseIsoCode("EUR");
 
         Mockito.when(rateService.getRate(rateRequest)).thenThrow(WebClientResponseException.class);
