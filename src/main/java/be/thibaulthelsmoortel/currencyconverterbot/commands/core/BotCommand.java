@@ -39,7 +39,7 @@ import picocli.CommandLine.Spec;
 @Command(mixinStandardHelpOptions = true, versionProvider = VersionProvider.class)
 public abstract class BotCommand<T> implements Callable<T> {
 
-    @SuppressWarnings("Unused") // Injected by Picocli
+    @SuppressWarnings("UnusedDeclaration") // Injected by Picocli
     @Spec
     private CommandLine.Model.CommandSpec spec;
 

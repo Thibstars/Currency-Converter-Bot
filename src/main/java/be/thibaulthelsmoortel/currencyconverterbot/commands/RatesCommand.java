@@ -47,7 +47,7 @@ import picocli.CommandLine.Option;
 @Component
 public class RatesCommand extends BotCommand<MessageEmbed> {
 
-    private static final String ERROR_MESSAGE = "Unable to perform the rates request. Please verify the input parameters and try again. If the issue persists, please make sure to report the issue via the 'issue' command.";
+    protected static final String ERROR_MESSAGE = "Unable to perform the rates request. Please verify the input parameters and try again. If the issue persists, please make sure to report the issue via the 'issue' command.";
 
     private static final String HEADER = "Currency rates";
 

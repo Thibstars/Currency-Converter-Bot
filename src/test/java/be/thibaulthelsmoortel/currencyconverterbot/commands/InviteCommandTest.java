@@ -54,7 +54,7 @@ class InviteCommandTest extends CommandBaseTest {
     }
 
     @BeforeEach
-    void setUp() {
+    protected void setUp() {
         Mockito.when(messageReceivedEvent.getJDA()).thenReturn(jda);
         Mockito.when(jda.getInviteUrl(Permission.EMPTY_PERMISSIONS)).thenReturn(INVITE_URL_NO_PERMISSIONS);
         Mockito.when(messageReceivedEvent.getChannel()).thenReturn(messageChannel);
