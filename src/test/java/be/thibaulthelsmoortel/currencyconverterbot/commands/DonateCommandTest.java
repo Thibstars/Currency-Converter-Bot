@@ -51,7 +51,7 @@ class DonateCommandTest extends CommandBaseTest {
     }
 
     @BeforeEach
-    void setUp() {
+    protected void setUp() {
         Mockito.when(messageReceivedEvent.getJDA()).thenReturn(jda);
         Mockito.when(messageReceivedEvent.getChannel()).thenReturn(messageChannel);
         Mockito.when(messageChannel.sendMessage(ArgumentMatchers.anyString())).thenReturn(Mockito.mock(MessageAction.class));

@@ -43,7 +43,7 @@ import picocli.CommandLine.Parameters;
 @Component
 public class ConvertCommand extends BotCommand<String> {
 
-    private static final String ERROR_MESSAGE = "Unable to perform the conversion request. Please verify the input parameters and try again. If the issue persists, please make sure to report the issue via the 'issue' command.";
+    protected static final String ERROR_MESSAGE = "Unable to perform the conversion request. Please verify the input parameters and try again. If the issue persists, please make sure to report the issue via the 'issue' command.";
 
     @Parameters(description = "Value of the currency to convert.", arity = "1", index = "0")
     @NotNull

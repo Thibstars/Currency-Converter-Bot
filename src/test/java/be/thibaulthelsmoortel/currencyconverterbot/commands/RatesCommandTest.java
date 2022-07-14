@@ -35,14 +35,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 /**
  * @author Thibault Helsmoortel
  */
 class RatesCommandTest extends CommandBaseTest {
 
+    @InjectMocks
     private RatesCommand ratesCommand;
 
     @Mock
@@ -50,9 +53,8 @@ class RatesCommandTest extends CommandBaseTest {
 
     @Override
     @BeforeEach
-    void setUp() {
+    protected void setUp() {
         super.setUp();
-        this.ratesCommand = new RatesCommand(ratesService);
         ratesCommand.setEvent(messageReceivedEvent);
         ratesCommand.setBaseCurrencyIsoCode("EUR");
     }
@@ -87,6 +89,23 @@ class RatesCommandTest extends CommandBaseTest {
                 "Message should contain USD.");
         Assertions.assertTrue(embed.getFields().stream().anyMatch(field -> Objects.equals(field.getName(), "CAD")),
                 "Message should contain CAD.");
+        verifyOneMessageSent(embed);
+    }
+
+    @DisplayName("Should handle WebClientResponseException.")
+    @Test
+    void shouldHandleWebClientResponseException() {
+        RatesRequest ratesRequest = new RatesRequest();
+        ratesRequest.setBaseIsoCode("EUR");
+
+        Mockito.when(ratesService.getRates(ratesRequest)).thenThrow(WebClientResponseException.class);
+
+        Mockito.when(messageChannel.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class))).thenReturn(Mockito.mock(MessageAction.class));
+
+        MessageEmbed embed = ratesCommand.call();
+
+        Assertions.assertNotNull(embed, "Message should not be null.");
+        Assertions.assertEquals(RatesCommand.ERROR_MESSAGE, embed.getDescription(), "Message should be correct.");
         verifyOneMessageSent(embed);
     }
 
