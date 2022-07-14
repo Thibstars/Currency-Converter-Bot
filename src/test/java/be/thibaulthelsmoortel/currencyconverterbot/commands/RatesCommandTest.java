@@ -51,7 +51,7 @@ class RatesCommandTest extends CommandBaseTest {
 
     @Override
     @BeforeEach
-    void setUp() {
+    protected void setUp() {
         super.setUp();
         this.ratesCommand = new RatesCommand(ratesService);
         ratesCommand.setEvent(messageReceivedEvent);

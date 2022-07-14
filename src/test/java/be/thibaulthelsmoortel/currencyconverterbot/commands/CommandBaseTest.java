@@ -37,20 +37,20 @@ import org.mockito.Mockito;
 /**
  * @author Thibault Helsmoortel
  */
-abstract class CommandBaseTest extends BaseTest {
+public abstract class CommandBaseTest extends BaseTest {
 
     @Mock
-    MessageReceivedEvent messageReceivedEvent;
+    protected MessageReceivedEvent messageReceivedEvent;
 
     @Mock
-    Message message;
+    protected Message message;
 
     @Mock
-    MessageChannel messageChannel;
+    protected MessageChannel messageChannel;
 
     @SuppressWarnings("unchecked")
     @BeforeEach
-    void setUp() {
+    protected void setUp() {
         Mockito.when(messageReceivedEvent.getChannel()).thenReturn(messageChannel);
         Mockito.when(messageReceivedEvent.getMessage()).thenReturn(message);
         Mockito.when(message.addReaction(ArgumentMatchers.anyString())).thenReturn(Mockito.mock(RestAction.class));
@@ -80,7 +80,7 @@ abstract class CommandBaseTest extends BaseTest {
         verifyNoMoreJDAInteractions();
     }
 
-    void verifyNoMoreJDAInteractions() {
+    protected void verifyNoMoreJDAInteractions() {
         Mockito.verifyNoMoreInteractions(messageChannel);
         Mockito.verifyNoMoreInteractions(messageReceivedEvent);
     }
