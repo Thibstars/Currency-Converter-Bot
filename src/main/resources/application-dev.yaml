@@ -17,11 +17,11 @@
 #  along with Currency Converter Bot.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-logging.level.be.thibaulthelsmoortel=DEBUG
+logging:
+  level:
+    be:
+      thibaulthelsmoortel: DEBUG
 
-bot.donation.url=https://github.com/sponsors/Thibstars
-bot.issues.url=https://github.com/Thibstars/Currency-Converter-Bot/issues/new/choose
-
-api.base.url=http://0.0.0.0:8001
-api.auth.username=client
-api.auth.password=clientPassword
+api:
+  base:
+    url: "http://0.0.0.0:8001"

@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2021 Thibault Helsmoortel.
+# Copyright (c) 2022 Thibault Helsmoortel.
 #
 #  This file is part of Currency Converter Bot.
 #
@@ -17,17 +17,25 @@
 #  along with Currency Converter Bot.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-logging.level.be.thibaulthelsmoortel=INFO
+logging:
+  level:
+    be:
+      thibaulthelsmoortel: INFO
 
-bot.author=Thibault Helsmoortel
-bot.name=@project.name@
-bot.description=@project.description@
-bot.version=@project.version@
-bot.commandPrefix=/
-bot.processBotMessages=false
-bot.donation.url=https://github.com/sponsors/Thibstars
-bot.issues.url=https://github.com/Thibstars/Currency-Converter-Bot/issues/new/choose
+bot:
+  author: "Thibault Helsmoortel"
+  name: @project.name@
+  description: @project.description@
+  commandPrefix: "/"
+  processBotMessages: false
+  donation:
+    url: "https://github.com/sponsors/Thibstars"
+  issues:
+    url: "https://github.com/Thibstars/Currency-Converter-Bot/issues/new/choose"
 
-api.base.url=${apiBaseUrl}
-api.auth.username=${apiUsername}
-api.auth.password=${apiPassword}
+api:
+  base:
+    url: ${apiBaseUrl}
+  auth:
+    username: ${apiUsername}
+    password: ${apiPassword}

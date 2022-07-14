@@ -73,7 +73,7 @@ public class RateCommand extends BotCommand<String> {
                 RateResponse rate = rateService.getRate(rateRequest);
 
                 if (rate != null && rate.getResult() != null) {
-                    message = "1" + baseCurrencyIsoCode.toUpperCase() + " = " + rate.getResult() + " " + isoCode.toUpperCase();
+                    message = "1 " + baseCurrencyIsoCode.toUpperCase() + " = " + rate.getResult() + " " + isoCode.toUpperCase();
                 } else {
                     message = ERROR_MESSAGE;
                 }
