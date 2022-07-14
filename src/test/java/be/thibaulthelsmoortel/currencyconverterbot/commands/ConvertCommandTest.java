@@ -21,17 +21,21 @@ package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
 import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.payload.ConversionRequest;
 import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.payload.ConversionResponse;
-import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.service.ConversionServiceBean;
+import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.service.ConversionService;
 import java.math.BigDecimal;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 /**
  * @author Thibault Helsmoortel
@@ -42,13 +46,13 @@ class ConvertCommandTest extends CommandBaseTest {
     private ConvertCommand convertCommand;
 
     @Mock
-    private ConversionServiceBean conversionServiceBean;
+    private ConversionService conversionService;
 
     @Override
     @BeforeEach
     void setUp() {
         super.setUp();
-        this.convertCommand = new ConvertCommand(conversionServiceBean);
+        this.convertCommand = new ConvertCommand(conversionService);
         convertCommand.setEvent(messageReceivedEvent);
     }
 
@@ -70,7 +74,7 @@ class ConvertCommandTest extends CommandBaseTest {
 
         ConversionResponse conversionResponse = new ConversionResponse();
         conversionResponse.setResult(BigDecimal.valueOf(3.33));
-        Mockito.when(conversionServiceBean.getConversion(conversionRequest)).thenReturn(conversionResponse);
+        Mockito.when(conversionService.getConversion(conversionRequest)).thenReturn(conversionResponse);
 
         String message = convertCommand.call();
 
@@ -98,7 +102,7 @@ class ConvertCommandTest extends CommandBaseTest {
         conversionRequest.setSourceIsoCode(usdIso);
         conversionRequest.setTargetIsoCode(unrecognizedIsoCode);
 
-        Mockito.when(conversionServiceBean.getConversion(conversionRequest)).thenReturn(null);
+        Mockito.when(conversionService.getConversion(conversionRequest)).thenReturn(null);
 
         String message = convertCommand.call();
 
@@ -106,6 +110,34 @@ class ConvertCommandTest extends CommandBaseTest {
         Assertions.assertEquals(
                 "Unable to perform the conversion request. Please verify the input parameters and try again. If the issue persists, please make sure to report the issue via the 'issue' command.",
                 message, "Message should match.");
+        verifyOneMessageSent(message);
+    }
+
+    @DisplayName("Should handle WebClientResponseException.")
+    @Test
+    void shouldHandleWebClientResponseException() {
+        BigDecimal sourceAmount = BigDecimal.ONE;
+        String usdIso = "USD";
+        String eurIso = "EUR";
+
+        convertCommand.setSourceAmount(sourceAmount);
+        convertCommand.setSourceIsoCode(usdIso);
+        convertCommand.setTargetIsoCode(eurIso);
+
+        ConversionRequest conversionRequest = new ConversionRequest();
+        conversionRequest.setSourceAmount(sourceAmount);
+        conversionRequest.setSourceIsoCode(usdIso);
+        conversionRequest.setTargetIsoCode(eurIso);
+
+        Mockito.when(conversionService.getConversion(conversionRequest)).thenThrow(WebClientResponseException.class);
+
+        Mockito.when(messageChannel.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class))).thenReturn(Mockito.mock(
+                MessageAction.class));
+
+        String message = convertCommand.call();
+
+        Assertions.assertTrue(StringUtils.isNotBlank(message), "Message should not be empty.");
+        Assertions.assertEquals(ConvertCommand.ERROR_MESSAGE, message, "Message should be correct.");
         verifyOneMessageSent(message);
     }
 

@@ -43,7 +43,7 @@ import picocli.CommandLine.Parameters;
 @Component
 public class RateCommand extends BotCommand<String> {
 
-    private static final String ERROR_MESSAGE = "Unable to perform the rate request. Please verify the input parameters and try again. If the issue persists, please make sure to report the issue via the 'issue' command.";
+    protected static final String ERROR_MESSAGE = "Unable to perform the rate request. Please verify the input parameters and try again. If the issue persists, please make sure to report the issue via the 'issue' command.";
 
     @Parameters(description = "ISO code of the currency to lookup.", arity = "1", index = "0", converter = LowerToUpperCaseConverter.class)
     @NotNull

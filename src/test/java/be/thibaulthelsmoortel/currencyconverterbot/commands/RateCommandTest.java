@@ -23,15 +23,19 @@ import be.thibaulthelsmoortel.currencyconverterbot.client.rate.payload.RateReque
 import be.thibaulthelsmoortel.currencyconverterbot.client.rate.payload.RateResponse;
 import be.thibaulthelsmoortel.currencyconverterbot.client.rate.service.RateService;
 import java.math.BigDecimal;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 /**
  * @author Thibault Helsmoortel
@@ -87,6 +91,26 @@ class RateCommandTest extends CommandBaseTest {
         Assertions.assertEquals(
                 "Unable to perform the rate request. Please verify the input parameters and try again. If the issue persists, please make sure to report the issue via the 'issue' command.",
                 message, "Message should match.");
+        verifyOneMessageSent(message);
+    }
+
+    @DisplayName("Should handle WebClientResponseException.")
+    @Test
+    void shouldHandleWebClientResponseException() {
+        rateCommand.setIsoCode("EUR");
+
+        RateRequest rateRequest = new RateRequest();
+        rateRequest.setBaseIsoCode("EUR");
+
+        Mockito.when(rateService.getRate(rateRequest)).thenThrow(WebClientResponseException.class);
+
+        Mockito.when(messageChannel.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class))).thenReturn(Mockito.mock(
+                MessageAction.class));
+
+        String message = rateCommand.call();
+
+        Assertions.assertTrue(StringUtils.isNotBlank(message), "Message should not be empty.");
+        Assertions.assertEquals(RateCommand.ERROR_MESSAGE, message, "Message should be correct.");
         verifyOneMessageSent(message);
     }
 

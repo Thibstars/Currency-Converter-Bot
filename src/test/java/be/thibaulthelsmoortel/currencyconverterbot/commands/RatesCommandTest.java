@@ -37,6 +37,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 /**
  * @author Thibault Helsmoortel
@@ -87,6 +88,23 @@ class RatesCommandTest extends CommandBaseTest {
                 "Message should contain USD.");
         Assertions.assertTrue(embed.getFields().stream().anyMatch(field -> Objects.equals(field.getName(), "CAD")),
                 "Message should contain CAD.");
+        verifyOneMessageSent(embed);
+    }
+
+    @DisplayName("Should handle WebClientResponseException.")
+    @Test
+    void shouldHandleWebClientResponseException() {
+        RatesRequest ratesRequest = new RatesRequest();
+        ratesRequest.setBaseIsoCode("EUR");
+
+        Mockito.when(ratesService.getRates(ratesRequest)).thenThrow(WebClientResponseException.class);
+
+        Mockito.when(messageChannel.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class))).thenReturn(Mockito.mock(MessageAction.class));
+
+        MessageEmbed embed = ratesCommand.call();
+
+        Assertions.assertNotNull(embed, "Message should not be null.");
+        Assertions.assertEquals(RatesCommand.ERROR_MESSAGE, embed.getDescription(), "Message should be correct.");
         verifyOneMessageSent(embed);
     }
 
