@@ -29,7 +29,7 @@ import lombok.ToString;
  */
 @Data
 @ToString
-@EqualsAndHashCode()
+@EqualsAndHashCode
 public class ConversionRequest {
 
     private BigDecimal sourceAmount;
