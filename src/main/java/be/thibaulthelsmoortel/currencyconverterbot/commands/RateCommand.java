@@ -24,9 +24,8 @@ import be.thibaulthelsmoortel.currencyconverterbot.client.rate.payload.RateRespo
 import be.thibaulthelsmoortel.currencyconverterbot.client.rate.service.RateService;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.converters.LowerToUpperCaseConverter;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
-import javax.validation.constraints.NotBlank;
+import be.thibaulthelsmoortel.currencyconverterbot.validation.CurrencyIsoCode;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.springframework.stereotype.Component;
@@ -47,14 +46,12 @@ public class RateCommand extends BotCommand<String> {
 
     @Parameters(description = "ISO code of the currency to lookup.", arity = "1", index = "0", converter = LowerToUpperCaseConverter.class)
     @NotNull
-    @NotBlank
-    @Size(min = 3, max = 3)
+    @CurrencyIsoCode
     private String isoCode;
 
     @SuppressWarnings("unused") // Used through option
     @Option(names = {"-c", "--currency"}, paramLabel = "CURRENCY", description = "The base currency iso code.  Default: ${DEFAULT-VALUE}", defaultValue = "EUR", arity = "0..1", converter = LowerToUpperCaseConverter.class)
-    @NotBlank
-    @Size(min = 3, max = 3)
+    @CurrencyIsoCode
     private String baseCurrencyIsoCode;
 
     private final RateService rateService;

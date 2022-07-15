@@ -24,10 +24,9 @@ import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.payload.Con
 import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.service.ConversionService;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.converters.LowerToUpperCaseConverter;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
+import be.thibaulthelsmoortel.currencyconverterbot.validation.CurrencyIsoCode;
 import java.math.BigDecimal;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.springframework.stereotype.Component;
@@ -49,12 +48,10 @@ public class ConvertCommand extends BotCommand<String> {
     @NotNull
     private BigDecimal sourceAmount;
     @Parameters(description = "ISO code of the source currency.", arity = "1", index = "1", converter = LowerToUpperCaseConverter.class)
-    @NotBlank
-    @Size(min = 3, max = 3)
+    @CurrencyIsoCode
     private String sourceIsoCode;
     @Parameters(description = "ISO code of the target currency.", arity = "1", index = "2", converter = LowerToUpperCaseConverter.class)
-    @NotBlank
-    @Size(min = 3, max = 3)
+    @CurrencyIsoCode
     private String targetIsoCode;
 
     private final ConversionService conversionService;

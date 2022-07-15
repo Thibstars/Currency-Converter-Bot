@@ -25,11 +25,10 @@ import be.thibaulthelsmoortel.currencyconverterbot.client.rates.payload.RatesRes
 import be.thibaulthelsmoortel.currencyconverterbot.client.rates.service.RatesService;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.converters.LowerToUpperCaseConverter;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
+import be.thibaulthelsmoortel.currencyconverterbot.validation.CurrencyIsoCode;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -53,8 +52,7 @@ public class RatesCommand extends BotCommand<MessageEmbed> {
 
     @SuppressWarnings("unused") // Used through option
     @Option(names = {"-c", "--currency"}, paramLabel = "CURRENCY", description = "The base currency iso code. Default: ${DEFAULT-VALUE}", defaultValue = "EUR", arity = "0..1", converter = LowerToUpperCaseConverter.class)
-    @NotBlank
-    @Size(min = 3, max = 3)
+    @CurrencyIsoCode
     private String baseCurrencyIsoCode;
 
     private final RatesService ratesService;
