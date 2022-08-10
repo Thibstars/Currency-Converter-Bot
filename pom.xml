@@ -52,7 +52,7 @@
 		<jda.version>4.4.0_350</jda.version>
 		<apache.commons.version>3.12.0</apache.commons.version>
 		<picocli.version>4.6.3</picocli.version>
-		<dbl.version>2.0.1</dbl.version>
+		<top-gg.version>2.1.2</top-gg.version>
 		<lombok.version>1.18.24</lombok.version>
 		<javax.servlet-api.version>4.0.1</javax.servlet-api.version>
 
@@ -110,7 +110,7 @@
 		<dependency>
 			<groupId>com.github.top-gg</groupId>
 			<artifactId>java-sdk</artifactId>
-			<version>${dbl.version}</version>
+			<version>${top-gg.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
