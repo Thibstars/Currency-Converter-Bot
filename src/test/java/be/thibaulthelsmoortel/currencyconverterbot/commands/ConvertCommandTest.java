@@ -25,7 +25,7 @@ import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.service.Con
 import java.math.BigDecimal;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.Event;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -130,8 +130,8 @@ class ConvertCommandTest extends CommandBaseTest {
 
         Mockito.when(conversionService.getConversion(conversionRequest)).thenThrow(WebClientResponseException.class);
 
-        Mockito.when(messageChannel.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class))).thenReturn(Mockito.mock(
-                MessageAction.class));
+        Mockito.when(messageChannelUnion.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class)))
+                .thenReturn(Mockito.mock(MessageCreateAction.class));
 
         String message = convertCommand.call();
 

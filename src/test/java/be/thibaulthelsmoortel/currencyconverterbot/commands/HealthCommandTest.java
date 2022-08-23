@@ -22,7 +22,7 @@ package be.thibaulthelsmoortel.currencyconverterbot.commands;
 import be.thibaulthelsmoortel.currencyconverterbot.client.health.payload.HealthResponse;
 import be.thibaulthelsmoortel.currencyconverterbot.client.health.service.HealthServiceBean;
 import net.dv8tion.jda.api.events.Event;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -62,14 +62,15 @@ class HealthCommandTest extends CommandBaseTest {
 
     @BeforeEach
     protected void setUp() {
-        Mockito.when(messageReceivedEvent.getChannel()).thenReturn(messageChannel);
-        Mockito.when(messageChannel.sendMessage(ArgumentMatchers.anyString())).thenReturn(Mockito.mock(MessageAction.class));
+        Mockito.when(messageReceivedEvent.getChannel()).thenReturn(messageChannelUnion);
+        Mockito.when(messageChannelUnion.sendMessage(ArgumentMatchers.anyString()))
+                .thenReturn(Mockito.mock(MessageCreateAction.class));
     }
 
     private void verifyOneMessageSent() {
         Mockito.verify(messageReceivedEvent).getChannel();
-        Mockito.verify(messageChannel).sendMessage(ArgumentMatchers.anyString());
-        Mockito.verifyNoMoreInteractions(messageChannel);
+        Mockito.verify(messageChannelUnion).sendMessage(ArgumentMatchers.anyString());
+        Mockito.verifyNoMoreInteractions(messageChannelUnion);
     }
 
     @DisplayName("Should not process event.")

@@ -28,7 +28,7 @@ import java.util.Objects;
 import java.util.Set;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.Event;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -79,7 +79,8 @@ class RatesCommandTest extends CommandBaseTest {
 
         Mockito.when(ratesService.getRates(ratesRequest)).thenReturn(ratesResponse);
 
-        Mockito.when(messageChannel.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class))).thenReturn(Mockito.mock(MessageAction.class));
+        Mockito.when(messageChannelUnion.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class)))
+                .thenReturn(Mockito.mock(MessageCreateAction.class));
 
         MessageEmbed embed = ratesCommand.call();
 
@@ -100,7 +101,8 @@ class RatesCommandTest extends CommandBaseTest {
 
         Mockito.when(ratesService.getRates(ratesRequest)).thenThrow(WebClientResponseException.class);
 
-        Mockito.when(messageChannel.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class))).thenReturn(Mockito.mock(MessageAction.class));
+        Mockito.when(messageChannelUnion.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class)))
+                .thenReturn(Mockito.mock(MessageCreateAction.class));
 
         MessageEmbed embed = ratesCommand.call();
 

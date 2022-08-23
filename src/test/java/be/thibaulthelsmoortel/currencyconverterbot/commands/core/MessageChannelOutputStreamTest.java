@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -53,7 +53,8 @@ class MessageChannelOutputStreamTest extends BaseTest {
         messageChannelOutputStream = new MessageChannelOutputStream();
         messageChannelOutputStream.setMessageChannel(messageChannel);
 
-        Mockito.when(messageChannel.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class))).thenReturn(Mockito.mock(MessageAction.class));
+        Mockito.when(messageChannel.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class)))
+                .thenReturn(Mockito.mock(MessageCreateAction.class));
     }
 
     @DisplayName("Should write message to channel.")

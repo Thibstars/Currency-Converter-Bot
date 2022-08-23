@@ -21,10 +21,10 @@ package be.thibaulthelsmoortel.currencyconverterbot.commands.core;
 
 import be.thibaulthelsmoortel.currencyconverterbot.BaseTest;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.AboutCommand;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -48,7 +48,7 @@ class CommandExecutorTest extends BaseTest {
     private MessageReceivedEvent messageReceivedEvent;
 
     @Mock
-    private MessageChannel messageChannel;
+    private MessageChannelUnion messageChannelUnion;
 
     @Autowired
     CommandExecutorTest(CommandExecutor commandExecutor, AboutCommand aboutCommand) {
@@ -58,10 +58,10 @@ class CommandExecutorTest extends BaseTest {
 
     @BeforeEach
     void setUp() {
-        Mockito.when(messageReceivedEvent.getChannel()).thenReturn(messageChannel);
-        MessageAction messageAction = Mockito.mock(MessageAction.class);
-        Mockito.when(messageChannel.sendMessage(ArgumentMatchers.anyString())).thenReturn(messageAction);
-        Mockito.when(messageChannel.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class))).thenReturn(messageAction);
+        Mockito.when(messageReceivedEvent.getChannel()).thenReturn(messageChannelUnion);
+        MessageCreateAction messageCreateAction = Mockito.mock(MessageCreateAction.class);
+        Mockito.when(messageChannelUnion.sendMessage(ArgumentMatchers.anyString())).thenReturn(messageCreateAction);
+        Mockito.when(messageChannelUnion.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class))).thenReturn(messageCreateAction);
     }
 
     @DisplayName("Should execute command.")
@@ -74,8 +74,8 @@ class CommandExecutorTest extends BaseTest {
 
         // Assuming the command sends a message back:
         Mockito.verify(messageReceivedEvent, Mockito.times(2)).getChannel(); // Once for sending the message, once to pass to the output stream
-        Mockito.verify(messageChannel).sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class));
-        Mockito.verifyNoMoreInteractions(messageChannel);
+        Mockito.verify(messageChannelUnion).sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class));
+        Mockito.verifyNoMoreInteractions(messageChannelUnion);
         Mockito.verifyNoMoreInteractions(messageReceivedEvent);
 
         Assertions.assertTrue(executed, "Command should be executed.");
@@ -91,8 +91,8 @@ class CommandExecutorTest extends BaseTest {
 
         // Assuming the command sends a message back:
         Mockito.verify(messageReceivedEvent).getChannel(); // Once for sending the message, once to pass to the output stream
-        Mockito.verify(messageChannel).sendMessageEmbeds(Mockito.any(MessageEmbed.class));
-        Mockito.verifyNoMoreInteractions(messageChannel);
+        Mockito.verify(messageChannelUnion).sendMessageEmbeds(Mockito.any(MessageEmbed.class));
+        Mockito.verifyNoMoreInteractions(messageChannelUnion);
         Mockito.verifyNoMoreInteractions(messageReceivedEvent);
 
         Assertions.assertTrue(executed, "Command should be executed.");
@@ -107,8 +107,8 @@ class CommandExecutorTest extends BaseTest {
 
         // The executor should send back a message:
         Mockito.verify(messageReceivedEvent).getChannel();
-        Mockito.verify(messageChannel).sendMessage("Command not recognized... Issue the 'help' command to get an overview of available commands.");
-        Mockito.verifyNoMoreInteractions(messageChannel);
+        Mockito.verify(messageChannelUnion).sendMessage("Command not recognized... Issue the 'help' command to get an overview of available commands.");
+        Mockito.verifyNoMoreInteractions(messageChannelUnion);
         Mockito.verifyNoMoreInteractions(messageReceivedEvent);
 
         Assertions.assertFalse(executed, "Command should not be executed.");

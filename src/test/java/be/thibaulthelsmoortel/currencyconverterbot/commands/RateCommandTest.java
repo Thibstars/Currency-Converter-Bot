@@ -25,7 +25,7 @@ import be.thibaulthelsmoortel.currencyconverterbot.client.rate.service.RateServi
 import java.math.BigDecimal;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.Event;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -106,8 +106,8 @@ class RateCommandTest extends CommandBaseTest {
 
         Mockito.when(rateService.getRate(rateRequest)).thenThrow(WebClientResponseException.class);
 
-        Mockito.when(messageChannel.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class))).thenReturn(Mockito.mock(
-                MessageAction.class));
+        Mockito.when(messageChannelUnion.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class)))
+                .thenReturn(Mockito.mock(MessageCreateAction.class));
 
         String message = rateCommand.call();
 

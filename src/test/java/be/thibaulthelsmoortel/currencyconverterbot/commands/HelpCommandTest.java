@@ -28,7 +28,7 @@ import java.util.Objects;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.Event;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -56,11 +56,11 @@ class HelpCommandTest extends CommandBaseTest {
         HelpCommand command = new HelpCommand(environment, botCommands);
         command.setEvent(messageReceivedEvent);
 
-        Mockito.when(messageChannel.getType()).thenReturn(ChannelType.UNKNOWN);
-        Mockito.when(messageChannel.getId()).thenReturn("id");
-        MessageAction messageAction = Mockito.mock(MessageAction.class);
-        Mockito.when(messageChannel.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class)))
-                .thenReturn(messageAction);
+        Mockito.when(messageChannelUnion.getType()).thenReturn(ChannelType.UNKNOWN);
+        Mockito.when(messageChannelUnion.getId()).thenReturn("id");
+        MessageCreateAction messageCreateAction = Mockito.mock(MessageCreateAction.class);
+        Mockito.when(messageChannelUnion.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class)))
+                .thenReturn(messageCreateAction);
 
         MessageEmbed embedded = command.call();
         Assertions.assertNotNull(embedded, "Message must not be null.");
@@ -79,11 +79,11 @@ class HelpCommandTest extends CommandBaseTest {
             }
         });
 
-        verifyOneMessageSent(messageAction);
+        verifyOneMessageSent(messageCreateAction);
     }
 
-    void verifyOneMessageSent(MessageAction messageAction) {
-        Mockito.verify(messageAction).queue();
+    void verifyOneMessageSent(MessageCreateAction messageCreateAction) {
+        Mockito.verify(messageCreateAction).queue();
     }
 
     private String parseDescription(Command annotation) {

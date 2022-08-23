@@ -22,7 +22,7 @@ package be.thibaulthelsmoortel.currencyconverterbot.commands;
 import be.thibaulthelsmoortel.currencyconverterbot.config.DiscordBotEnvironment;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.Event;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,7 +46,8 @@ class AboutCommandTest extends CommandBaseTest {
         AboutCommand command = new AboutCommand(discordBotEnvironment);
         command.setEvent(messageReceivedEvent);
 
-        Mockito.when(messageChannel.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class))).thenReturn(Mockito.mock(MessageAction.class));
+        Mockito.when(messageChannelUnion.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class)))
+                .thenReturn(Mockito.mock(MessageCreateAction.class));
 
         MessageEmbed embed = command.call();
 
@@ -69,7 +70,8 @@ class AboutCommandTest extends CommandBaseTest {
         AboutCommand command = new AboutCommand(discordBotEnvironment);
         command.setEvent(messageReceivedEvent);
 
-        Mockito.when(messageChannel.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class))).thenReturn(Mockito.mock(MessageAction.class));
+        Mockito.when(messageChannelUnion.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class)))
+                .thenReturn(Mockito.mock(MessageCreateAction.class));
 
         MessageEmbed embed = command.call();
 
@@ -91,7 +93,8 @@ class AboutCommandTest extends CommandBaseTest {
         AboutCommand command = new AboutCommand(discordBotEnvironment);
         command.setEvent(messageReceivedEvent);
 
-        Mockito.when(messageChannel.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class))).thenReturn(Mockito.mock(MessageAction.class));
+        Mockito.when(messageChannelUnion.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class)))
+                .thenReturn(Mockito.mock(MessageCreateAction.class));
 
         MessageEmbed embed = command.call();
 

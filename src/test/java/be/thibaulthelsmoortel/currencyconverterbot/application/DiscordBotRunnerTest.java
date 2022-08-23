@@ -27,8 +27,8 @@ import java.util.List;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -58,7 +58,7 @@ class DiscordBotRunnerTest extends BaseTest {
     private MessageReceivedEvent messageReceivedEvent;
 
     @Mock
-    private MessageChannel messageChannel;
+    private MessageChannelUnion messageChannelUnion;
 
     @Mock
     private User user;
@@ -76,8 +76,8 @@ class DiscordBotRunnerTest extends BaseTest {
     @DisplayName("Should handle message received.")
     @Test
     void shouldHandleMessageReceived() {
-        Mockito.when(messageReceivedEvent.getChannel()).thenReturn(messageChannel);
-        Mockito.when(messageChannel.sendTyping()).thenReturn(Mockito.mock(RestAction.class));
+        Mockito.when(messageReceivedEvent.getChannel()).thenReturn(messageChannelUnion);
+        Mockito.when(messageChannelUnion.sendTyping()).thenReturn(Mockito.mock(RestAction.class));
         ReceivedMessage receivedMessage = Mockito.mock(ReceivedMessage.class);
         Mockito.when(messageReceivedEvent.getMessage()).thenReturn(receivedMessage);
         Mockito.when(receivedMessage.getAuthor()).thenReturn(user);
@@ -90,8 +90,8 @@ class DiscordBotRunnerTest extends BaseTest {
 
         discordBotRunner.onMessageReceived(messageReceivedEvent);
 
-        Mockito.verify(messageChannel).sendTyping();
-        Mockito.verifyNoMoreInteractions(messageChannel);
+        Mockito.verify(messageChannelUnion).sendTyping();
+        Mockito.verifyNoMoreInteractions(messageChannelUnion);
         Mockito.verify(commandExecutor).tryExecute(messageReceivedEvent, message);
         Mockito.verifyNoMoreInteractions(commandExecutor);
     }
@@ -104,7 +104,7 @@ class DiscordBotRunnerTest extends BaseTest {
 
         discordBotRunner.onMessageReceived(messageReceivedEvent);
 
-        Mockito.verifyNoMoreInteractions(messageChannel);
+        Mockito.verifyNoMoreInteractions(messageChannelUnion);
         Mockito.verify(messageReceivedEvent).getMessage(); // 1 to check processing
     }
 
@@ -119,13 +119,13 @@ class DiscordBotRunnerTest extends BaseTest {
         String message = "myNewMessage";
         Mockito.when(messageMock.getContentDisplay()).thenReturn(prefix + message);
         Mockito.when(discordBotEnvironment.getCommandPrefix()).thenReturn(prefix);
-        Mockito.when(messageReceivedEvent.getChannel()).thenReturn(messageChannel);
-        Mockito.when(messageChannel.sendTyping()).thenReturn(Mockito.mock(RestAction.class));
+        Mockito.when(messageReceivedEvent.getChannel()).thenReturn(messageChannelUnion);
+        Mockito.when(messageChannelUnion.sendTyping()).thenReturn(Mockito.mock(RestAction.class));
 
         discordBotRunner.onMessageReceived(messageReceivedEvent);
 
-        Mockito.verify(messageChannel).sendTyping();
-        Mockito.verifyNoMoreInteractions(messageChannel);
+        Mockito.verify(messageChannelUnion).sendTyping();
+        Mockito.verifyNoMoreInteractions(messageChannelUnion);
         Mockito.verify(commandExecutor).tryExecute(messageReceivedEvent, message);
         Mockito.verifyNoMoreInteractions(commandExecutor);
     }
