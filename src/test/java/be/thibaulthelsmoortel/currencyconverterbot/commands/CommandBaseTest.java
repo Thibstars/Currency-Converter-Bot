@@ -21,12 +21,13 @@ package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
 import be.thibaulthelsmoortel.currencyconverterbot.BaseTest;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.Event;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.ArgumentMatchers;
@@ -39,35 +40,39 @@ import org.mockito.Mockito;
 public abstract class CommandBaseTest extends BaseTest {
 
     @Mock
-    protected MessageReceivedEvent messageReceivedEvent;
+    protected SlashCommandInteractionEvent slashCommandInteractionEvent;
 
     @Mock
-    protected Message message;
+    protected SlashCommandInteraction slashCommandInteraction;
 
     @Mock
     protected MessageChannelUnion messageChannelUnion;
 
     @BeforeEach
     protected void setUp() {
-        Mockito.when(messageReceivedEvent.getChannel()).thenReturn(messageChannelUnion);
-        Mockito.when(messageReceivedEvent.getMessage()).thenReturn(message);
-        //Mockito.when(message.addReaction(ArgumentMatchers.anyString())).thenReturn(Mockito.mock(RestAction.class));
+        Mockito.when(slashCommandInteractionEvent.getChannel()).thenReturn(messageChannelUnion);
+        Mockito.when(slashCommandInteractionEvent.getInteraction()).thenReturn(slashCommandInteraction);
+        Mockito.when(slashCommandInteraction.reply(ArgumentMatchers.anyString()))
+                .thenReturn(Mockito.mock(ReplyCallbackAction.class));
+        Mockito.when(slashCommandInteraction.replyEmbeds(ArgumentMatchers.any(MessageEmbed.class)))
+                .thenReturn(Mockito.mock(ReplyCallbackAction.class));
         Mockito.when(messageChannelUnion.sendMessage(ArgumentMatchers.anyString()))
                 .thenReturn(Mockito.mock(MessageCreateAction.class));
     }
 
-    void verifyOneMessageSent(String message) {
-        Mockito.verify(messageReceivedEvent).getChannel();
-        Mockito.verify(messageChannelUnion).sendMessage(message);
-        Mockito.verifyNoMoreInteractions(messageChannelUnion);
-        Mockito.verifyNoMoreInteractions(messageReceivedEvent);
+    void verifyOneMessageReplied() {
+        Mockito.verify(slashCommandInteractionEvent).getInteraction();
+        Mockito.verify(slashCommandInteraction).reply(ArgumentMatchers.anyString());
     }
 
-    void verifyOneMessageSent(MessageEmbed embed) {
-        Mockito.verify(messageReceivedEvent).getChannel();
-        Mockito.verify(messageChannelUnion).sendMessageEmbeds(embed);
-        Mockito.verifyNoMoreInteractions(messageChannelUnion);
-        Mockito.verifyNoMoreInteractions(messageReceivedEvent);
+    void verifyOneMessageReplied(MessageEmbed embed) {
+        Mockito.verify(slashCommandInteractionEvent).getInteraction();
+        Mockito.verify(slashCommandInteraction).replyEmbeds(embed);
+    }
+
+    void verifyOneMessageReplied(String message) {
+        Mockito.verify(slashCommandInteractionEvent).getInteraction();
+        Mockito.verify(slashCommandInteraction).reply(message);
     }
 
     void verifyDoNotProcessEvent(BotCommand<?> botCommand, Event event) throws Exception {
@@ -81,7 +86,7 @@ public abstract class CommandBaseTest extends BaseTest {
 
     protected void verifyNoMoreJDAInteractions() {
         Mockito.verifyNoMoreInteractions(messageChannelUnion);
-        Mockito.verifyNoMoreInteractions(messageReceivedEvent);
+        Mockito.verifyNoMoreInteractions(slashCommandInteractionEvent);
     }
 
 }

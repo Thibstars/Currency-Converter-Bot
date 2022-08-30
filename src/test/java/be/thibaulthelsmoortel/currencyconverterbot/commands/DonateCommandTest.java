@@ -21,12 +21,9 @@ package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.Event;
-import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,31 +47,17 @@ class DonateCommandTest extends CommandBaseTest {
         this.donateCommand = donateCommand;
     }
 
-    @BeforeEach
-    protected void setUp() {
-        Mockito.when(messageReceivedEvent.getJDA()).thenReturn(jda);
-        Mockito.when(messageReceivedEvent.getChannel()).thenReturn(messageChannelUnion);
-        Mockito.when(messageChannelUnion.sendMessage(ArgumentMatchers.anyString()))
-                .thenReturn(Mockito.mock(MessageCreateAction.class));
-    }
-
     @DisplayName("Should return donation url.")
     @Test
     void shouldReturnInviteUrlWithoutPermissions() {
-        donateCommand.setEvent(messageReceivedEvent);
+        donateCommand.setEvent(slashCommandInteractionEvent);
 
         String message = donateCommand.call();
 
         Assertions.assertNotNull(message, "Donation url must not be null.");
         Assertions.assertEquals(donationUrl, message, "Donation url must be correct.");
 
-        verifyOneMessageSent();
-    }
-
-    private void verifyOneMessageSent() {
-        Mockito.verify(messageReceivedEvent).getChannel();
-        Mockito.verify(messageChannelUnion).sendMessage(ArgumentMatchers.anyString());
-        Mockito.verifyNoMoreInteractions(messageChannelUnion);
+        verifyOneMessageReplied();
     }
 
     @DisplayName("Should not process event.")

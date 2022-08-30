@@ -52,7 +52,7 @@ class ConvertCommandTest extends CommandBaseTest {
     @BeforeEach
     protected void setUp() {
         super.setUp();
-        convertCommand.setEvent(messageReceivedEvent);
+        convertCommand.setEvent(slashCommandInteractionEvent);
     }
 
     @DisplayName("Should send convert message.")
@@ -82,7 +82,7 @@ class ConvertCommandTest extends CommandBaseTest {
         Assertions.assertTrue(message.contains(usdIso), "Message should contain USD.");
         Assertions.assertTrue(message.contains(String.valueOf(conversionResponse.getResult())),
                 "Message should contain result.");
-        verifyOneMessageSent(message);
+        verifyOneMessageReplied(message);
     }
 
     @DisplayName("Should send error message.")
@@ -109,7 +109,7 @@ class ConvertCommandTest extends CommandBaseTest {
         Assertions.assertEquals(
                 "Unable to perform the conversion request. Please verify the input parameters and try again. If the issue persists, please make sure to report the issue via the 'issue' command.",
                 message, "Message should match.");
-        verifyOneMessageSent(message);
+        verifyOneMessageReplied(message);
     }
 
     @DisplayName("Should handle WebClientResponseException.")
@@ -137,7 +137,7 @@ class ConvertCommandTest extends CommandBaseTest {
 
         Assertions.assertTrue(StringUtils.isNotBlank(message), "Message should not be empty.");
         Assertions.assertEquals(ConvertCommand.ERROR_MESSAGE, message, "Message should be correct.");
-        verifyOneMessageSent(message);
+        verifyOneMessageReplied(message);
     }
 
     @DisplayName("Should not process event.")

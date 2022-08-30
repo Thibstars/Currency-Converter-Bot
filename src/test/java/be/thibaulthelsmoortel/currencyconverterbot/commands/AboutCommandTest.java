@@ -44,7 +44,7 @@ class AboutCommandTest extends CommandBaseTest {
         Mockito.when(discordBotEnvironment.getName()).thenReturn(null);
         Mockito.when(discordBotEnvironment.getAuthor()).thenReturn(null);
         AboutCommand command = new AboutCommand(discordBotEnvironment);
-        command.setEvent(messageReceivedEvent);
+        command.setEvent(slashCommandInteractionEvent);
 
         Mockito.when(messageChannelUnion.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class)))
                 .thenReturn(Mockito.mock(MessageCreateAction.class));
@@ -54,7 +54,7 @@ class AboutCommandTest extends CommandBaseTest {
         Assertions.assertNotNull(embed, "Message should not be null.");
         Assertions.assertEquals("Mystery bot by mystery author.", embed.getTitle(), "Message should be correct.");
 
-        verifyOneMessageSent(embed);
+        verifyOneMessageReplied(embed);
     }
 
     @DisplayName("Should reply about message.")
@@ -68,7 +68,7 @@ class AboutCommandTest extends CommandBaseTest {
         Mockito.when(discordBotEnvironment.getDescription()).thenReturn(description);
 
         AboutCommand command = new AboutCommand(discordBotEnvironment);
-        command.setEvent(messageReceivedEvent);
+        command.setEvent(slashCommandInteractionEvent);
 
         Mockito.when(messageChannelUnion.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class)))
                 .thenReturn(Mockito.mock(MessageCreateAction.class));
@@ -78,7 +78,7 @@ class AboutCommandTest extends CommandBaseTest {
         Assertions.assertNotNull(embed, "Message should not be null.");
         Assertions.assertEquals(name + " created by " + author + "." + System.lineSeparator() + description, embed.getDescription(), "Message should be correct.");
 
-        verifyOneMessageSent(embed);
+        verifyOneMessageReplied(embed);
     }
 
     @DisplayName("Should reply about message without bot name.")
@@ -91,7 +91,7 @@ class AboutCommandTest extends CommandBaseTest {
         Mockito.when(discordBotEnvironment.getDescription()).thenReturn(description);
 
         AboutCommand command = new AboutCommand(discordBotEnvironment);
-        command.setEvent(messageReceivedEvent);
+        command.setEvent(slashCommandInteractionEvent);
 
         Mockito.when(messageChannelUnion.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class)))
                 .thenReturn(Mockito.mock(MessageCreateAction.class));
@@ -101,7 +101,7 @@ class AboutCommandTest extends CommandBaseTest {
         Assertions.assertNotNull(embed, "Message should not be null.");
         Assertions.assertEquals("Bot created by " + author + "." + System.lineSeparator() + description, embed.getDescription(), "Message should be correct.");
 
-        verifyOneMessageSent(embed);
+        verifyOneMessageReplied(embed);
     }
 
     @DisplayName("Should not process event.")

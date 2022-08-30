@@ -55,7 +55,7 @@ class RatesCommandTest extends CommandBaseTest {
     @BeforeEach
     protected void setUp() {
         super.setUp();
-        ratesCommand.setEvent(messageReceivedEvent);
+        ratesCommand.setEvent(slashCommandInteractionEvent);
         ratesCommand.setBaseCurrencyIsoCode("EUR");
     }
 
@@ -90,7 +90,7 @@ class RatesCommandTest extends CommandBaseTest {
                 "Message should contain USD.");
         Assertions.assertTrue(embed.getFields().stream().anyMatch(field -> Objects.equals(field.getName(), "CAD")),
                 "Message should contain CAD.");
-        verifyOneMessageSent(embed);
+        verifyOneMessageReplied(embed);
     }
 
     @DisplayName("Should handle WebClientResponseException.")
@@ -108,7 +108,7 @@ class RatesCommandTest extends CommandBaseTest {
 
         Assertions.assertNotNull(embed, "Message should not be null.");
         Assertions.assertEquals(RatesCommand.ERROR_MESSAGE, embed.getDescription(), "Message should be correct.");
-        verifyOneMessageSent(embed);
+        verifyOneMessageReplied(embed);
     }
 
     @DisplayName("Should not process event.")

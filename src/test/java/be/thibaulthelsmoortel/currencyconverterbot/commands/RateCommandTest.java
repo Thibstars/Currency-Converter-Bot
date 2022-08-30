@@ -53,7 +53,7 @@ class RateCommandTest extends CommandBaseTest {
     @BeforeEach
     protected void setUp() {
         super.setUp();
-        rateCommand.setEvent(messageReceivedEvent);
+        rateCommand.setEvent(slashCommandInteractionEvent);
         rateCommand.setBaseCurrencyIsoCode("EUR");
     }
 
@@ -78,7 +78,7 @@ class RateCommandTest extends CommandBaseTest {
         Assertions.assertTrue(message.contains(isoCode), "Message should contain USD.");
         Assertions.assertTrue(message.contains(rateRequest.getBaseIsoCode()), "Message should contain base iso code.");
         Assertions.assertTrue(message.contains(response.getResult().toString()), "Message should contain result.");
-        verifyOneMessageSent(message);
+        verifyOneMessageReplied(message);
     }
 
     @DisplayName("Should send error message.")
@@ -92,7 +92,7 @@ class RateCommandTest extends CommandBaseTest {
         Assertions.assertEquals(
                 "Unable to perform the rate request. Please verify the input parameters and try again. If the issue persists, please make sure to report the issue via the 'issue' command.",
                 message, "Message should match.");
-        verifyOneMessageSent(message);
+        verifyOneMessageReplied(message);
     }
 
     @DisplayName("Should handle WebClientResponseException.")
@@ -113,7 +113,7 @@ class RateCommandTest extends CommandBaseTest {
 
         Assertions.assertTrue(StringUtils.isNotBlank(message), "Message should not be empty.");
         Assertions.assertEquals(RateCommand.ERROR_MESSAGE, message, "Message should be correct.");
-        verifyOneMessageSent(message);
+        verifyOneMessageReplied(message);
     }
 
     @DisplayName("Should not process event.")

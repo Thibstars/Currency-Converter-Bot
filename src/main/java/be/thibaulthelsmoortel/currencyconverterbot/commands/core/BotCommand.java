@@ -26,6 +26,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.ParameterException;
@@ -68,4 +69,6 @@ public abstract class BotCommand<T> implements Callable<T> {
             }
         }
     }
+
+    public abstract SlashCommandData getSlashCommandData();
 }
