@@ -22,7 +22,6 @@ package be.thibaulthelsmoortel.currencyconverterbot.commands;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.Event;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -55,16 +54,15 @@ class InviteCommandTest extends CommandBaseTest {
 
     @BeforeEach
     protected void setUp() {
-        Mockito.when(messageReceivedEvent.getJDA()).thenReturn(jda);
+        super.setUp();
+        Mockito.when(slashCommandInteractionEvent.getJDA()).thenReturn(jda);
         Mockito.when(jda.getInviteUrl(Permission.EMPTY_PERMISSIONS)).thenReturn(INVITE_URL_NO_PERMISSIONS);
-        Mockito.when(messageReceivedEvent.getChannel()).thenReturn(messageChannel);
-        Mockito.when(messageChannel.sendMessage(ArgumentMatchers.anyString())).thenReturn(Mockito.mock(MessageAction.class));
     }
 
     @DisplayName("Should return invite url without permissions.")
     @Test
     void shouldReturnInviteUrlWithoutPermissions() {
-        inviteCommand.setEvent(messageReceivedEvent);
+        inviteCommand.setEvent(slashCommandInteractionEvent);
 
         String message = inviteCommand.call();
 
@@ -72,48 +70,40 @@ class InviteCommandTest extends CommandBaseTest {
         Assertions.assertTrue(message.contains(EXPECTED_SCOPE), "Scope must be correct.");
         Assertions.assertFalse(message.contains(PERMISSIONS_PARAM), "No permissions should be provided.");
 
-        verifyOneMessageSent();
-    }
-
-    private void verifyOneMessageSent() {
-        Mockito.verify(messageReceivedEvent).getChannel();
-        Mockito.verify(messageChannel).sendMessage(ArgumentMatchers.anyString());
-        Mockito.verifyNoMoreInteractions(messageChannel);
+        verifyOneMessageReplied();
     }
 
     @DisplayName("Should return invite url with permissions.")
     @Test
     void shouldReturnInviteUrlWithPermissions() {
-        Permission[] permissions = {Permission.MESSAGE_READ, Permission.MESSAGE_WRITE};
-        inviteCommand.setPermissionsRequested(new boolean[]{true});
+        Permission[] permissions = {Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND};
         inviteCommand.setPermissions(permissions);
 
         Mockito.when(jda.getInviteUrl(permissions)).thenReturn(INVITE_URL_WITH_PERMISSIONS);
-        inviteCommand.setEvent(messageReceivedEvent);
+        inviteCommand.setEvent(slashCommandInteractionEvent);
 
         String message = inviteCommand.call();
         Assertions.assertNotNull(message, "Invite url must not be null.");
         Assertions.assertTrue(message.contains(EXPECTED_SCOPE), "Scope must be correct.");
         Assertions.assertTrue(message.contains(PERMISSIONS_PARAM), "Permissions should be provided.");
 
-        verifyOneMessageSent();
+        verifyOneMessageReplied();
     }
 
     @DisplayName("Should return invite url without permissions when none available.")
     @Test
     void shouldReturnInviteUrlWithoutPermissionsWhenNoneAvailable() {
-        inviteCommand.setPermissionsRequested(new boolean[]{true});
         inviteCommand.setPermissions(null);
 
         Mockito.when(jda.getInviteUrl(ArgumentMatchers.any(Permission[].class))).thenReturn(INVITE_URL_WITH_PERMISSIONS);
-        inviteCommand.setEvent(messageReceivedEvent);
+        inviteCommand.setEvent(slashCommandInteractionEvent);
 
         String message = inviteCommand.call();
         Assertions.assertNotNull(message, "Invite url must not be null.");
         Assertions.assertTrue(message.contains(EXPECTED_SCOPE), "Scope must be correct.");
         Assertions.assertTrue(message.contains(PERMISSIONS_PARAM), "Permissions should be provided.");
 
-        verifyOneMessageSent();
+        verifyOneMessageReplied();
     }
 
     @DisplayName("Should not process event.")

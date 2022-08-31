@@ -24,16 +24,16 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.1</version>
+		<version>2.7.3</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
 	<groupId>be.thibaulthelsmoortel</groupId>
 	<artifactId>currency-converter-bot</artifactId>
-	<version>1.0.1</version>
+	<version>1.1.0</version>
 
 	<name>Currency Converter Bot</name>
-	<description>Discord bot allowing currency conversions and rates listing. Uses the same API as https://currencyconversion.be</description>
+	<description>Discord bot allowing currency conversions and rates listing. Uses the same API as https://currencyconversion.be. Issue the 'help' command to get started.</description>
 
 	<packaging>jar</packaging>
 
@@ -49,15 +49,15 @@
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 
-		<jda.version>4.4.0_350</jda.version>
+		<jda.version>5.0.0-alpha.18</jda.version>
 		<apache.commons.version>3.12.0</apache.commons.version>
 		<picocli.version>4.6.3</picocli.version>
-		<dbl.version>2.0.1</dbl.version>
+		<top-gg.version>2.1.2</top-gg.version>
 		<lombok.version>1.18.24</lombok.version>
 		<javax.servlet-api.version>4.0.1</javax.servlet-api.version>
 
-		<junit.version>5.8.2</junit.version>
-		<mockito.junit.version>4.6.1</mockito.junit.version>
+		<junit.version>5.9.0</junit.version>
+		<mockito.junit.version>4.7.0</mockito.junit.version>
 		<httpclient.version>4.5.13</httpclient.version>
 
 		<jacoco.version>0.8.8</jacoco.version>
@@ -110,7 +110,7 @@
 		<dependency>
 			<groupId>com.github.top-gg</groupId>
 			<artifactId>java-sdk</artifactId>
-			<version>${dbl.version}</version>
+			<version>${top-gg.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>

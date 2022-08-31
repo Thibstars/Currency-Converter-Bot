@@ -24,15 +24,16 @@ import be.thibaulthelsmoortel.currencyconverterbot.client.rate.payload.RateRespo
 import be.thibaulthelsmoortel.currencyconverterbot.client.rate.service.RateService;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.converters.LowerToUpperCaseConverter;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
-import javax.validation.constraints.NotBlank;
+import be.thibaulthelsmoortel.currencyconverterbot.validation.CurrencyIsoCode;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import picocli.CommandLine.Command;
-import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 /**
@@ -47,14 +48,12 @@ public class RateCommand extends BotCommand<String> {
 
     @Parameters(description = "ISO code of the currency to lookup.", arity = "1", index = "0", converter = LowerToUpperCaseConverter.class)
     @NotNull
-    @NotBlank
-    @Size(min = 3, max = 3)
+    @CurrencyIsoCode
     private String isoCode;
 
     @SuppressWarnings("unused") // Used through option
-    @Option(names = {"-c", "--currency"}, paramLabel = "CURRENCY", description = "The base currency iso code.  Default: ${DEFAULT-VALUE}", defaultValue = "EUR", arity = "0..1", converter = LowerToUpperCaseConverter.class)
-    @NotBlank
-    @Size(min = 3, max = 3)
+    @Parameters(description = "The base currency iso code.  Default: ${DEFAULT-VALUE}", defaultValue = "EUR", arity = "0..1", converter = LowerToUpperCaseConverter.class)
+    @CurrencyIsoCode
     private String baseCurrencyIsoCode;
 
     private final RateService rateService;
@@ -64,7 +63,7 @@ public class RateCommand extends BotCommand<String> {
         String message = null;
         validate();
 
-        if (getEvent() instanceof MessageReceivedEvent messageReceivedEvent) {
+        if (getEvent() instanceof SlashCommandInteractionEvent slashCommandInteractionEvent) {
             RateRequest rateRequest = new RateRequest();
             rateRequest.setBaseIsoCode(baseCurrencyIsoCode);
             rateRequest.setTargetIsoCode(isoCode);
@@ -78,10 +77,10 @@ public class RateCommand extends BotCommand<String> {
                     message = ERROR_MESSAGE;
                 }
 
-                messageReceivedEvent.getChannel().sendMessage(message).queue();
+                slashCommandInteractionEvent.getInteraction().reply(message).queue();
             } catch (WebClientResponseException e) {
                 message = ERROR_MESSAGE;
-                messageReceivedEvent.getChannel().sendMessage(message).queue();
+                slashCommandInteractionEvent.getInteraction().reply(message).queue();
             }
         }
 
@@ -97,5 +96,12 @@ public class RateCommand extends BotCommand<String> {
     @SuppressWarnings("all")
     void setBaseCurrencyIsoCode(String baseCurrencyIsoCode) {
         this.baseCurrencyIsoCode = baseCurrencyIsoCode;
+    }
+
+    @Override
+    public SlashCommandData getSlashCommandData() {
+        return Commands.slash("rate", "Provides current currency rate.")
+                .addOption(OptionType.STRING, "iso_code", "ISO code of the currency to lookup.", true)
+                .addOption(OptionType.STRING, "base_iso_code", "The base currency iso code.", false);
     }
 }

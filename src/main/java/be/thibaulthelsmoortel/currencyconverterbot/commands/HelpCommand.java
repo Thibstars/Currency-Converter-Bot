@@ -25,7 +25,9 @@ import java.util.Arrays;
 import java.util.List;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
@@ -50,7 +52,7 @@ public class HelpCommand extends BotCommand<MessageEmbed> {
     @Override
     public MessageEmbed call() {
         var embedBuilder = new EmbedBuilder();
-        if (getEvent() instanceof MessageReceivedEvent messageReceivedEvent) {
+        if (getEvent() instanceof SlashCommandInteractionEvent slashCommandInteractionEvent) {
             StringBuilder descriptionBuilder = embedBuilder.getDescriptionBuilder();
             descriptionBuilder.append("Usage: ").append(discordBotEnvironment.getCommandPrefix()).append("COMMAND [OPTIONS]")
                 .append(String.format("%n%n%s%n%n", discordBotEnvironment.getDescription()))
@@ -64,7 +66,7 @@ public class HelpCommand extends BotCommand<MessageEmbed> {
             });
 
             MessageEmbed embed = embedBuilder.build();
-            messageReceivedEvent.getChannel().sendMessageEmbeds(embed).queue();
+            slashCommandInteractionEvent.getInteraction().replyEmbeds(embed).queue();
 
             return embed;
         }
@@ -75,5 +77,10 @@ public class HelpCommand extends BotCommand<MessageEmbed> {
     private String parseDescription(Command annotation) {
         var array = Arrays.toString(annotation.description());
         return array.substring(1, array.length() - 1);
+    }
+
+    @Override
+    public SlashCommandData getSlashCommandData() {
+        return Commands.slash("help", "Provides command usage help.");
     }
 }

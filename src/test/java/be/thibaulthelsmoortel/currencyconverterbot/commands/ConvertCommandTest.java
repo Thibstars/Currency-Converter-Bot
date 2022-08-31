@@ -25,7 +25,7 @@ import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.service.Con
 import java.math.BigDecimal;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.Event;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,7 +52,7 @@ class ConvertCommandTest extends CommandBaseTest {
     @BeforeEach
     protected void setUp() {
         super.setUp();
-        convertCommand.setEvent(messageReceivedEvent);
+        convertCommand.setEvent(slashCommandInteractionEvent);
     }
 
     @DisplayName("Should send convert message.")
@@ -82,7 +82,7 @@ class ConvertCommandTest extends CommandBaseTest {
         Assertions.assertTrue(message.contains(usdIso), "Message should contain USD.");
         Assertions.assertTrue(message.contains(String.valueOf(conversionResponse.getResult())),
                 "Message should contain result.");
-        verifyOneMessageSent(message);
+        verifyOneMessageReplied(message);
     }
 
     @DisplayName("Should send error message.")
@@ -109,7 +109,7 @@ class ConvertCommandTest extends CommandBaseTest {
         Assertions.assertEquals(
                 "Unable to perform the conversion request. Please verify the input parameters and try again. If the issue persists, please make sure to report the issue via the 'issue' command.",
                 message, "Message should match.");
-        verifyOneMessageSent(message);
+        verifyOneMessageReplied(message);
     }
 
     @DisplayName("Should handle WebClientResponseException.")
@@ -130,14 +130,14 @@ class ConvertCommandTest extends CommandBaseTest {
 
         Mockito.when(conversionService.getConversion(conversionRequest)).thenThrow(WebClientResponseException.class);
 
-        Mockito.when(messageChannel.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class))).thenReturn(Mockito.mock(
-                MessageAction.class));
+        Mockito.when(messageChannelUnion.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class)))
+                .thenReturn(Mockito.mock(MessageCreateAction.class));
 
         String message = convertCommand.call();
 
         Assertions.assertTrue(StringUtils.isNotBlank(message), "Message should not be empty.");
         Assertions.assertEquals(ConvertCommand.ERROR_MESSAGE, message, "Message should be correct.");
-        verifyOneMessageSent(message);
+        verifyOneMessageReplied(message);
     }
 
     @DisplayName("Should not process event.")

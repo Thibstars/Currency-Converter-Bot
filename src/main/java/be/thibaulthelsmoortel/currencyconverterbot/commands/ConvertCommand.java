@@ -24,12 +24,14 @@ import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.payload.Con
 import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.service.ConversionService;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.converters.LowerToUpperCaseConverter;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
+import be.thibaulthelsmoortel.currencyconverterbot.validation.CurrencyIsoCode;
 import java.math.BigDecimal;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import picocli.CommandLine.Command;
@@ -49,12 +51,10 @@ public class ConvertCommand extends BotCommand<String> {
     @NotNull
     private BigDecimal sourceAmount;
     @Parameters(description = "ISO code of the source currency.", arity = "1", index = "1", converter = LowerToUpperCaseConverter.class)
-    @NotBlank
-    @Size(min = 3, max = 3)
+    @CurrencyIsoCode
     private String sourceIsoCode;
     @Parameters(description = "ISO code of the target currency.", arity = "1", index = "2", converter = LowerToUpperCaseConverter.class)
-    @NotBlank
-    @Size(min = 3, max = 3)
+    @CurrencyIsoCode
     private String targetIsoCode;
 
     private final ConversionService conversionService;
@@ -64,7 +64,7 @@ public class ConvertCommand extends BotCommand<String> {
         String message = null;
         validate();
 
-        if (getEvent() instanceof MessageReceivedEvent messageReceivedEvent) {
+        if (getEvent() instanceof SlashCommandInteractionEvent slashCommandInteractionEvent) {
             ConversionRequest conversionRequest = new ConversionRequest();
             conversionRequest.setSourceAmount(sourceAmount);
             conversionRequest.setSourceIsoCode(sourceIsoCode);
@@ -79,10 +79,10 @@ public class ConvertCommand extends BotCommand<String> {
                     message = ERROR_MESSAGE;
                 }
 
-                messageReceivedEvent.getChannel().sendMessage(message).queue();
+                slashCommandInteractionEvent.getInteraction().reply(message).queue();
             } catch (WebClientResponseException e) {
                 message = ERROR_MESSAGE;
-                messageReceivedEvent.getChannel().sendMessage(message).queue();
+                slashCommandInteractionEvent.getInteraction().reply(message).queue();
             }
         }
 
@@ -102,5 +102,13 @@ public class ConvertCommand extends BotCommand<String> {
     // Visible for testing
     void setTargetIsoCode(String targetIsoCode) {
         this.targetIsoCode = targetIsoCode;
+    }
+
+    @Override
+    public SlashCommandData getSlashCommandData() {
+        return Commands.slash("convert", "Converts one currency value to another.")
+                .addOption(OptionType.NUMBER, "source_amount", "Value of the currency to convert.", true)
+                .addOption(OptionType.STRING, "source_iso_code", "ISO code of the source currency.", true)
+                .addOption(OptionType.STRING, "target_iso_code", "ISO code of the target currency.", true);
     }
 }

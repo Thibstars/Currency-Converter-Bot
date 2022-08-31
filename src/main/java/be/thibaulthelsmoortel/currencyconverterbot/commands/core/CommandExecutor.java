@@ -20,11 +20,15 @@
 package be.thibaulthelsmoortel.currencyconverterbot.commands.core;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import org.apache.commons.lang3.StringUtils;;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
@@ -59,7 +63,7 @@ public class CommandExecutor {
      * @param commandMessage the command message (stripped from its prefix)
      * @return true if the command was executed, false if otherwise
      */
-    public boolean tryExecute(MessageReceivedEvent event, String commandMessage) {
+    public boolean tryExecute(SlashCommandInteractionEvent event, String commandMessage) {
         var commandRecognised = new AtomicBoolean(false);
 
         if (StringUtils.isNotBlank(commandMessage)) {
@@ -80,7 +84,8 @@ public class CommandExecutor {
                     commandLine.setErr(printWriter);
 
                     if (StringUtils.isNotBlank(args)) {
-                        commandLine.execute(args.split(" "));
+                        List<String> targetArglist = stripOptionsFromArgs(command, args);
+                        commandLine.execute(targetArglist.toArray(new String[0]));
                     } else {
                         commandLine.execute();
                     }
@@ -91,11 +96,28 @@ public class CommandExecutor {
                 log.debug("Executed command: {}.", commandMessage);
             } else {
                 log.debug("Command not recognized: {}.", commandMessage);
-                event.getChannel().sendMessage("Command not recognized... Issue the 'help' command to get an overview of available commands.").queue();
+                event.reply("Command not recognized... Issue the 'help' command to get an overview of available commands.").queue();
             }
         }
 
         return commandRecognised.get();
+    }
+
+    @NotNull
+    private static List<String> stripOptionsFromArgs(BotCommand<?> command, String args) {
+        List<String> originalArgList = new ArrayList<>(Arrays.asList(args.split(" ")));
+        List<String> targetArglist = new ArrayList<>();
+        originalArgList.forEach(arg -> {
+                    List<OptionData> options = command.getSlashCommandData().getOptions();
+                    boolean argIsParamName = options.stream()
+                            .map(OptionData::getName)
+                            .anyMatch(arg::startsWith);
+                    if (!argIsParamName) {
+                        targetArglist.add(arg);
+                    }
+                });
+
+        return targetArglist;
     }
 
 }

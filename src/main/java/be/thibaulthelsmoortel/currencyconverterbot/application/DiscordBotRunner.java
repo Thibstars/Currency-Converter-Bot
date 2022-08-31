@@ -25,10 +25,9 @@ import be.thibaulthelsmoortel.currencyconverterbot.exceptions.MissingTokenExcept
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.apache.commons.lang3.StringUtils;
 import org.discordbots.api.client.DiscordBotListAPI;
@@ -49,22 +48,28 @@ public class DiscordBotRunner extends ListenerAdapter implements CommandLineRunn
 
     private final DiscordBotEnvironment discordBotEnvironment;
     private final CommandExecutor commandExecutor;
+    private final CommandRegister commandRegister;
 
     private DiscordBotListAPI dblApi;
 
     @Autowired
-    public DiscordBotRunner(DiscordBotEnvironment discordBotEnvironment, CommandExecutor commandExecutor) {
+    public DiscordBotRunner(DiscordBotEnvironment discordBotEnvironment, CommandExecutor commandExecutor,
+            CommandRegister commandRegister) {
         this.discordBotEnvironment = discordBotEnvironment;
         this.commandExecutor = commandExecutor;
+        this.commandRegister = commandRegister;
     }
 
     @Override
-    public void onMessageReceived(MessageReceivedEvent event) {
-        var message = event.getMessage();
-        if (processMessage(message)) {
-            String msg = message.getContentDisplay();
-            handleMessage(event, msg);
+    public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
+        String commandString = event.getCommandString();
+        if (StringUtils.isNotBlank(commandString) && processMessage(event)) {
+            handleMessage(event, commandString);
         }
+    }
+
+    private boolean processMessage(SlashCommandInteractionEvent event) {
+        return (discordBotEnvironment.isProcessBotMessages() && event.getInteraction().getUser().isBot()) || !event.getInteraction().getUser().isBot();
     }
 
     @Override
@@ -86,14 +91,16 @@ public class DiscordBotRunner extends ListenerAdapter implements CommandLineRunn
     }
 
     private void updateServerCount(JDA jda) {
-        dblApi.setStats(jda.getGuilds().size());
+        if (this.dblApi != null) {
+            dblApi.setStats(jda.getGuilds().size()).whenComplete((v, e) -> {
+                if (e != null) {
+                    log.error("Unable to set stats.", e);
+                }
+            });
+        }
     }
 
-    private boolean processMessage(Message message) {
-        return (discordBotEnvironment.isProcessBotMessages() && message.getAuthor().isBot()) || !message.getAuthor().isBot();
-    }
-
-    private void handleMessage(MessageReceivedEvent event, String msg) {
+    private void handleMessage(SlashCommandInteractionEvent event, String msg) {
         if (msg.startsWith(discordBotEnvironment.getCommandPrefix())) {
             event.getChannel().sendTyping().queue();
 
@@ -136,6 +143,8 @@ public class DiscordBotRunner extends ListenerAdapter implements CommandLineRunn
                 .addEventListeners(this)
                 .build()
                 .awaitReady();
+
+            commandRegister.registerCommands(jda);
 
             this.dblApi = new Builder()
                 .token(dblToken)

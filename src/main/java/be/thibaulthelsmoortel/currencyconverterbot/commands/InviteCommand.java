@@ -23,10 +23,12 @@ import be.thibaulthelsmoortel.currencyconverterbot.commands.candidates.Permissio
 import be.thibaulthelsmoortel.currencyconverterbot.commands.converters.PermissionConverter;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
-import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 /**
@@ -38,9 +40,6 @@ import picocli.CommandLine.Parameters;
 @Component
 public class InviteCommand extends BotCommand<String> {
 
-    @Option(names = {"-p", "--permission"}, description = "Target bot permission.", arity = "0..1")
-    private boolean[] permissionsRequested = new boolean[0];
-
     @Parameters(paramLabel = "PERMISSION", description = "Target bot permissions. Candidates: ${COMPLETION-CANDIDATES}", arity = "0..*",
         converter = PermissionConverter.class, completionCandidates = PermissionCandidates.class)
     private Permission[] permissions;
@@ -48,16 +47,16 @@ public class InviteCommand extends BotCommand<String> {
     @Override
     public String call() {
         String message = null;
-        if (getEvent() instanceof MessageReceivedEvent messageReceivedEvent) {
+        if (getEvent() instanceof SlashCommandInteractionEvent slashCommandInteractionEvent) {
             var jda = getEvent().getJDA();
 
-            if (permissionsRequested.length > 0 && permissions != null && permissions.length > 0) {
+            if (permissions != null && permissions.length > 0) {
                 message = jda.getInviteUrl(permissions);
             } else {
                 message = jda.getInviteUrl(Permission.EMPTY_PERMISSIONS);
             }
 
-            messageReceivedEvent.getChannel().sendMessage(message).queue();
+            slashCommandInteractionEvent.getInteraction().reply(message).queue();
         }
 
         reset();
@@ -66,17 +65,17 @@ public class InviteCommand extends BotCommand<String> {
     }
 
     // Visible for testing
-    void setPermissionsRequested(boolean[] permissionsRequested) {
-        this.permissionsRequested = permissionsRequested;
-    }
-
-    // Visible for testing
     void setPermissions(Permission[] permissions) {
         this.permissions = permissions;
     }
 
     private void reset() {
-        permissionsRequested = new boolean[0];
         permissions = null;
+    }
+
+    @Override
+    public SlashCommandData getSlashCommandData() {
+        return Commands.slash("invite", "Provides an invitation url for the bot.")
+                .addOption(OptionType.STRING, "permissions", "Target bot permissions.", false);
     }
 }

@@ -25,19 +25,21 @@ import be.thibaulthelsmoortel.currencyconverterbot.client.rates.payload.RatesRes
 import be.thibaulthelsmoortel.currencyconverterbot.client.rates.service.RatesService;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.converters.LowerToUpperCaseConverter;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
+import be.thibaulthelsmoortel.currencyconverterbot.validation.CurrencyIsoCode;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import picocli.CommandLine.Command;
-import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
 
 /**
  * @author Thibault Helsmoortel
@@ -52,9 +54,8 @@ public class RatesCommand extends BotCommand<MessageEmbed> {
     private static final String HEADER = "Currency rates";
 
     @SuppressWarnings("unused") // Used through option
-    @Option(names = {"-c", "--currency"}, paramLabel = "CURRENCY", description = "The base currency iso code. Default: ${DEFAULT-VALUE}", defaultValue = "EUR", arity = "0..1", converter = LowerToUpperCaseConverter.class)
-    @NotBlank
-    @Size(min = 3, max = 3)
+    @Parameters(description = "The base currency iso code. Default: ${DEFAULT-VALUE}", defaultValue = "EUR", arity = "0..1", converter = LowerToUpperCaseConverter.class)
+    @CurrencyIsoCode
     private String baseCurrencyIsoCode;
 
     private final RatesService ratesService;
@@ -64,7 +65,7 @@ public class RatesCommand extends BotCommand<MessageEmbed> {
         MessageEmbed embed = null;
         validate();
 
-        if (getEvent() instanceof MessageReceivedEvent messageReceivedEvent) {
+        if (getEvent() instanceof SlashCommandInteractionEvent slashCommandInteractionEvent) {
             var embedBuilder = new EmbedBuilder();
             embedBuilder.setTitle(HEADER);
 
@@ -82,11 +83,11 @@ public class RatesCommand extends BotCommand<MessageEmbed> {
                 rates.forEach(rate -> embedBuilder.addField(rate.getTargetIsoCode(), rate.getResult().toPlainString(), true));
 
                 embed = embedBuilder.build();
-                messageReceivedEvent.getChannel().sendMessageEmbeds(embed).queue();
+                slashCommandInteractionEvent.getInteraction().replyEmbeds(embed).queue();
             } catch (WebClientResponseException e) {
                 embedBuilder.setDescription(ERROR_MESSAGE);
                 embed = embedBuilder.build();
-                messageReceivedEvent.getChannel().sendMessageEmbeds(embed).queue();
+                slashCommandInteractionEvent.getInteraction().replyEmbeds(embed).queue();
             }
         }
 
@@ -97,5 +98,11 @@ public class RatesCommand extends BotCommand<MessageEmbed> {
     @SuppressWarnings("all")
     void setBaseCurrencyIsoCode(String baseCurrencyIsoCode) {
         this.baseCurrencyIsoCode = baseCurrencyIsoCode;
+    }
+
+    @Override
+    public SlashCommandData getSlashCommandData() {
+        return Commands.slash("rates", "Provides current currency rates.")
+                .addOption(OptionType.STRING, "base_iso_code", "The base currency iso code.", false);
     }
 }

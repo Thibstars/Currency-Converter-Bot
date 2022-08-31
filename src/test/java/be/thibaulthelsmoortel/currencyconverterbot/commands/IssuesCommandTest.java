@@ -21,12 +21,9 @@ package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.Event;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,30 +47,17 @@ class IssuesCommandTest extends CommandBaseTest  {
         this.issuesCommand = issuesCommand;
     }
 
-    @BeforeEach
-    protected void setUp() {
-        Mockito.when(messageReceivedEvent.getJDA()).thenReturn(jda);
-        Mockito.when(messageReceivedEvent.getChannel()).thenReturn(messageChannel);
-        Mockito.when(messageChannel.sendMessage(ArgumentMatchers.anyString())).thenReturn(Mockito.mock(MessageAction.class));
-    }
-
     @DisplayName("Should return issues url.")
     @Test
     void shouldReturnInviteUrlWithoutPermissions() {
-        issuesCommand.setEvent(messageReceivedEvent);
+        issuesCommand.setEvent(slashCommandInteractionEvent);
 
         String message = issuesCommand.call();
 
         Assertions.assertNotNull(message, "Issues url must not be null.");
         Assertions.assertEquals(issuesUrl, message, "Issues url must be correct.");
 
-        verifyOneMessageSent();
-    }
-
-    private void verifyOneMessageSent() {
-        Mockito.verify(messageReceivedEvent).getChannel();
-        Mockito.verify(messageChannel).sendMessage(ArgumentMatchers.anyString());
-        Mockito.verifyNoMoreInteractions(messageChannel);
+        verifyOneMessageReplied();
     }
 
     @DisplayName("Should not process event.")
