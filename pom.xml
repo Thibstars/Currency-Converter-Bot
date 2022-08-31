@@ -33,7 +33,7 @@
 	<version>1.0.2-SNAPSHOT</version>
 
 	<name>Currency Converter Bot</name>
-	<description>Discord bot allowing currency conversions and rates listing. Uses the same API as https://currencyconversion.be</description>
+	<description>Discord bot allowing currency conversions and rates listing. Uses the same API as https://currencyconversion.be. Issue the 'help' command to get started.</description>
 
 	<packaging>jar</packaging>
 
