@@ -56,7 +56,7 @@
 		<lombok.version>1.18.24</lombok.version>
 		<javax.servlet-api.version>4.0.1</javax.servlet-api.version>
 
-		<junit.version>5.8.2</junit.version>
+		<junit.version>5.9.0</junit.version>
 		<mockito.junit.version>4.7.0</mockito.junit.version>
 		<httpclient.version>4.5.13</httpclient.version>
 
