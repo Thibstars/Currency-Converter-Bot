@@ -110,12 +110,17 @@ class CommandExecutorTest extends BaseTest {
     @Test
     void shouldNotExecuteCommand() {
         String commandName = "someUnavailableCommand";
+        String commandNotRecognizedMessage = "Command not recognized... Issue the 'help' command to get an overview of available commands.";
+
+        ReplyCallbackAction replyCallbackAction = Mockito.mock(ReplyCallbackAction.class);
+        Mockito.when(slashCommandInteractionEvent.reply(commandNotRecognizedMessage))
+                .thenReturn(replyCallbackAction);
 
         boolean executed = commandExecutor.tryExecute(slashCommandInteractionEvent, commandName);
 
         // The executor should send back a message:
-        Mockito.verify(slashCommandInteractionEvent).getChannel();
-        Mockito.verify(messageChannelUnion).sendMessage("Command not recognized... Issue the 'help' command to get an overview of available commands.");
+        Mockito.verify(slashCommandInteractionEvent).reply(commandNotRecognizedMessage);
+        Mockito.verify(replyCallbackAction).queue();
         Mockito.verifyNoMoreInteractions(messageChannelUnion);
         Mockito.verifyNoMoreInteractions(slashCommandInteractionEvent);
 
