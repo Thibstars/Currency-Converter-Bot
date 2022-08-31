@@ -91,7 +91,13 @@ public class DiscordBotRunner extends ListenerAdapter implements CommandLineRunn
     }
 
     private void updateServerCount(JDA jda) {
-        dblApi.setStats(jda.getGuilds().size());
+        if (this.dblApi != null) {
+            dblApi.setStats(jda.getGuilds().size()).whenComplete((v, e) -> {
+                if (e != null) {
+                    log.error("Unable to set stats.", e);
+                }
+            });
+        }
     }
 
     private void handleMessage(SlashCommandInteractionEvent event, String msg) {

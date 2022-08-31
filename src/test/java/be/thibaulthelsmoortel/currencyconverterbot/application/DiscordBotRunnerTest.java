@@ -24,6 +24,7 @@ import be.thibaulthelsmoortel.currencyconverterbot.commands.core.CommandExecutor
 import be.thibaulthelsmoortel.currencyconverterbot.config.DiscordBotEnvironment;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
@@ -37,6 +38,7 @@ import org.discordbots.api.client.DiscordBotListAPI;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
@@ -75,6 +77,7 @@ class DiscordBotRunnerTest extends BaseTest {
     void setUp() {
         this.discordBotRunner = new DiscordBotRunner(discordBotEnvironment, commandExecutor, commandRegister);
         discordBotRunner.setDblApi(dblApi);
+        Mockito.when(dblApi.setStats(ArgumentMatchers.anyInt())).thenReturn(new CompletableFuture<>());
         Mockito.when(slashCommandInteractionEvent.getInteraction()).thenReturn(slashCommandInteraction);
         Mockito.when(slashCommandInteraction.getUser()).thenReturn(user);
     }
