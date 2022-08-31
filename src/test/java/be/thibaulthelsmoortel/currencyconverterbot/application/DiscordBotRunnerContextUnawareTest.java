@@ -46,7 +46,10 @@ class DiscordBotRunnerContextUnawareTest {
     @BeforeEach
     void setUp() {
         this.discordBotEnvironment = Mockito.mock(DiscordBotEnvironment.class);
-        this.discordBotRunner = new DiscordBotRunner(discordBotEnvironment, Mockito.mock(CommandExecutor.class));
+        this.discordBotRunner = new DiscordBotRunner(
+                discordBotEnvironment,
+                Mockito.mock(CommandExecutor.class),
+                Mockito.mock(CommandRegister.class));
     }
 
     @DisplayName("Should throw MissingTokenException.")

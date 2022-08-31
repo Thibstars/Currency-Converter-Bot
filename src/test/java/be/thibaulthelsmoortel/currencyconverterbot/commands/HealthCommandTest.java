@@ -22,12 +22,9 @@ package be.thibaulthelsmoortel.currencyconverterbot.commands;
 import be.thibaulthelsmoortel.currencyconverterbot.client.health.payload.HealthResponse;
 import be.thibaulthelsmoortel.currencyconverterbot.client.health.service.HealthServiceBean;
 import net.dv8tion.jda.api.events.Event;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -46,7 +43,7 @@ class HealthCommandTest extends CommandBaseTest {
     @DisplayName("Should return health.")
     @Test
     void shouldReturnHealth() {
-        healthCommand.setEvent(messageReceivedEvent);
+        healthCommand.setEvent(slashCommandInteractionEvent);
 
         HealthResponse healthResponse = new HealthResponse();
         healthResponse.setStatus("UP");
@@ -57,19 +54,7 @@ class HealthCommandTest extends CommandBaseTest {
         Assertions.assertNotNull(message, "Health must not be null.");
         Assertions.assertEquals("Status: " + healthServiceBean.getHealth().getStatus(), message, "Health must be correct.");
 
-        verifyOneMessageSent();
-    }
-
-    @BeforeEach
-    protected void setUp() {
-        Mockito.when(messageReceivedEvent.getChannel()).thenReturn(messageChannel);
-        Mockito.when(messageChannel.sendMessage(ArgumentMatchers.anyString())).thenReturn(Mockito.mock(MessageAction.class));
-    }
-
-    private void verifyOneMessageSent() {
-        Mockito.verify(messageReceivedEvent).getChannel();
-        Mockito.verify(messageChannel).sendMessage(ArgumentMatchers.anyString());
-        Mockito.verifyNoMoreInteractions(messageChannel);
+        verifyOneMessageReplied();
     }
 
     @DisplayName("Should not process event.")

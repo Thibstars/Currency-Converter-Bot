@@ -41,7 +41,7 @@ class PermissionConverterTest extends BaseTest {
     @DisplayName("Should convert permission.")
     @Test
     void shouldConvertPermission() {
-        Permission permissionToConvert = Permission.MESSAGE_READ;
+        Permission permissionToConvert = Permission.VIEW_CHANNEL;
         Permission permission = permissionConverter.convert(permissionToConvert.toString());
 
         Assertions.assertEquals(permissionToConvert, permission, "Permission should be converted correctly.");

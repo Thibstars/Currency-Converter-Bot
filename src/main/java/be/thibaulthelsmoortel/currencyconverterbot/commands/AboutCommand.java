@@ -23,7 +23,9 @@ import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
 import be.thibaulthelsmoortel.currencyconverterbot.config.DiscordBotEnvironment;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -51,7 +53,7 @@ public class AboutCommand extends BotCommand<MessageEmbed> {
     public MessageEmbed call() {
         MessageEmbed embed = null;
 
-        if (getEvent() instanceof MessageReceivedEvent messageReceivedEvent) {
+        if (getEvent() instanceof SlashCommandInteractionEvent slashCommandInteractionEvent) {
             var embedBuilder = new EmbedBuilder();
             if (StringUtils.isAllBlank(discordBotEnvironment.getName(), discordBotEnvironment.getAuthor())) {
                 embedBuilder.setTitle("Mystery bot by mystery author.");
@@ -63,7 +65,7 @@ public class AboutCommand extends BotCommand<MessageEmbed> {
             }
 
             embed = embedBuilder.build();
-            messageReceivedEvent.getChannel().sendMessageEmbeds(embed).queue();
+            slashCommandInteractionEvent.getInteraction().replyEmbeds(embed).queue();
         }
 
         return embed;
@@ -75,5 +77,10 @@ public class AboutCommand extends BotCommand<MessageEmbed> {
         } else {
             return FALLBACK;
         }
+    }
+
+    @Override
+    public SlashCommandData getSlashCommandData() {
+        return Commands.slash("about", "Provides general information about the bot.");
     }
 }

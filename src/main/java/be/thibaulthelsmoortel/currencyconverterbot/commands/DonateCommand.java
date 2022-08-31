@@ -20,7 +20,9 @@
 package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
@@ -40,13 +42,17 @@ public class DonateCommand extends BotCommand<String> {
     @Override
     public String call() {
         String message = null;
-        if (getEvent() instanceof MessageReceivedEvent messageReceivedEvent) {
+        if (getEvent() instanceof SlashCommandInteractionEvent slashCommandInteractionEvent) {
             message = donationUrl;
 
-            messageReceivedEvent.getChannel().sendMessage(message).queue();
+            slashCommandInteractionEvent.getInteraction().reply(message).queue();
         }
 
         return message;
     }
 
+    @Override
+    public SlashCommandData getSlashCommandData() {
+        return Commands.slash("donate", "Provides a donation url.");
+    }
 }

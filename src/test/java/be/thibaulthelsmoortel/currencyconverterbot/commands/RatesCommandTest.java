@@ -28,7 +28,7 @@ import java.util.Objects;
 import java.util.Set;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.Event;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,7 +55,7 @@ class RatesCommandTest extends CommandBaseTest {
     @BeforeEach
     protected void setUp() {
         super.setUp();
-        ratesCommand.setEvent(messageReceivedEvent);
+        ratesCommand.setEvent(slashCommandInteractionEvent);
         ratesCommand.setBaseCurrencyIsoCode("EUR");
     }
 
@@ -79,7 +79,8 @@ class RatesCommandTest extends CommandBaseTest {
 
         Mockito.when(ratesService.getRates(ratesRequest)).thenReturn(ratesResponse);
 
-        Mockito.when(messageChannel.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class))).thenReturn(Mockito.mock(MessageAction.class));
+        Mockito.when(messageChannelUnion.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class)))
+                .thenReturn(Mockito.mock(MessageCreateAction.class));
 
         MessageEmbed embed = ratesCommand.call();
 
@@ -89,7 +90,7 @@ class RatesCommandTest extends CommandBaseTest {
                 "Message should contain USD.");
         Assertions.assertTrue(embed.getFields().stream().anyMatch(field -> Objects.equals(field.getName(), "CAD")),
                 "Message should contain CAD.");
-        verifyOneMessageSent(embed);
+        verifyOneMessageReplied(embed);
     }
 
     @DisplayName("Should handle WebClientResponseException.")
@@ -100,13 +101,14 @@ class RatesCommandTest extends CommandBaseTest {
 
         Mockito.when(ratesService.getRates(ratesRequest)).thenThrow(WebClientResponseException.class);
 
-        Mockito.when(messageChannel.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class))).thenReturn(Mockito.mock(MessageAction.class));
+        Mockito.when(messageChannelUnion.sendMessageEmbeds(ArgumentMatchers.any(MessageEmbed.class)))
+                .thenReturn(Mockito.mock(MessageCreateAction.class));
 
         MessageEmbed embed = ratesCommand.call();
 
         Assertions.assertNotNull(embed, "Message should not be null.");
         Assertions.assertEquals(RatesCommand.ERROR_MESSAGE, embed.getDescription(), "Message should be correct.");
-        verifyOneMessageSent(embed);
+        verifyOneMessageReplied(embed);
     }
 
     @DisplayName("Should not process event.")

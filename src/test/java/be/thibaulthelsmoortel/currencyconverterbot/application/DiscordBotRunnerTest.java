@@ -27,14 +27,13 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.internal.entities.ReceivedMessage;
 import org.discordbots.api.client.DiscordBotListAPI;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -57,10 +56,16 @@ class DiscordBotRunnerTest extends BaseTest {
     private CommandExecutor commandExecutor;
 
     @Mock
-    private MessageReceivedEvent messageReceivedEvent;
+    private CommandRegister commandRegister;
 
     @Mock
-    private MessageChannel messageChannel;
+    private SlashCommandInteractionEvent slashCommandInteractionEvent;
+
+    @Mock
+    private SlashCommandInteraction slashCommandInteraction;
+
+    @Mock
+    private MessageChannelUnion messageChannelUnion;
 
     @Mock
     private User user;
@@ -70,32 +75,31 @@ class DiscordBotRunnerTest extends BaseTest {
 
     @BeforeEach
     void setUp() {
-        this.discordBotRunner = new DiscordBotRunner(discordBotEnvironment, commandExecutor);
+        this.discordBotRunner = new DiscordBotRunner(discordBotEnvironment, commandExecutor, commandRegister);
         discordBotRunner.setDblApi(dblApi);
         Mockito.when(dblApi.setStats(ArgumentMatchers.anyInt())).thenReturn(new CompletableFuture<>());
+        Mockito.when(slashCommandInteractionEvent.getInteraction()).thenReturn(slashCommandInteraction);
+        Mockito.when(slashCommandInteraction.getUser()).thenReturn(user);
     }
 
     @SuppressWarnings("unchecked")
     @DisplayName("Should handle message received.")
     @Test
     void shouldHandleMessageReceived() {
-        Mockito.when(messageReceivedEvent.getChannel()).thenReturn(messageChannel);
-        Mockito.when(messageChannel.sendTyping()).thenReturn(Mockito.mock(RestAction.class));
-        ReceivedMessage receivedMessage = Mockito.mock(ReceivedMessage.class);
-        Mockito.when(messageReceivedEvent.getMessage()).thenReturn(receivedMessage);
-        Mockito.when(receivedMessage.getAuthor()).thenReturn(user);
-        Mockito.when(user.isBot()).thenReturn(false);
-
+        Mockito.when(slashCommandInteractionEvent.getChannel()).thenReturn(messageChannelUnion);
+        Mockito.when(messageChannelUnion.sendTyping()).thenReturn(Mockito.mock(RestAction.class));
         String prefix = "/";
         String message = "myNewMessage";
-        Mockito.when(receivedMessage.getContentDisplay()).thenReturn(prefix + message);
+        Mockito.when(slashCommandInteractionEvent.getCommandString()).thenReturn(prefix + message);
+        Mockito.when(user.isBot()).thenReturn(false);
+
         Mockito.when(discordBotEnvironment.getCommandPrefix()).thenReturn(prefix);
 
-        discordBotRunner.onMessageReceived(messageReceivedEvent);
+        discordBotRunner.onSlashCommandInteraction(slashCommandInteractionEvent);
 
-        Mockito.verify(messageChannel).sendTyping();
-        Mockito.verifyNoMoreInteractions(messageChannel);
-        Mockito.verify(commandExecutor).tryExecute(messageReceivedEvent, message);
+        Mockito.verify(messageChannelUnion).sendTyping();
+        Mockito.verifyNoMoreInteractions(messageChannelUnion);
+        Mockito.verify(commandExecutor).tryExecute(slashCommandInteractionEvent, message);
         Mockito.verifyNoMoreInteractions(commandExecutor);
     }
 
@@ -105,31 +109,30 @@ class DiscordBotRunnerTest extends BaseTest {
         configureAsBot();
         Mockito.when(discordBotEnvironment.isProcessBotMessages()).thenReturn(false);
 
-        discordBotRunner.onMessageReceived(messageReceivedEvent);
+        discordBotRunner.onSlashCommandInteraction(slashCommandInteractionEvent);
 
-        Mockito.verifyNoMoreInteractions(messageChannel);
-        Mockito.verify(messageReceivedEvent).getMessage(); // 1 to check processing
+        Mockito.verifyNoMoreInteractions(messageChannelUnion);
+        Mockito.verify(slashCommandInteractionEvent).getCommandString(); // 1 to check processing
     }
 
     @SuppressWarnings("unchecked")
     @DisplayName("Should process bot messages.")
     @Test
     void shouldProcessBotMessages() {
-        Message messageMock = configureAsBot();
         Mockito.when(discordBotEnvironment.isProcessBotMessages()).thenReturn(true);
 
         String prefix = "/";
         String message = "myNewMessage";
-        Mockito.when(messageMock.getContentDisplay()).thenReturn(prefix + message);
+        Mockito.when(slashCommandInteractionEvent.getCommandString()).thenReturn(prefix + message);
         Mockito.when(discordBotEnvironment.getCommandPrefix()).thenReturn(prefix);
-        Mockito.when(messageReceivedEvent.getChannel()).thenReturn(messageChannel);
-        Mockito.when(messageChannel.sendTyping()).thenReturn(Mockito.mock(RestAction.class));
+        Mockito.when(slashCommandInteractionEvent.getChannel()).thenReturn(messageChannelUnion);
+        Mockito.when(messageChannelUnion.sendTyping()).thenReturn(Mockito.mock(RestAction.class));
 
-        discordBotRunner.onMessageReceived(messageReceivedEvent);
+        discordBotRunner.onSlashCommandInteraction(slashCommandInteractionEvent);
 
-        Mockito.verify(messageChannel).sendTyping();
-        Mockito.verifyNoMoreInteractions(messageChannel);
-        Mockito.verify(commandExecutor).tryExecute(messageReceivedEvent, message);
+        Mockito.verify(messageChannelUnion).sendTyping();
+        Mockito.verifyNoMoreInteractions(messageChannelUnion);
+        Mockito.verify(commandExecutor).tryExecute(slashCommandInteractionEvent, message);
         Mockito.verifyNoMoreInteractions(commandExecutor);
     }
 
@@ -161,12 +164,7 @@ class DiscordBotRunnerTest extends BaseTest {
         Mockito.verify(dblApi).setStats(guilds.size());
     }
 
-    private Message configureAsBot() {
-        Message messageMock = Mockito.mock(Message.class);
-        Mockito.when(messageReceivedEvent.getMessage()).thenReturn(messageMock);
-        Mockito.when(messageMock.getAuthor()).thenReturn(user);
+    private void configureAsBot() {
         Mockito.when(user.isBot()).thenReturn(true);
-
-        return messageMock;
     }
 }

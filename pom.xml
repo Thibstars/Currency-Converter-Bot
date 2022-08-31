@@ -49,7 +49,7 @@
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 
-		<jda.version>4.4.0_350</jda.version>
+		<jda.version>5.0.0-alpha.18</jda.version>
 		<apache.commons.version>3.12.0</apache.commons.version>
 		<picocli.version>4.6.3</picocli.version>
 		<top-gg.version>2.1.2</top-gg.version>

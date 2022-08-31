@@ -49,7 +49,7 @@ class BotCommandTest extends CommandBaseTest {
     @BeforeEach
     protected void setUp() {
         super.setUp();
-        convertCommand.setEvent(messageReceivedEvent);
+        convertCommand.setEvent(slashCommandInteractionEvent);
     }
 
     @DisplayName("Should throw ParameterException.")
