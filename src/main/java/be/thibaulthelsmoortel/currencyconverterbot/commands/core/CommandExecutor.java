@@ -96,7 +96,7 @@ public class CommandExecutor {
                 log.debug("Executed command: {}.", commandMessage);
             } else {
                 log.debug("Command not recognized: {}.", commandMessage);
-                event.getChannel().sendMessage("Command not recognized... Issue the 'help' command to get an overview of available commands.").queue();
+                event.reply("Command not recognized... Issue the 'help' command to get an overview of available commands.").queue();
             }
         }
 
@@ -116,6 +116,7 @@ public class CommandExecutor {
                         targetArglist.add(arg);
                     }
                 });
+
         return targetArglist;
     }
 
