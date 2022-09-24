@@ -27,8 +27,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.Command.Choice;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,6 +112,10 @@ public class HelpCommand extends BotCommand<MessageEmbed> {
     @Override
     public SlashCommandData getSlashCommandData() {
         return Commands.slash("help", "Provides command usage help.")
-                .addOption(OptionType.STRING, "command", "Command of which to display usage help.", false);
+                .addOptions(new OptionData(OptionType.STRING, "command", "Command of which to display usage help.", false)
+                        .addChoices(botCommands.stream()
+                                .map(botCommand -> botCommand.getSlashCommandData().getName())
+                                .map(commandName -> new Choice(commandName, commandName))
+                                .toList()));
     }
 }
