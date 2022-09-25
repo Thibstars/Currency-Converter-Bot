@@ -30,7 +30,7 @@
 
 	<groupId>be.thibaulthelsmoortel</groupId>
 	<artifactId>currency-converter-bot</artifactId>
-	<version>1.1.1</version>
+	<version>1.1.2-SNAPSHOT</version>
 
 	<name>Currency Converter Bot</name>
 	<description>Discord bot allowing currency conversions and rates listing. Uses the same API as https://currencyconversion.be. Issue the 'help' command to get started.</description>
