@@ -21,12 +21,13 @@ package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
 import be.thibaulthelsmoortel.currencyconverterbot.config.DiscordBotEnvironment;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import org.apache.commons.lang3.StringUtils;
@@ -75,6 +76,45 @@ class HelpCommandTest extends CommandBaseTest {
                         "Message should contain command name.");
                 Assertions.assertTrue(embedded.getFields().stream()
                                 .anyMatch(field -> Objects.equals(field.getValue(), parseDescription(annotation))),
+                        "Message should contain command description.");
+            }
+        });
+
+        verifyOneMessageSent(replyCallbackAction);
+    }
+
+    @DisplayName("Should send help message for command.")
+    @Test
+    void shouldSendHelpMessageForCommand() throws NoSuchFieldException, IllegalAccessException {
+        botCommands = new ArrayList<>();
+        botCommands.add(new InviteCommand());
+        botCommands.add(Mockito.mock(HelpCommand.class));
+
+        DiscordBotEnvironment environment = Mockito.mock(DiscordBotEnvironment.class);
+        Mockito.when(environment.getCommandPrefix()).thenReturn("/");
+        HelpCommand command = new HelpCommand(environment, botCommands);
+        command.setEvent(slashCommandInteractionEvent);
+        Field commandField = HelpCommand.class.getDeclaredField("command");
+        commandField.setAccessible(true);
+        commandField.set(command, "invite");
+
+        Mockito.when(messageChannelUnion.getType()).thenReturn(ChannelType.UNKNOWN);
+        Mockito.when(messageChannelUnion.getId()).thenReturn("id");
+        ReplyCallbackAction replyCallbackAction = Mockito.mock(ReplyCallbackAction.class);
+        Mockito.when(slashCommandInteraction.replyEmbeds(ArgumentMatchers.any(MessageEmbed.class)))
+                .thenReturn(replyCallbackAction);
+
+        MessageEmbed embedded = command.call();
+        Assertions.assertNotNull(embedded, "Message must not be null.");
+        Assertions.assertTrue(StringUtils.isNotBlank(embedded.getDescription()), "Description should not be empty.");
+        Assertions.assertNotNull(embedded.getFields(), "Message fields must not be null.");
+        Assertions.assertFalse(embedded.getDescription().isBlank(), "Description must not be empty.");
+        botCommands.forEach(botCommand -> {
+            if (!(botCommand instanceof HelpCommand)) {
+                Command annotation = botCommand.getClass().getAnnotation(Command.class);
+                Assertions.assertTrue(embedded.getDescription().contains(annotation.name()),
+                        "Message should contain command name.");
+                Assertions.assertTrue(embedded.getDescription().contains(parseDescription(annotation)),
                         "Message should contain command description.");
             }
         });

@@ -23,14 +23,22 @@ import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
 import be.thibaulthelsmoortel.currencyconverterbot.config.DiscordBotEnvironment;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.Command.Choice;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Help.Ansi;
+import picocli.CommandLine.Parameters;
 
 /**
  * @author Thibault Helsmoortel
@@ -38,6 +46,9 @@ import picocli.CommandLine.Command;
 @Command(name = "help", description = "Provides command usage help.")
 @Component
 public class HelpCommand extends BotCommand<MessageEmbed> {
+
+    @Parameters(description = "Command of which to display usage help.", arity = "0..1", index = "0")
+    private String command;
 
     private final DiscordBotEnvironment discordBotEnvironment;
     private final List<BotCommand<?>> botCommands;
@@ -54,21 +65,40 @@ public class HelpCommand extends BotCommand<MessageEmbed> {
         var embedBuilder = new EmbedBuilder();
         if (getEvent() instanceof SlashCommandInteractionEvent slashCommandInteractionEvent) {
             StringBuilder descriptionBuilder = embedBuilder.getDescriptionBuilder();
-            descriptionBuilder.append("Usage: ").append(discordBotEnvironment.getCommandPrefix()).append("COMMAND [OPTIONS]")
-                .append(String.format("%n%n%s%n%n", discordBotEnvironment.getDescription()))
-                .append(String.format("%s%n", "Commands:"));
+            if (StringUtils.isBlank(command)) {
+                descriptionBuilder
+                        .append(String.format("%n%n%s%n%n", discordBotEnvironment.getDescription()))
+                        .append("Usage: ").append(discordBotEnvironment.getCommandPrefix()).append("COMMAND [OPTIONS]")
+                        .append(String.format("%n%n%s%n%n", "Commands:"));
 
-            botCommands.forEach(botCommand -> {
-                if (!(botCommand instanceof HelpCommand)) {
-                    Command annotation = botCommand.getClass().getAnnotation(Command.class);
-                    embedBuilder.addField(annotation.name(), parseDescription(annotation), false);
-                }
-            });
+                botCommands.forEach(botCommand -> {
+                    if (!(botCommand instanceof HelpCommand)) {
+                        Command annotation = botCommand.getClass().getAnnotation(Command.class);
+                        embedBuilder.addField(annotation.name(), parseDescription(annotation), false);
+                    }
+                });
 
-            MessageEmbed embed = embedBuilder.build();
-            slashCommandInteractionEvent.getInteraction().replyEmbeds(embed).queue();
+                MessageEmbed embed = embedBuilder.build();
+                slashCommandInteractionEvent.getInteraction().replyEmbeds(embed).queue();
 
-            return embed;
+                return embed;
+            } else {
+                AtomicReference<MessageEmbed> embed = new AtomicReference<>(null);
+                botCommands.stream()
+                        .filter(botCommand -> {
+                            String commandName = botCommand.getClass().getAnnotation(Command.class).name();
+                            return command.equals(commandName);
+                        })
+                        .findFirst()
+                        .ifPresent(botCommand -> {
+                            String message = new CommandLine(botCommand).getUsageMessage(Ansi.OFF);
+                            descriptionBuilder.append(message);
+                            embed.set(embedBuilder.build());
+                            slashCommandInteractionEvent.getInteraction().replyEmbeds(embed.get()).queue();
+                        });
+                command = null;
+                return embed.get();
+            }
         }
 
         return null;
@@ -81,6 +111,11 @@ public class HelpCommand extends BotCommand<MessageEmbed> {
 
     @Override
     public SlashCommandData getSlashCommandData() {
-        return Commands.slash("help", "Provides command usage help.");
+        return Commands.slash("help", "Provides command usage help.")
+                .addOptions(new OptionData(OptionType.STRING, "command", "Command of which to display usage help.", false)
+                        .addChoices(botCommands.stream()
+                                .map(botCommand -> botCommand.getSlashCommandData().getName())
+                                .map(commandName -> new Choice(commandName, commandName))
+                                .toList()));
     }
 }

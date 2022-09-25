@@ -37,7 +37,7 @@ import picocli.CommandLine.Spec;
  *
  * @author Thibault Helsmoortel
  */
-@Command(mixinStandardHelpOptions = true, versionProvider = VersionProvider.class)
+@Command(versionProvider = VersionProvider.class)
 public abstract class BotCommand<T> implements Callable<T> {
 
     @SuppressWarnings("UnusedDeclaration") // Injected by Picocli
