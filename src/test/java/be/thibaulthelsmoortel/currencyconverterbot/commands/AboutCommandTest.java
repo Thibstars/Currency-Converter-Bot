@@ -20,6 +20,7 @@
 package be.thibaulthelsmoortel.currencyconverterbot.commands;
 
 import be.thibaulthelsmoortel.currencyconverterbot.config.DiscordBotEnvironment;
+import java.util.Objects;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
@@ -66,6 +67,8 @@ class AboutCommandTest extends CommandBaseTest {
         Mockito.when(discordBotEnvironment.getAuthor()).thenReturn(author);
         String description = "my bot is the best";
         Mockito.when(discordBotEnvironment.getDescription()).thenReturn(description);
+        String version = "1.1";
+        Mockito.when(discordBotEnvironment.getVersion()).thenReturn(version);
 
         AboutCommand command = new AboutCommand(discordBotEnvironment);
         command.setEvent(slashCommandInteractionEvent);
@@ -76,8 +79,14 @@ class AboutCommandTest extends CommandBaseTest {
         MessageEmbed embed = command.call();
 
         Assertions.assertNotNull(embed, "Message should not be null.");
-        Assertions.assertEquals(name + " created by " + author + "." + System.lineSeparator() + description, embed.getDescription(), "Message should be correct.");
-
+        Assertions.assertNotNull(embed.getDescription(), "Description must not be null.");
+        Assertions.assertTrue(embed.getDescription().contains(description), "Message should contain description.");
+        Assertions.assertTrue(embed.getFields().stream()
+                        .anyMatch(field -> Objects.equals(field.getValue(), author)),
+                "Message should contain author.");
+        Assertions.assertTrue(embed.getFields().stream()
+                        .anyMatch(field -> Objects.equals(field.getValue(), version)),
+                "Message should contain version.");
         verifyOneMessageReplied(embed);
     }
 
@@ -89,6 +98,8 @@ class AboutCommandTest extends CommandBaseTest {
         Mockito.when(discordBotEnvironment.getAuthor()).thenReturn(author);
         String description = "my bot is the best";
         Mockito.when(discordBotEnvironment.getDescription()).thenReturn(description);
+        String version = "1.1";
+        Mockito.when(discordBotEnvironment.getVersion()).thenReturn(version);
 
         AboutCommand command = new AboutCommand(discordBotEnvironment);
         command.setEvent(slashCommandInteractionEvent);
@@ -99,8 +110,14 @@ class AboutCommandTest extends CommandBaseTest {
         MessageEmbed embed = command.call();
 
         Assertions.assertNotNull(embed, "Message should not be null.");
-        Assertions.assertEquals("Bot created by " + author + "." + System.lineSeparator() + description, embed.getDescription(), "Message should be correct.");
-
+        Assertions.assertNotNull(embed.getDescription(), "Description must not be null.");
+        Assertions.assertTrue(embed.getDescription().contains(description), "Message should contain description.");
+        Assertions.assertTrue(embed.getFields().stream()
+                        .anyMatch(field -> Objects.equals(field.getValue(), author)),
+                "Message should contain author.");
+        Assertions.assertTrue(embed.getFields().stream()
+                        .anyMatch(field -> Objects.equals(field.getValue(), version)),
+                "Message should contain version.");
         verifyOneMessageReplied(embed);
     }
 

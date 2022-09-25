@@ -32,6 +32,7 @@ bot:
     url: "https://github.com/sponsors/Thibstars"
   issues:
     url: "https://github.com/Thibstars/Currency-Converter-Bot/issues/new/choose"
+  version: @project.version@
 
 api:
   base:

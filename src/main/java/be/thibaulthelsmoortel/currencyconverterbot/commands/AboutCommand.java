@@ -40,8 +40,6 @@ import picocli.CommandLine.Command;
 @Component
 public class AboutCommand extends BotCommand<MessageEmbed> {
 
-    private static final String FALLBACK = "Bot";
-
     private final DiscordBotEnvironment discordBotEnvironment;
 
     @Autowired
@@ -58,10 +56,10 @@ public class AboutCommand extends BotCommand<MessageEmbed> {
             if (StringUtils.isAllBlank(discordBotEnvironment.getName(), discordBotEnvironment.getAuthor())) {
                 embedBuilder.setTitle("Mystery bot by mystery author.");
             } else {
-                embedBuilder.setDescription(whenNotBlankPrint(discordBotEnvironment.getName())
-                    + (StringUtils.isNotBlank(discordBotEnvironment.getAuthor()) ? " created by " + discordBotEnvironment.getAuthor() + "." : "")
-                    + (StringUtils.isNotBlank(discordBotEnvironment.getVersion()) ? " Version: " + discordBotEnvironment.getVersion() : "")
-                    + (StringUtils.isNotBlank(discordBotEnvironment.getDescription()) ? System.lineSeparator() + discordBotEnvironment.getDescription() : ""));
+                StringBuilder descriptionBuilder = embedBuilder.getDescriptionBuilder();
+                descriptionBuilder.append(String.format("%s%n%s%n", discordBotEnvironment.getName(), discordBotEnvironment.getDescription()));
+                embedBuilder.addField("author", discordBotEnvironment.getAuthor(), true);
+                embedBuilder.addField("version", discordBotEnvironment.getVersion(), true);
             }
 
             embed = embedBuilder.build();
@@ -69,14 +67,6 @@ public class AboutCommand extends BotCommand<MessageEmbed> {
         }
 
         return embed;
-    }
-
-    private String whenNotBlankPrint(String toPrint) {
-        if (StringUtils.isNotBlank(toPrint)) {
-            return toPrint;
-        } else {
-            return FALLBACK;
-        }
     }
 
     @Override
