@@ -23,7 +23,6 @@ import java.io.OutputStream;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 /**
@@ -45,7 +44,7 @@ public class MessageChannelOutputStream extends OutputStream {
 
     @SuppressWarnings("all") // hard null check
     @Override
-    public void write(byte @NotNull [] b, int off, int len) {
+    public void write(byte [] b, int off, int len) {
         if (b == null) {
             throw new IllegalArgumentException();
         }
