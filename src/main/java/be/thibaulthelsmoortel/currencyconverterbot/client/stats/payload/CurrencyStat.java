@@ -19,13 +19,17 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.client.stats.payload;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
  * @author Thibault Helsmoortel
  */
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 @Builder
 @ToString
