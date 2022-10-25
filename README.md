@@ -4,7 +4,7 @@ This bot uses the same API as https://currencyconversion.be.
 
 ## Hosting ##
 ### Public ###
-This bot is currently publicly hosted and available. It is listed on top.gg, so you could simply invite the bot to your server from there.
+This bot is currently publicly hosted and available. It is listed on [top.gg](https://top.gg/bot/563655936263061544), so you could simply invite the bot to your server from there.
 
 [![Discord Bots](https://discordbots.org/api/widget/563655936263061544.svg)](https://discordbots.org/bot/563655936263061544)
 

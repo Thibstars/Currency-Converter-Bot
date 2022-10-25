@@ -42,7 +42,7 @@ class RatesServiceBeanTest extends ClientBaseTest {
     @Autowired
     private RatesService ratesService;
 
-    @DisplayName("should get rates.")
+    @DisplayName("Should get rates.")
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void shouldGetRates() {
