@@ -111,8 +111,10 @@ public class StatsCommand extends BotCommand<MessageEmbed> {
     }
 
     private String formatOccurrences(List<CurrencyStat> currencyStats) {
+        final String format = "%-4s- %d";
+
         return currencyStats.stream()
-                .map(stats -> stats.getIsoCode() + " - " + stats.getOccurrences())
+                .map(stats -> String.format(format, stats.getIsoCode(), stats.getOccurrences()))
                 .collect(Collectors.joining("\n"));
     }
 }
