@@ -23,7 +23,7 @@ import be.thibaulthelsmoortel.currencyconverterbot.client.stats.payload.StatsReq
 import be.thibaulthelsmoortel.currencyconverterbot.client.stats.payload.StatsResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -31,7 +31,7 @@ import reactor.core.publisher.Mono;
  * @author Thibault Helsmoortel
  */
 @RequiredArgsConstructor
-@Component
+@Service
 @Slf4j
 public class StatsServiceBean implements StatsService {
 
