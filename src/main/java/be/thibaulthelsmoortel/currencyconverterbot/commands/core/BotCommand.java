@@ -19,12 +19,12 @@
 
 package be.thibaulthelsmoortel.currencyconverterbot.commands.core;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import picocli.CommandLine;
