@@ -25,8 +25,8 @@ import be.thibaulthelsmoortel.currencyconverterbot.client.conversion.service.Con
 import be.thibaulthelsmoortel.currencyconverterbot.commands.converters.LowerToUpperCaseConverter;
 import be.thibaulthelsmoortel.currencyconverterbot.commands.core.BotCommand;
 import be.thibaulthelsmoortel.currencyconverterbot.validation.CurrencyIsoCode;
+import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
