@@ -53,7 +53,7 @@
 		<apache.commons.version>3.12.0</apache.commons.version>
 		<picocli.version>4.7.1</picocli.version>
 		<top-gg.version>2.1.2</top-gg.version>
-		<lombok.version>1.18.26</lombok.version>
+		<lombok.version>1.18.28</lombok.version>
 		<javax.servlet-api.version>4.0.1</javax.servlet-api.version>
 
 		<junit.version>5.9.0</junit.version>
