@@ -4,11 +4,8 @@ This bot uses the same API as https://currencyconversion.be.
 
 ## Hosting ##
 ### Public ###
-This bot is currently publicly hosted and available. It is listed on [top.gg](https://top.gg/bot/563655936263061544), so you could simply invite the bot to your server from there.
-
-[![Discord Bots](https://discordbots.org/api/widget/563655936263061544.svg)](https://discordbots.org/bot/563655936263061544)
-
-[![DigitalOcean Referral Badge](https://web-platforms.sfo2.cdn.digitaloceanspaces.com/WWW/Badge%201.svg)](https://www.digitalocean.com/?refcode=9d2be90e794d&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge)
+This bot has been discontinued and is thus no longer publicly hosted.
+Apologies for any inconvenience.
 
 ### Private (0.2.7 and before) ###
 This bot can also be self-hosted up until version 0.2.7. The newer version calls an API maintained separately.
